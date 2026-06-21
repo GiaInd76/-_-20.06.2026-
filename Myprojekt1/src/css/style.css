@@ -5192,3 +5192,65 @@ button:hover,
         max-width: none;
     }
 }
+
+
+/* Упрощённый кабинет и редактирование на витрине */
+
+.glass-page.seller-panel-page .container {
+    max-width: 660px;
+}
+
+.home-page .home-benefits button small {
+    display: block;
+    margin-top: 4px;
+    color: #7a7f84;
+    font-size: 9px;
+    font-weight: var(--weight-medium);
+}
+
+.owner-edit-product-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.78);
+    color: #33373b;
+    font-size: 9px;
+}
+
+.owner-product-editor {
+    display: grid;
+    max-width: 390px;
+    padding: 20px;
+    gap: 8px;
+    background: rgba(255,255,255,0.94);
+}
+
+.owner-product-editor h2 {
+    margin-bottom: 5px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.owner-product-editor input,
+.owner-product-editor select,
+.owner-product-editor textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(150, 156, 162, 0.38);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.84);
+    color: #25282b;
+    font-size: 13px;
+    outline: none;
+}
+
+.owner-product-editor textarea {
+    min-height: 68px;
+    resize: none;
+}
+
+.owner-product-editor button {
+    width: 100%;
+    min-height: 38px;
+}

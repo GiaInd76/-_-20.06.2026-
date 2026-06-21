@@ -21,7 +21,7 @@
 
     <link
         rel="stylesheet"
-        href="css/style.css?v=20260621-7"
+        href="css/style.css?v=20260621-8"
     >
 
 </head>
@@ -80,6 +80,39 @@
         </section>
 
 
+    </div>
+
+
+    <!-- Редактирование товара владельцем лавки -->
+
+    <div id="ownerProductModal" class="modal">
+        <div class="modal-content owner-product-editor">
+            <h2>Редактировать товар</h2>
+
+            <input id="ownerProductName" type="text" placeholder="Название товара">
+            <input id="ownerProductDepartment" type="text" placeholder="Отдел">
+            <input id="ownerProductPrice" type="number" min="0" placeholder="Цена">
+
+            <select id="ownerProductUnit">
+                <option value="kg">кг</option>
+                <option value="gram">г</option>
+                <option value="liter">л</option>
+                <option value="piece">шт</option>
+                <option value="pack">упаковка</option>
+            </select>
+
+            <textarea id="ownerProductDescription" placeholder="Описание товара"></textarea>
+
+            <button id="saveOwnerProductBtn" class="add-btn" type="button">
+                Сохранить
+            </button>
+
+            <button id="cancelOwnerProductBtn" class="btn-outline" type="button">
+                Отмена
+            </button>
+
+            <p id="ownerProductMessage" class="form-message"></p>
+        </div>
     </div>
 
 
@@ -156,7 +189,7 @@
 
     <!-- Подключение JS -->
 
-    <script src="js/script.js?v=20260621-7"></script>
+    <script src="js/script.js?v=20260621-8"></script>
 
 </body>
 

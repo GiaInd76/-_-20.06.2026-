@@ -284,6 +284,7 @@ function initMainPage() {
     const sellerChoiceModal = document.getElementById("sellerChoiceModal");
     const sellerCabinetChoice = document.getElementById("sellerCabinetChoice");
     const sellerEditChoice = document.getElementById("sellerEditChoice");
+    const sellerNewChoice = document.getElementById("sellerNewChoice");
 
     const renderAllHomeCategories = () => {
         if (!homeAllCategoriesGrid) return;
@@ -353,7 +354,15 @@ function initMainPage() {
     });
 
     sellerCabinetChoice?.addEventListener("click", () => {
-        openPage("create_seller.html");
+        const sellers = readStorage("sellers");
+        const seller = sellers[sellers.length - 1];
+
+        if (!seller) {
+            openPage("create_seller.html");
+            return;
+        }
+
+        openPage(`seller.html?seller=${encodeURIComponent(seller.id)}&owner=1`);
     });
 
     sellerEditChoice?.addEventListener("click", () => {
@@ -366,6 +375,10 @@ function initMainPage() {
         }
 
         openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
+    });
+
+    sellerNewChoice?.addEventListener("click", () => {
+        openPage("create_seller.html");
     });
 
     sellerChoiceModal?.addEventListener("click", event => {
@@ -1238,6 +1251,7 @@ function renderCategoryProducts(container, products, options = {}) {
     if (!container) return;
 
     const showSellerLink = options.showSellerLink === true;
+    const ownerMode = options.ownerMode === true;
 
     container.classList.add("product-list");
     container.classList.remove("sellers-list");
@@ -1296,6 +1310,19 @@ function renderCategoryProducts(container, products, options = {}) {
                     `
                     : ""
             }
+            ${
+                ownerMode
+                    ? `
+                        <button
+                            class="owner-edit-product-btn"
+                            data-product="${escapeHtml(product.id)}"
+                            type="button"
+                        >
+                            Редактировать
+                        </button>
+                    `
+                    : ""
+            }
         `;
 
         card.addEventListener("click", event => {
@@ -1318,7 +1345,81 @@ function renderCategoryProducts(container, products, options = {}) {
                 openPage(`seller.html?seller=${encodeURIComponent(product.seller)}`);
             });
 
+        card
+            .querySelector(".owner-edit-product-btn")
+            ?.addEventListener("click", event => {
+                event.stopPropagation();
+                openOwnerProductEditor(product);
+            });
+
         container.appendChild(card);
+    });
+}
+
+function openOwnerProductEditor(product) {
+    if (params.get("owner") !== "1") return;
+
+    const modal = document.getElementById("ownerProductModal");
+
+    if (!modal || product.seller !== currentSeller) return;
+
+    modal.dataset.product = product.id;
+    document.getElementById("ownerProductName").value = product.name || "";
+    document.getElementById("ownerProductDepartment").value = product.department || "";
+    document.getElementById("ownerProductPrice").value = product.price || "";
+    document.getElementById("ownerProductUnit").value = product.unit || "kg";
+    document.getElementById("ownerProductDescription").value = product.description || "";
+    showMessage(document.getElementById("ownerProductMessage"), "");
+    modal.style.display = "flex";
+}
+
+function initOwnerProductEditor() {
+    const modal = document.getElementById("ownerProductModal");
+    const saveButton = document.getElementById("saveOwnerProductBtn");
+    const cancelButton = document.getElementById("cancelOwnerProductBtn");
+
+    if (!modal || params.get("owner") !== "1") return;
+
+    saveButton?.addEventListener("click", () => {
+        const products = readStorage("products");
+        const productIndex = products.findIndex(product => {
+            return product.id === modal.dataset.product && product.seller === currentSeller;
+        });
+
+        if (productIndex === -1) return;
+
+        const name = document.getElementById("ownerProductName").value.trim();
+        const price = document.getElementById("ownerProductPrice").value.trim();
+
+        if (!name || !price) {
+            showMessage(
+                document.getElementById("ownerProductMessage"),
+                "Введите название и цену."
+            );
+            return;
+        }
+
+        products[productIndex] = {
+            ...products[productIndex],
+            name,
+            department: document.getElementById("ownerProductDepartment").value.trim(),
+            price,
+            unit: document.getElementById("ownerProductUnit").value,
+            description: document.getElementById("ownerProductDescription").value.trim()
+        };
+
+        writeStorage("products", products);
+        window.location.reload();
+    });
+
+    cancelButton?.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", event => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
     });
 }
 
@@ -1358,6 +1459,7 @@ function initSellerPage() {
     const sellerPage = document.getElementById("sellerPage");
     const sellerProductsContainer = document.getElementById("sellerProducts");
     const departmentsContainer = document.getElementById("sellerDepartments");
+    const ownerMode = params.get("owner") === "1";
 
     if (!sellerPage && !sellerProductsContainer) return;
 
@@ -1372,6 +1474,7 @@ function initSellerPage() {
     }
 
     setBrandCategory(seller.category);
+    document.body.classList.toggle("owner-mode", ownerMode);
 
     sellerPage.classList.toggle("has-cover", Boolean(seller.coverImage));
 
@@ -1466,7 +1569,9 @@ function initSellerPage() {
                 const filteredProducts = products
                     .filter(product => getProductDepartment(product) === department);
 
-                renderCategoryProducts(sellerProductsContainer, filteredProducts);
+                renderCategoryProducts(sellerProductsContainer, filteredProducts, {
+                    ownerMode
+                });
             });
 
             departmentsContainer.appendChild(button);
@@ -1474,10 +1579,11 @@ function initSellerPage() {
 
         renderCategoryProducts(
             sellerProductsContainer,
-            products.filter(product => getProductDepartment(product) === departments[0])
+            products.filter(product => getProductDepartment(product) === departments[0]),
+            { ownerMode }
         );
     } else {
-        renderCategoryProducts(sellerProductsContainer, products);
+        renderCategoryProducts(sellerProductsContainer, products, { ownerMode });
     }
 }
 
@@ -1544,4 +1650,5 @@ initSellerPanel();
 initFishPage();
 initCategoryPage();
 initSellerPage();
+initOwnerProductEditor();
 initModal();
