@@ -5105,3 +5105,90 @@ button:hover,
     color: #555b61;
     font-size: 12px;
 }
+
+
+/* Упрощённый редактор без колонки предпросмотра */
+
+.product-workbench {
+    display: block;
+    max-width: 420px;
+}
+
+.seller-panel-page .product-editor {
+    width: 100%;
+}
+
+.photo-preview {
+    display: grid;
+    min-height: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.photo-preview-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    background: #eceeef center / cover no-repeat;
+    box-shadow: inset 0 0 0 1px rgba(70, 76, 82, 0.10);
+}
+
+.product-modal-image.has-image {
+    cursor: pointer;
+}
+
+/* Правая кнопка верхней навигации */
+
+.page-navigation .favorites-nav-btn {
+    width: auto;
+    margin-left: auto;
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.68);
+    color: var(--theme-ink);
+    font-size: 11px;
+    font-weight: var(--weight-medium);
+}
+
+/* Выбор действия по кнопке «Моя лавка» */
+
+.seller-choice-modal {
+    background: rgba(30, 33, 37, 0.24);
+}
+
+.seller-choice-content {
+    display: grid;
+    max-width: 300px;
+    padding: 20px;
+    gap: 9px;
+    border: 1px solid rgba(255,255,255,0.90);
+    background: rgba(255,255,255,0.88);
+    box-shadow:
+        0 18px 44px rgba(32, 37, 43, 0.16),
+        inset 0 1px 0 #fff;
+    backdrop-filter: blur(18px);
+}
+
+.seller-choice-content h2 {
+    margin-bottom: 5px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.seller-choice-content button {
+    width: 100%;
+    min-height: 38px;
+}
+
+@media (max-width: 430px) {
+    .page-navigation .favorites-nav-btn {
+        padding: 7px 9px;
+        font-size: 10px;
+    }
+
+    .product-workbench {
+        max-width: none;
+    }
+}

@@ -1,11 +1,13 @@
 const params = new URLSearchParams(window.location.search);
 let currentSeller = params.get("seller");
 let editingProductIndex = null;
-let selectedProductImage = "";
+let selectedProductImages = [];
 let selectedSellerCover = "";
 let refreshProductImagePreview = () => {};
 let refreshLiveProductPreview = () => {};
 const sessionProductIds = new Set();
+let modalProductImages = [];
+let modalProductImageIndex = 0;
 
 const categories = [
     { id: "meat", label: "Мясо" },
@@ -162,6 +164,16 @@ function getProductDepartment(product) {
     return String(product?.department || "").trim() || "Другое";
 }
 
+function getProductImages(product) {
+    if (Array.isArray(product?.images)) {
+        const images = product.images.filter(Boolean).slice(0, 2);
+
+        if (images.length) return images;
+    }
+
+    return product?.image ? [product.image] : [];
+}
+
 function renderDepartmentSuggestions() {
     const suggestions = document.getElementById("departmentSuggestions");
 
@@ -269,6 +281,9 @@ function initMainPage() {
     const favoritesBtn = document.getElementById("favoritesBtn");
     const sellerStartBtn = document.getElementById("sellerStartBtn");
     const sellerCabinetsBtn = document.getElementById("sellerCabinetsBtn");
+    const sellerChoiceModal = document.getElementById("sellerChoiceModal");
+    const sellerCabinetChoice = document.getElementById("sellerCabinetChoice");
+    const sellerEditChoice = document.getElementById("sellerEditChoice");
 
     const renderAllHomeCategories = () => {
         if (!homeAllCategoriesGrid) return;
@@ -334,8 +349,40 @@ function initMainPage() {
     });
 
     sellerCabinetsBtn?.addEventListener("click", () => {
+        if (sellerChoiceModal) sellerChoiceModal.style.display = "flex";
+    });
+
+    sellerCabinetChoice?.addEventListener("click", () => {
         openPage("create_seller.html");
     });
+
+    sellerEditChoice?.addEventListener("click", () => {
+        const sellers = readStorage("sellers");
+        const seller = sellers[sellers.length - 1];
+
+        if (!seller) {
+            openPage("create_seller.html");
+            return;
+        }
+
+        openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
+    });
+
+    sellerChoiceModal?.addEventListener("click", event => {
+        if (event.target === sellerChoiceModal) {
+            sellerChoiceModal.style.display = "none";
+        }
+    });
+}
+
+function initFavoritesNavigation() {
+    document
+        .querySelectorAll(".favorites-nav-btn")
+        .forEach(button => {
+            button.addEventListener("click", () => {
+                openPage("category.html?favorites=1");
+            });
+        });
 }
 
 function initBackButtons() {
@@ -567,7 +614,7 @@ function initSellerPanel() {
             price: productPriceInput?.value.trim() || "0",
             unit: productUnitSelect?.value || "kg",
             description: productDescriptionInput?.value.trim() || "Описание появится здесь.",
-            image: selectedProductImage
+            image: selectedProductImages[0] || ""
         };
 
         liveProductPreview.innerHTML = `
@@ -602,30 +649,36 @@ function initSellerPanel() {
     const updateProductImagePreview = () => {
         if (!productImagePreview || !removeProductImageBtn) return;
 
-        if (!selectedProductImage) {
+        if (!selectedProductImages.length) {
             productImagePreview.classList.add("hidden");
-            productImagePreview.style.backgroundImage = "";
+            productImagePreview.innerHTML = "";
             removeProductImageBtn.classList.add("hidden");
             productImageStatus?.classList.add("hidden");
             if (productImageLabel) {
-                productImageLabel.textContent = "Добавить фото товара";
+                productImageLabel.textContent = "Добавить до 2 фото";
             }
             renderLiveProductPreview();
             return;
         }
 
         productImagePreview.classList.remove("hidden");
-        productImagePreview.style.backgroundImage = `url("${selectedProductImage}")`;
+        productImagePreview.innerHTML = selectedProductImages
+            .map(() => `<div class="photo-preview-item"></div>`)
+            .join("");
+
+        productImagePreview
+            .querySelectorAll(".photo-preview-item")
+            .forEach((preview, index) => {
+                preview.style.backgroundImage = `url("${selectedProductImages[index]}")`;
+            });
         removeProductImageBtn.classList.remove("hidden");
 
         if (productImageLabel) {
-            productImageLabel.textContent = "Заменить фото товара";
+            productImageLabel.textContent = "Заменить фото";
         }
 
         if (productImageStatus) {
-            productImageStatus.textContent = editingProductIndex !== null
-                ? "✓ У товара уже есть фото"
-                : "✓ Фото выбрано";
+            productImageStatus.textContent = `✓ Выбрано фото: ${selectedProductImages.length} из 2`;
             productImageStatus.classList.remove("hidden");
         }
 
@@ -687,7 +740,7 @@ function initSellerPanel() {
 
     const resetProductForm = () => {
         editingProductIndex = null;
-        selectedProductImage = "";
+        selectedProductImages = [];
         productFormTitle.textContent = "Добавить товар";
         addProductBtn.textContent = "Добавить товар";
         cancelEditProductBtn.classList.add("hidden");
@@ -703,32 +756,32 @@ function initSellerPanel() {
     };
 
     productImageInput?.addEventListener("change", () => {
-        const file = productImageInput.files?.[0];
+        const files = [...(productImageInput.files || [])].slice(0, 2);
 
-        if (!file) return;
+        if (!files.length) return;
 
-        if (!file.type.startsWith("image/")) {
-            showMessage(productMessage, "Выберите изображение.");
+        if (files.some(file => !file.type.startsWith("image/"))) {
+            showMessage(productMessage, "Выберите только изображения.");
             productImageInput.value = "";
             return;
         }
 
-        resizeImageFile(file)
-            .then(imageData => {
-                selectedProductImage = imageData;
+        Promise.all(files.map(file => resizeImageFile(file)))
+            .then(images => {
+                selectedProductImages = images;
                 updateProductImagePreview();
-                showMessage(productMessage, "Фото выбрано и подготовлено.");
+                showMessage(productMessage, `Подготовлено фото: ${images.length}.`);
             })
             .catch(() => {
-                showMessage(productMessage, "Не удалось загрузить фото.");
-                selectedProductImage = "";
+                showMessage(productMessage, "Не удалось загрузить фотографии.");
+                selectedProductImages = [];
                 productImageInput.value = "";
                 updateProductImagePreview();
             });
     });
 
     removeProductImageBtn?.addEventListener("click", () => {
-        selectedProductImage = "";
+        selectedProductImages = [];
         if (productImageInput) {
             productImageInput.value = "";
         }
@@ -829,7 +882,8 @@ function initSellerPanel() {
                 price,
                 unit,
                 description,
-                image: selectedProductImage
+                images: [...selectedProductImages],
+                image: selectedProductImages[0] || ""
             };
             savedProductId = oldProduct.id;
         } else {
@@ -843,7 +897,8 @@ function initSellerPanel() {
                 price,
                 unit,
                 description,
-                image: selectedProductImage
+                images: [...selectedProductImages],
+                image: selectedProductImages[0] || ""
             });
         }
 
@@ -948,8 +1003,8 @@ function renderPanelProducts() {
                     <span>${escapeHtml(getProductPriceText(product))}</span>
                 </div>
                 ${
-                    product.image
-                        ? `<span class="photo-chip">Фото</span>`
+                    getProductImages(product).length
+                        ? `<span class="photo-chip">${getProductImages(product).length} фото</span>`
                         : ""
                 }
                 <div class="product-actions">
@@ -986,7 +1041,7 @@ function renderPanelProducts() {
                 document.getElementById("price").value = product.price || "";
                 document.getElementById("unit").value = product.unit || "kg";
                 document.getElementById("productDescription").value = product.description || "";
-                selectedProductImage = product.image || "";
+                selectedProductImages = getProductImages(product);
                 refreshProductImagePreview();
                 refreshLiveProductPreview();
                 document.getElementById("productFormTitle").textContent = "Редактировать товар";
@@ -1221,8 +1276,8 @@ function renderCategoryProducts(container, products, options = {}) {
                 <span>${escapeHtml(getProductPriceText(product))}</span>
             </div>
             ${
-                product.image
-                    ? `<span class="photo-chip">Фото</span>`
+                getProductImages(product).length
+                    ? `<span class="photo-chip">${getProductImages(product).length} фото</span>`
                     : ""
             }
             ${
@@ -1279,12 +1334,24 @@ function openProductModal(product) {
         modal.classList.remove(getCategoryClass(category.id));
     });
     modal.classList.add(getCategoryClass(product.category));
-    image.classList.toggle("has-image", Boolean(product.image));
-    image.style.backgroundImage = product.image ? `url("${product.image}")` : "";
-    image.textContent = product.image ? "" : "Фото товара";
+    modalProductImages = getProductImages(product);
+    modalProductImageIndex = 0;
+    updateProductModalImage();
     title.textContent = product.name || "Товар";
     price.textContent = getProductPriceText(product);
     modal.style.display = "flex";
+}
+
+function updateProductModalImage() {
+    const image = document.getElementById("productModalImage");
+
+    if (!image) return;
+
+    const currentImage = modalProductImages[modalProductImageIndex] || "";
+
+    image.classList.toggle("has-image", Boolean(currentImage));
+    image.style.backgroundImage = currentImage ? `url("${currentImage}")` : "";
+    image.textContent = currentImage ? "" : "Фото товара";
 }
 
 function initSellerPage() {
@@ -1420,6 +1487,17 @@ function initModal() {
         const contactModal = document.getElementById("contactModal");
         const productModal = document.getElementById("productModal");
 
+        if (
+            productModal &&
+            productModal.style.display === "flex" &&
+            event.target.id === "productModalImage" &&
+            modalProductImages.length > 1
+        ) {
+            modalProductImageIndex = (modalProductImageIndex + 1) % modalProductImages.length;
+            updateProductModalImage();
+            return;
+        }
+
         if (productModal && productModal.style.display === "flex") {
             productModal.style.display = "none";
             return;
@@ -1458,6 +1536,7 @@ function initModal() {
 initBrandHeader();
 initCategoryColors();
 initMainPage();
+initFavoritesNavigation();
 initBackButtons();
 initCategoryCards();
 initSellerCreation();

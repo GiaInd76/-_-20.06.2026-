@@ -7,7 +7,7 @@
 
     <title>Панель продавца — Привоз Онлайн</title>
 
-    <link rel="stylesheet" href="css/style.css?v=20260621-6">
+    <link rel="stylesheet" href="css/style.css?v=20260621-7">
 </head>
 
 <body class="glass-page seller-panel-page">
@@ -20,6 +20,10 @@
             <a class="brand-title site-brand" href="index.html">
                 Привоз
             </a>
+
+            <button class="favorites-nav-btn" type="button">
+                ☆ Избранное
+            </button>
         </nav>
 
         <header class="header">
@@ -213,13 +217,14 @@
                     class="photo-upload-btn"
                     id="productImageLabel"
                 >
-                    Добавить фото товара
+                    Добавить до 2 фото
                 </label>
 
                 <input
                     type="file"
                     id="productImage"
                     accept="image/*"
+                    multiple
                 >
 
                 <div
@@ -262,19 +267,6 @@
             ></p>
         </section>
 
-        <aside class="panel-section live-products-panel">
-            <h2>
-                Предпросмотр
-            </h2>
-
-            <div id="liveProductPreview" class="live-product-preview"></div>
-
-            <h3 class="session-products-title">
-                Добавлено сейчас
-            </h3>
-
-            <div id="liveSessionProducts" class="session-products"></div>
-        </aside>
         </div>
 
         <section class="panel-section products-section">
@@ -289,7 +281,7 @@
         </section>
     </div>
 
-    <script src="js/script.js?v=20260621-6"></script>
+    <script src="js/script.js?v=20260621-7"></script>
 </body>
 
 </html>
