@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+
+        Продавец — Привоз Онлайн
+
+    </title>
+
+
+    <!-- Подключение CSS -->
+
+    <link
+        rel="stylesheet"
+        href="css/style.css?v=20260619-2"
+    >
+
+</head>
+
+<body class="glass-page">
+
+    <div class="container">
+
+
+        <!-- Кнопка возврата -->
+
+        <button class="back-home-btn">
+
+            Назад
+
+        </button>
+
+
+        <!-- Данные продавца -->
+
+        <div id="sellerPage"></div>
+
+
+        <!-- Список товаров -->
+
+        <section class="seller-menu">
+
+            <h2 class="section-title">
+
+                Товары
+
+            </h2>
+
+
+            <!-- JS вставит товары -->
+
+            <div
+                class="product-list"
+                id="sellerProducts"
+            ></div>
+
+        </section>
+
+
+    </div>
+
+
+    <!-- Модальное окно товара -->
+
+    <div
+        id="productModal"
+        class="modal"
+    >
+
+        <div class="modal-content product-modal-content">
+
+            <div
+                id="productModalImage"
+                class="product-modal-image"
+            ></div>
+
+            <h3 id="productModalTitle"></h3>
+
+            <p
+                id="productModalPrice"
+                class="product-modal-price"
+            ></p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Модальное окно -->
+
+    <div
+        id="modal"
+        class="modal"
+    >
+
+        <div class="modal-content">
+
+            <p id="findModalText">
+
+                Информация о месте пока не заполнена.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Подключение JS -->
+
+    <script src="js/script.js?v=20260619-2"></script>
+
+</body>
+
+</html>

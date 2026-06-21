@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Панель продавца — Привоз Онлайн</title>
+
+    <link rel="stylesheet" href="css/style.css?v=20260619-2">
+</head>
+
+<body class="glass-page">
+    <div class="container">
+        <button class="back-home-btn">
+            Назад
+        </button>
+
+        <button
+            id="allCabinetsBtn"
+            class="back-home-btn"
+        >
+            Моя лавка
+        </button>
+
+        <header class="header">
+            <h1 class="logo">
+                Управление лавкой
+            </h1>
+
+            <p class="subtitle">
+                Заполните профиль продавца и добавляйте товары
+            </p>
+        </header>
+
+        <section class="panel-section profile-block">
+            <h2>
+                Профиль лавки
+            </h2>
+
+            <input
+                type="text"
+                id="profileSellerName"
+                placeholder="Название лавки"
+            >
+
+            <textarea
+                id="profileSellerDescription"
+                placeholder="Описание лавки"
+            ></textarea>
+
+            <textarea
+                id="profileFindInfo"
+                placeholder="Описание для кнопки Как найти"
+            ></textarea>
+
+            <!-- Фон верхней карточки на странице продавца -->
+            <div class="cover-upload">
+                <label
+                    for="sellerCoverImage"
+                    class="photo-upload-btn"
+                >
+                    Добавить фон лавки
+                </label>
+
+                <input
+                    type="file"
+                    id="sellerCoverImage"
+                    accept="image/*"
+                >
+
+                <div
+                    id="sellerCoverPreview"
+                    class="seller-cover-preview hidden"
+                ></div>
+
+                <button
+                    id="removeSellerCoverBtn"
+                    class="btn-outline hidden"
+                    type="button"
+                >
+                    Убрать фон лавки
+                </button>
+
+                <p class="field-note">
+                    Фон появится за названием, временем работы и кнопками лавки.
+                </p>
+            </div>
+
+            <select id="profileSellerCategory"></select>
+
+            <div class="time-block">
+                <input
+                    type="time"
+                    id="profileOpenTime"
+                >
+
+                <input
+                    type="time"
+                    id="profileCloseTime"
+                >
+            </div>
+
+            <button
+                id="saveSellerProfileBtn"
+                class="add-btn"
+            >
+                Сохранить профиль
+            </button>
+
+            <p
+                id="profileMessage"
+                class="form-message"
+            ></p>
+        </section>
+
+        <section class="panel-section form-block">
+            <h2 id="productFormTitle">
+                Добавить товар
+            </h2>
+
+            <input
+                type="text"
+                id="productName"
+                placeholder="Название товара"
+            >
+
+            <select id="category"></select>
+
+            <input
+                type="number"
+                id="price"
+                placeholder="Цена"
+                min="0"
+            >
+
+            <select id="unit">
+                <option value="kg">
+                    кг
+                </option>
+
+                <option value="gram">
+                    г
+                </option>
+
+                <option value="liter">
+                    л
+                </option>
+
+                <option value="piece">
+                    шт
+                </option>
+
+                <option value="pack">
+                    упаковка
+                </option>
+            </select>
+
+            <textarea
+                id="productDescription"
+                placeholder="Описание товара"
+            ></textarea>
+
+            <div class="photo-upload">
+                <label
+                    for="productImage"
+                    class="photo-upload-btn"
+                    id="productImageLabel"
+                >
+                    Добавить фото товара
+                </label>
+
+                <input
+                    type="file"
+                    id="productImage"
+                    accept="image/*"
+                >
+
+                <div
+                    id="productImagePreview"
+                    class="photo-preview hidden"
+                ></div>
+
+                <p
+                    id="productImageStatus"
+                    class="photo-status hidden"
+                ></p>
+
+                <button
+                    id="removeProductImageBtn"
+                    class="btn-outline hidden"
+                    type="button"
+                >
+                    Убрать фото
+                </button>
+            </div>
+
+            <button
+                id="addProductBtn"
+                class="add-btn"
+            >
+                Добавить товар
+            </button>
+
+            <button
+                id="cancelEditProductBtn"
+                class="btn-outline hidden"
+                type="button"
+            >
+                Отменить редактирование
+            </button>
+
+            <p
+                id="productMessage"
+                class="form-message"
+            ></p>
+        </section>
+
+        <section class="panel-section products-section">
+            <h2>
+                Товары лавки
+            </h2>
+
+            <div
+                class="product-list"
+                id="productList"
+            ></div>
+        </section>
+    </div>
+
+    <script src="js/script.js?v=20260619-2"></script>
+</body>
+
+</html>

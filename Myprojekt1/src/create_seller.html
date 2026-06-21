@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Моя лавка</title>
+
+    <link rel="stylesheet" href="css/style.css?v=20260619-2">
+</head>
+<body class="glass-page">
+
+    <div class="container">
+
+        <h1 class="page-title">Моя лавка</h1>
+
+        <p class="subtitle cabinet-subtitle">
+            Создайте новую лавку или выберите уже созданную для редактирования
+        </p>
+
+        <section class="form-block seller-create-block">
+            <h2 class="section-title">
+                Создать новую лавку
+            </h2>
+
+            <!-- НАЗВАНИЕ -->
+            <input
+                type="text"
+                id="sellerName"
+                placeholder="Название лавки"
+                class="input"
+            >
+
+            <!-- ОПИСАНИЕ -->
+            <textarea
+                id="sellerDescription"
+                placeholder="Краткое описание"
+                class="textarea"
+            ></textarea>
+
+            <!-- КАТЕГОРИЯ -->
+            <select id="sellerCategory" class="input"></select>
+
+            <!-- ВРЕМЯ -->
+            <div class="time-row">
+
+                <input
+                    type="time"
+                    id="openTime"
+                    class="input"
+                >
+
+                <input
+                    type="time"
+                    id="closeTime"
+                    class="input"
+                >
+
+            </div>
+
+            <!-- КНОПКА -->
+            <button id="createSellerBtn" class="btn-primary">
+                Создать лавку
+            </button>
+        </section>
+
+        <section class="category-section">
+            <h2 class="section-title">
+                Выберите лавку для редактирования
+            </h2>
+
+            <div
+                id="sellerCabinetList"
+                class="sellers-list"
+            ></div>
+        </section>
+
+    </div>
+
+    <script src="js/script.js?v=20260619-2"></script>
+
+</body>
+</html>

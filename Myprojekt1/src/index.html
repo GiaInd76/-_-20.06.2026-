@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Привоз Онлайн</title>
+
+
+    <!-- Подключение CSS -->
+
+    <link
+        rel="stylesheet"
+        href="css/style.css?v=20260619-2"
+    >
+
+</head>
+
+<body class="home-page">
+
+    <div class="container">
+
+
+        <!-- Главный заголовок -->
+
+        <header class="header home-header">
+            <p class="home-kicker">Одесса · рынок Привоз</p>
+
+            <h1 class="brand-title hero-brand">
+
+                Привоз Онлайн
+
+            </h1>
+
+
+            <p class="subtitle">
+
+                Выбирайте дома. Покупайте у своих.
+
+            </p>
+
+        </header>
+
+
+        <!-- Поиск товаров -->
+
+        <section class="search-section home-search">
+
+            <span class="home-search-icon">⌕</span>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Найти продукты..."
+            >
+
+            <button
+                id="searchBtn"
+                class="home-search-btn"
+            >
+
+                Поиск
+
+            </button>
+
+        </section>
+
+
+        <!-- Будущие предложения товаров -->
+
+        <section class="home-category-section home-offers-section">
+
+            <div class="home-section-row">
+                <h2>Предложения</h2>
+                <span class="home-section-note">Идею доработаем</span>
+            </div>
+
+            <!-- TODO: придумать логику меняющихся предложений конкретных товаров -->
+            <div class="home-offers-placeholder">
+                <span class="home-offers-mark">✦</span>
+
+                <div>
+                    <strong>Здесь будут меняться товары</strong>
+                    <p>Позже решим, какие предложения показывать покупателю.</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- Короткие преимущества -->
+
+        <section class="home-benefits">
+            <button
+                id="categoriesToggleBtn"
+                type="button"
+                aria-expanded="false"
+            >
+                <span>▦</span>
+                <p>Категории</p>
+            </button>
+
+            <button
+                id="sellerCabinetsBtn"
+                type="button"
+            >
+                <span>▤</span>
+                <p>Моя лавка</p>
+            </button>
+
+            <button
+                id="favoritesBtn"
+                type="button"
+            >
+                <span>☆</span>
+                <p>Избранное</p>
+            </button>
+        </section>
+
+
+        <!-- Полный список категорий раскрывается на этой же странице -->
+
+        <section
+            id="homeAllCategoriesPanel"
+            class="home-all-categories"
+            aria-hidden="true"
+        >
+            <div
+                id="homeAllCategoriesGrid"
+                class="home-all-categories-grid"
+            ></div>
+        </section>
+
+
+    </div>
+
+
+    <!-- Подключение JS -->
+
+    <script src="js/script.js?v=20260619-2"></script>
+
+</body>
+
+</html>
