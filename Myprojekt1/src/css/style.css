@@ -5341,6 +5341,8 @@ button:hover,
 .product-modal-image,
 .photo-preview-item {
     background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
     background-color: #f1f2f3;
 }
 
