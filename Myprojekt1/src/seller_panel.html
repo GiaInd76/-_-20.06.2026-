@@ -7,7 +7,7 @@
 
     <title>Панель продавца — Привоз Онлайн</title>
 
-    <link rel="stylesheet" href="css/style.css?v=20260621-4">
+    <link rel="stylesheet" href="css/style.css?v=20260621-5">
 </head>
 
 <body class="glass-page seller-panel-page">
@@ -165,7 +165,11 @@
                 type="text"
                 id="productDepartment"
                 placeholder="Отдел, например Сыры"
+                list="departmentSuggestions"
+                autocomplete="off"
             >
+
+            <datalist id="departmentSuggestions"></datalist>
 
             <select id="category"></select>
 
@@ -285,7 +289,7 @@
         </section>
     </div>
 
-    <script src="js/script.js?v=20260621-4"></script>
+    <script src="js/script.js?v=20260621-5"></script>
 </body>
 
 </html>

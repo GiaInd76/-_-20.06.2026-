@@ -162,6 +162,23 @@ function getProductDepartment(product) {
     return String(product?.department || "").trim() || "Без отдела";
 }
 
+function renderDepartmentSuggestions() {
+    const suggestions = document.getElementById("departmentSuggestions");
+
+    if (!suggestions) return;
+
+    const departments = [...new Set(
+        readStorage("products")
+            .filter(product => product.seller === currentSeller)
+            .map(product => String(product.department || "").trim())
+            .filter(Boolean)
+    )].sort((first, second) => first.localeCompare(second, "ru"));
+
+    suggestions.innerHTML = departments
+        .map(department => `<option value="${escapeHtml(department)}"></option>`)
+        .join("");
+}
+
 function getFavoriteProducts() {
     return readStorage("favoriteProducts");
 }
@@ -839,10 +856,12 @@ function initSellerPanel() {
         resetProductForm();
         renderPanelProducts();
         renderLiveSessionProducts();
+        renderDepartmentSuggestions();
     });
 
     renderLiveProductPreview();
     renderLiveSessionProducts();
+    renderDepartmentSuggestions();
     renderPanelProducts();
 }
 
@@ -992,6 +1011,7 @@ function renderPanelProducts() {
                 editingProductIndex = null;
                 renderPanelProducts();
                 renderLiveSessionProducts();
+                renderDepartmentSuggestions();
             });
         });
 }
