@@ -159,7 +159,7 @@ function getProductPriceText(product) {
 }
 
 function getProductDepartment(product) {
-    return String(product?.department || "").trim() || "Без отдела";
+    return String(product?.department || "").trim() || "Другое";
 }
 
 function renderDepartmentSuggestions() {
@@ -1377,16 +1377,13 @@ function initSellerPage() {
     const products = readStorage("products")
         .filter(product => product.seller === currentSeller);
 
-    renderCategoryProducts(sellerProductsContainer, products);
-
     if (departmentsContainer && products.length) {
         const departments = [...new Set(products.map(getProductDepartment))];
-        const filterNames = ["Все", ...departments];
 
         departmentsContainer.classList.remove("hidden");
         departmentsContainer.innerHTML = "";
 
-        filterNames.forEach((department, index) => {
+        departments.forEach((department, index) => {
             const button = document.createElement("button");
             button.type = "button";
             button.className = `department-filter-btn ${index === 0 ? "is-active" : ""}`;
@@ -1399,15 +1396,21 @@ function initSellerPage() {
 
                 button.classList.add("is-active");
 
-                const filteredProducts = department === "Все"
-                    ? products
-                    : products.filter(product => getProductDepartment(product) === department);
+                const filteredProducts = products
+                    .filter(product => getProductDepartment(product) === department);
 
                 renderCategoryProducts(sellerProductsContainer, filteredProducts);
             });
 
             departmentsContainer.appendChild(button);
         });
+
+        renderCategoryProducts(
+            sellerProductsContainer,
+            products.filter(product => getProductDepartment(product) === departments[0])
+        );
+    } else {
+        renderCategoryProducts(sellerProductsContainer, products);
     }
 }
 

@@ -4936,3 +4936,172 @@ button:hover,
 .page-navigation .site-brand {
     color: var(--theme-ink);
 }
+
+
+/* Белая стеклянная тема без фонового рисунка */
+
+:root {
+    --theme-ink: #202327;
+    --theme-muted: #6b7076;
+    --theme-glass: rgba(255, 255, 255, 0.58);
+    --theme-glass-strong: rgba(255, 255, 255, 0.82);
+    --theme-line: rgba(255, 255, 255, 0.88);
+    --theme-glow: rgba(80, 92, 105, 0.10);
+}
+
+body,
+.home-page,
+.glass-page {
+    background: #f2f3f4;
+    color: var(--theme-ink);
+}
+
+.home-page::before,
+.glass-page::before {
+    background: #f2f3f4;
+}
+
+.home-page::after,
+.glass-page::after {
+    background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(231,234,237,0.38));
+}
+
+.home-page .home-header,
+.home-page .home-search,
+.home-page .home-category-section,
+.home-page .home-benefits button,
+.glass-page .header,
+.glass-page .seller-create-block,
+.glass-page .panel-section,
+.glass-page #sellerPage,
+.glass-page .seller-menu,
+.glass-page .seller-card,
+.glass-page .product-card,
+.glass-page .empty-card,
+.glass-page .modal-content,
+.live-product-preview,
+.session-product-card {
+    border-color: rgba(255,255,255,0.86);
+    background: var(--theme-glass);
+    box-shadow:
+        0 16px 40px rgba(33, 39, 45, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.96),
+        inset 0 -1px 0 rgba(122, 130, 138, 0.08);
+}
+
+.home-page .search-section input,
+.glass-page .input,
+.glass-page .textarea,
+.glass-page .form-block input,
+.glass-page .form-block select,
+.glass-page .form-block textarea,
+.glass-page .profile-block input,
+.glass-page .profile-block select,
+.glass-page .profile-block textarea {
+    border-color: rgba(178, 184, 190, 0.48);
+    background: rgba(255,255,255,0.76);
+    color: var(--theme-ink);
+}
+
+button,
+.photo-upload-btn,
+.site-brand,
+.contact-icon {
+    border-color: rgba(255,255,255,0.92) !important;
+    box-shadow:
+        0 0 0 0.5px rgba(154, 162, 170, 0.20),
+        0 7px 18px rgba(33, 39, 45, 0.10) !important;
+}
+
+button:hover,
+.photo-upload-btn:hover,
+.site-brand:hover,
+.contact-icon:hover {
+    border-color: #fff !important;
+    box-shadow:
+        0 0 0 0.5px rgba(120, 128, 136, 0.24),
+        0 9px 22px rgba(33, 39, 45, 0.13) !important;
+}
+
+.glass-page .btn-primary,
+.glass-page .add-btn,
+.home-page .home-search-btn,
+.department-filter-btn.is-active,
+.product-seller-link {
+    background: linear-gradient(145deg, #34383d, #1f2226);
+    color: #fff;
+}
+
+.glass-page .btn-outline,
+.glass-page .back-home-btn,
+.glass-page .photo-upload-btn,
+.department-filter-btn,
+.home-page .home-benefits button,
+.home-page .home-category-card,
+.home-page .home-all-category-card {
+    background: rgba(255,255,255,0.68);
+    color: var(--theme-ink);
+}
+
+.product-department-label,
+.category-badge,
+.photo-chip {
+    background: rgba(220, 223, 226, 0.56);
+    color: #575d63;
+}
+
+.live-preview-image {
+    background-color: #eceeef;
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(215,219,223,0.68));
+}
+
+.glass-page .modal.info-modal {
+    background: rgba(30, 33, 37, 0.30);
+}
+
+.glass-page .modal-content.info-modal-content {
+    background: rgba(255,255,255,0.95);
+}
+
+/* Фото товара занимает почти всю карточку просмотра */
+
+.glass-page .product-modal-content,
+.product-modal-content {
+    max-width: 420px;
+    padding: 0;
+    overflow: hidden;
+    border: none;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow:
+        0 0 0 1px rgba(71, 190, 255, 0.32),
+        0 0 13px rgba(51, 183, 255, 0.20),
+        0 18px 42px rgba(25, 31, 37, 0.18);
+}
+
+.product-modal-image {
+    aspect-ratio: 4 / 5;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background-color: #f1f2f3;
+    box-shadow: none;
+}
+
+.product-modal-image.has-image {
+    box-shadow: none;
+}
+
+.product-modal-content h3 {
+    margin: 0;
+    padding: 9px 12px 2px;
+    transform: none;
+    font-size: 14px;
+}
+
+.product-modal-price {
+    margin: 0;
+    padding: 0 12px 10px;
+    color: #555b61;
+    font-size: 12px;
+}
