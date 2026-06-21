@@ -3,6 +3,9 @@ let currentSeller = params.get("seller");
 let editingProductIndex = null;
 let selectedProductImage = "";
 let selectedSellerCover = "";
+let refreshProductImagePreview = () => {};
+let refreshLiveProductPreview = () => {};
+const sessionProductIds = new Set();
 
 const categories = [
     { id: "meat", label: "Мясо" },
@@ -153,6 +156,10 @@ function showMessage(element, text) {
 
 function getProductPriceText(product) {
     return `${product.price} грн / ${getUnitLabel(product.unit)}`;
+}
+
+function getProductDepartment(product) {
+    return String(product?.department || "").trim() || "Без отдела";
 }
 
 function getFavoriteProducts() {
@@ -480,6 +487,12 @@ function initSellerPanel() {
     const openInput = document.getElementById("profileOpenTime");
     const closeInput = document.getElementById("profileCloseTime");
     const productCategorySelect = document.getElementById("category");
+    const productNameInput = document.getElementById("productName");
+    const productDepartmentInput = document.getElementById("productDepartment");
+    const productPriceInput = document.getElementById("price");
+    const productUnitSelect = document.getElementById("unit");
+    const productDescriptionInput = document.getElementById("productDescription");
+    const liveProductPreview = document.getElementById("liveProductPreview");
     const productFormTitle = document.getElementById("productFormTitle");
     const cancelEditProductBtn = document.getElementById("cancelEditProductBtn");
     const productImageInput = document.getElementById("productImage");
@@ -528,6 +541,47 @@ function initSellerPanel() {
         removeSellerCoverBtn.classList.remove("hidden");
     };
 
+    const renderLiveProductPreview = () => {
+        if (!liveProductPreview) return;
+
+        const previewProduct = {
+            name: productNameInput?.value.trim() || "Название товара",
+            department: productDepartmentInput?.value.trim() || "Отдел",
+            price: productPriceInput?.value.trim() || "0",
+            unit: productUnitSelect?.value || "kg",
+            description: productDescriptionInput?.value.trim() || "Описание появится здесь.",
+            image: selectedProductImage
+        };
+
+        liveProductPreview.innerHTML = `
+            <div class="live-preview-image ${previewProduct.image ? "has-image" : ""}"></div>
+            <span class="product-department-label">${escapeHtml(previewProduct.department)}</span>
+            <h3>${escapeHtml(previewProduct.name)}</h3>
+            <p>${escapeHtml(previewProduct.description)}</p>
+            <strong>${escapeHtml(getProductPriceText(previewProduct))}</strong>
+        `;
+
+        const previewImage = liveProductPreview.querySelector(".live-preview-image");
+
+        if (previewImage && previewProduct.image) {
+            previewImage.style.backgroundImage = `url("${previewProduct.image}")`;
+        }
+    };
+
+    refreshLiveProductPreview = renderLiveProductPreview;
+
+    [
+        productNameInput,
+        productDepartmentInput,
+        productPriceInput,
+        productUnitSelect,
+        productDescriptionInput,
+        productCategorySelect
+    ].forEach(field => {
+        field?.addEventListener("input", renderLiveProductPreview);
+        field?.addEventListener("change", renderLiveProductPreview);
+    });
+
     const updateProductImagePreview = () => {
         if (!productImagePreview || !removeProductImageBtn) return;
 
@@ -539,6 +593,7 @@ function initSellerPanel() {
             if (productImageLabel) {
                 productImageLabel.textContent = "Добавить фото товара";
             }
+            renderLiveProductPreview();
             return;
         }
 
@@ -556,7 +611,11 @@ function initSellerPanel() {
                 : "✓ Фото выбрано";
             productImageStatus.classList.remove("hidden");
         }
+
+        renderLiveProductPreview();
     };
+
+    refreshProductImagePreview = updateProductImagePreview;
 
     updateSellerCoverPreview();
 
@@ -616,12 +675,14 @@ function initSellerPanel() {
         addProductBtn.textContent = "Добавить товар";
         cancelEditProductBtn.classList.add("hidden");
         document.getElementById("productName").value = "";
+        productDepartmentInput.value = "";
         document.getElementById("price").value = "";
         document.getElementById("productDescription").value = "";
         if (productImageInput) {
             productImageInput.value = "";
         }
         updateProductImagePreview();
+        renderLiveProductPreview();
     };
 
     productImageInput?.addEventListener("change", () => {
@@ -720,6 +781,7 @@ function initSellerPanel() {
         }
 
         const name = document.getElementById("productName").value.trim();
+        const department = productDepartmentInput.value.trim();
         const category = document.getElementById("category").value;
         const price = document.getElementById("price").value.trim();
         const unit = document.getElementById("unit").value;
@@ -731,6 +793,7 @@ function initSellerPanel() {
         }
 
         const products = readStorage("products");
+        let savedProductId = "";
 
         if (editingProductIndex !== null) {
             const oldProduct = products[editingProductIndex];
@@ -744,17 +807,21 @@ function initSellerPanel() {
             products[editingProductIndex] = {
                 ...oldProduct,
                 name,
+                department,
                 category,
                 price,
                 unit,
                 description,
                 image: selectedProductImage
             };
+            savedProductId = oldProduct.id;
         } else {
+            savedProductId = `product_${Date.now()}`;
             products.push({
-                id: `product_${Date.now()}`,
+                id: savedProductId,
                 seller: currentSeller,
                 name,
+                department,
                 category,
                 price,
                 unit,
@@ -764,15 +831,43 @@ function initSellerPanel() {
         }
 
         writeStorage("products", products);
+        sessionProductIds.add(savedProductId);
         showMessage(
             productMessage,
             editingProductIndex !== null ? "Товар сохранён." : "Товар добавлен."
         );
         resetProductForm();
         renderPanelProducts();
+        renderLiveSessionProducts();
     });
 
+    renderLiveProductPreview();
+    renderLiveSessionProducts();
     renderPanelProducts();
+}
+
+function renderLiveSessionProducts() {
+    const container = document.getElementById("liveSessionProducts");
+
+    if (!container) return;
+
+    const products = readStorage("products")
+        .filter(product => product.seller === currentSeller && sessionProductIds.has(product.id));
+
+    if (!products.length) {
+        container.innerHTML = `<p class="session-empty">Добавленные товары появятся здесь.</p>`;
+        return;
+    }
+
+    container.innerHTML = products
+        .map(product => `
+            <article class="session-product-card">
+                <span>${escapeHtml(getProductDepartment(product))}</span>
+                <strong>${escapeHtml(product.name)}</strong>
+                <small>${escapeHtml(getProductPriceText(product))}</small>
+            </article>
+        `)
+        .join("");
 }
 
 function renderPanelProducts() {
@@ -785,6 +880,8 @@ function renderPanelProducts() {
         .map((product, index) => ({ ...product, storageIndex: index }))
         .filter(product => product.seller === currentSeller);
 
+    productList.classList.remove("product-list");
+    productList.classList.add("department-catalog");
     productList.innerHTML = "";
 
     if (!sellerProducts.length) {
@@ -796,38 +893,64 @@ function renderPanelProducts() {
         return;
     }
 
+    const departments = new Map();
+
     sellerProducts.forEach(product => {
-        const div = document.createElement("div");
-        div.className = "product-card";
+        const department = getProductDepartment(product);
 
-        div.innerHTML = `
-            <h3>${escapeHtml(product.name)}</h3>
-            <p class="product-description">
-                ${escapeHtml(product.description || "Описание пока не заполнено.")}
-            </p>
-            <div class="product-info">
-                <span>${escapeHtml(getProductPriceText(product))}</span>
-            </div>
-            ${
-                product.image
-                    ? `<span class="photo-chip">Фото</span>`
-                    : ""
-            }
-            <div class="product-actions">
-                <button class="edit-btn" data-index="${product.storageIndex}">
-                    Редактировать
-                </button>
+        if (!departments.has(department)) {
+            departments.set(department, []);
+        }
 
-                <button class="delete-btn" data-index="${product.storageIndex}">
-                    Удалить
-                </button>
-            </div>
-        `;
-
-        productList.appendChild(div);
+        departments.get(department).push(product);
     });
 
-    document
+    departments.forEach((departmentProducts, department) => {
+        const group = document.createElement("section");
+        group.className = "department-group";
+        group.innerHTML = `
+            <h3 class="department-title">${escapeHtml(department)}</h3>
+            <div class="product-list department-products-grid"></div>
+        `;
+
+        const groupGrid = group.querySelector(".department-products-grid");
+
+        departmentProducts.forEach(product => {
+            const div = document.createElement("div");
+            div.className = "product-card";
+
+            div.innerHTML = `
+                <span class="product-department-label">${escapeHtml(getProductDepartment(product))}</span>
+                <h3>${escapeHtml(product.name)}</h3>
+                <p class="product-description">
+                    ${escapeHtml(product.description || "Описание пока не заполнено.")}
+                </p>
+                <div class="product-info">
+                    <span>${escapeHtml(getProductPriceText(product))}</span>
+                </div>
+                ${
+                    product.image
+                        ? `<span class="photo-chip">Фото</span>`
+                        : ""
+                }
+                <div class="product-actions">
+                    <button class="edit-btn" data-index="${product.storageIndex}">
+                        Редактировать
+                    </button>
+
+                    <button class="delete-btn" data-index="${product.storageIndex}">
+                        Удалить
+                    </button>
+                </div>
+            `;
+
+            groupGrid.appendChild(div);
+        });
+
+        productList.appendChild(group);
+    });
+
+    productList
         .querySelectorAll(".edit-btn")
         .forEach(button => {
             button.addEventListener("click", () => {
@@ -839,12 +962,14 @@ function renderPanelProducts() {
 
                 editingProductIndex = index;
                 document.getElementById("productName").value = product.name || "";
+                document.getElementById("productDepartment").value = product.department || "";
                 document.getElementById("category").value = product.category || "other";
                 document.getElementById("price").value = product.price || "";
                 document.getElementById("unit").value = product.unit || "kg";
                 document.getElementById("productDescription").value = product.description || "";
                 selectedProductImage = product.image || "";
-                updateProductImagePreview();
+                refreshProductImagePreview();
+                refreshLiveProductPreview();
                 document.getElementById("productFormTitle").textContent = "Редактировать товар";
                 document.getElementById("addProductBtn").textContent = "Сохранить товар";
                 document.getElementById("cancelEditProductBtn").classList.remove("hidden");
@@ -853,17 +978,20 @@ function renderPanelProducts() {
             });
         });
 
-    document
+    productList
         .querySelectorAll(".delete-btn")
         .forEach(button => {
             button.addEventListener("click", () => {
                 const index = Number(button.dataset.index);
                 const products = readStorage("products");
 
+                sessionProductIds.delete(products[index]?.id);
+
                 products.splice(index, 1);
                 writeStorage("products", products);
                 editingProductIndex = null;
                 renderPanelProducts();
+                renderLiveSessionProducts();
             });
         });
 }
@@ -947,6 +1075,7 @@ function initCategoryPage() {
             const text = `
                 ${product.name || ""}
                 ${product.description || ""}
+                ${getProductDepartment(product)}
                 ${getCategoryLabel(product.category)}
                 ${seller?.name || ""}
                 ${seller?.description || ""}
@@ -1063,6 +1192,7 @@ function renderCategoryProducts(container, products, options = {}) {
             >
                 ${isFavorite ? "★" : "☆"}
             </button>
+            <span class="product-department-label">${escapeHtml(getProductDepartment(product))}</span>
             <h3>${escapeHtml(product.name)}</h3>
             <p class="product-description">
                 ${escapeHtml(product.description || "Описание пока не заполнено.")}
@@ -1140,6 +1270,7 @@ function openProductModal(product) {
 function initSellerPage() {
     const sellerPage = document.getElementById("sellerPage");
     const sellerProductsContainer = document.getElementById("sellerProducts");
+    const departmentsContainer = document.getElementById("sellerDepartments");
 
     if (!sellerPage && !sellerProductsContainer) return;
 
@@ -1227,6 +1358,37 @@ function initSellerPage() {
         .filter(product => product.seller === currentSeller);
 
     renderCategoryProducts(sellerProductsContainer, products);
+
+    if (departmentsContainer && products.length) {
+        const departments = [...new Set(products.map(getProductDepartment))];
+        const filterNames = ["Все", ...departments];
+
+        departmentsContainer.classList.remove("hidden");
+        departmentsContainer.innerHTML = "";
+
+        filterNames.forEach((department, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = `department-filter-btn ${index === 0 ? "is-active" : ""}`;
+            button.textContent = department;
+
+            button.addEventListener("click", () => {
+                departmentsContainer
+                    .querySelectorAll(".department-filter-btn")
+                    .forEach(item => item.classList.remove("is-active"));
+
+                button.classList.add("is-active");
+
+                const filteredProducts = department === "Все"
+                    ? products
+                    : products.filter(product => getProductDepartment(product) === department);
+
+                renderCategoryProducts(sellerProductsContainer, filteredProducts);
+            });
+
+            departmentsContainer.appendChild(button);
+        });
+    }
 }
 
 function initModal() {

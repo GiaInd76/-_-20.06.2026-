@@ -7,14 +7,14 @@
 
     <title>Панель продавца — Привоз Онлайн</title>
 
-    <link rel="stylesheet" href="css/style.css?v=20260621-2">
+    <link rel="stylesheet" href="css/style.css?v=20260621-3">
 </head>
 
 <body class="glass-page seller-panel-page">
     <div class="container">
         <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
             <button class="back-home-btn" type="button">
-                ← Назад
+                Назад
             </button>
 
             <a class="brand-title site-brand" href="index.html">
@@ -149,7 +149,8 @@
             ></p>
         </section>
 
-        <section class="panel-section form-block">
+        <div class="product-workbench">
+        <section class="panel-section form-block product-editor">
             <h2 id="productFormTitle">
                 Добавить товар
             </h2>
@@ -158,6 +159,12 @@
                 type="text"
                 id="productName"
                 placeholder="Название товара"
+            >
+
+            <input
+                type="text"
+                id="productDepartment"
+                placeholder="Отдел, например Сыры"
             >
 
             <select id="category"></select>
@@ -251,6 +258,21 @@
             ></p>
         </section>
 
+        <aside class="panel-section live-products-panel">
+            <h2>
+                Предпросмотр
+            </h2>
+
+            <div id="liveProductPreview" class="live-product-preview"></div>
+
+            <h3 class="session-products-title">
+                Добавлено сейчас
+            </h3>
+
+            <div id="liveSessionProducts" class="session-products"></div>
+        </aside>
+        </div>
+
         <section class="panel-section products-section">
             <h2>
                 Товары лавки
@@ -263,7 +285,7 @@
         </section>
     </div>
 
-    <script src="js/script.js?v=20260621-2"></script>
+    <script src="js/script.js?v=20260621-3"></script>
 </body>
 
 </html>
