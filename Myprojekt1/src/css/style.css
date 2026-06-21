@@ -239,9 +239,27 @@ h2 {
 
 .top-bar .site-brand {
 
-    flex: 1;
+    margin-left: auto;
 
-    width: auto;
+    flex: 0 0 auto;
+
+    width: fit-content;
+
+}
+
+
+/* Единая навигация внутренних страниц */
+
+.page-navigation {
+
+    margin-bottom: 24px;
+
+}
+
+
+.page-navigation .back-home-btn {
+
+    flex: 0 0 auto;
 
 }
 
