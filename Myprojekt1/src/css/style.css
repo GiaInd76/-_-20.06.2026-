@@ -5254,3 +5254,107 @@ button:hover,
     width: 100%;
     min-height: 38px;
 }
+
+/* Выбор товаров для краткой карточки лавки */
+.featured-products-field {
+    margin: 6px 0 14px;
+}
+
+.featured-products-field h3 {
+    margin: 0 0 3px;
+    font-size: 15px;
+}
+
+.featured-products-picker {
+    display: grid;
+    gap: 7px;
+    margin-top: 9px;
+}
+
+.featured-product-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    border: 1px solid rgba(28, 35, 42, 0.10);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.55);
+    font-size: 13px;
+}
+
+.featured-product-option input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+/* Три выбранных товара заполняют свободную часть карточки продавца */
+.category-page .seller-card {
+    display: grid;
+    grid-template-columns: minmax(180px, 0.8fr) minmax(300px, 1.2fr);
+    gap: 22px;
+    align-items: center;
+}
+
+.seller-featured-products {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.seller-featured-product {
+    min-width: 0;
+    padding: 7px;
+    border: 1px solid rgba(28, 35, 42, 0.09);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.62);
+}
+
+.seller-featured-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 10px;
+    background: #f1f2f3 center / contain no-repeat;
+}
+
+.seller-featured-product strong,
+.seller-featured-product small {
+    display: block;
+    overflow: hidden;
+    margin-top: 5px;
+    color: #20252a;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.seller-featured-product strong {
+    font-size: 12px;
+}
+
+.seller-featured-product small {
+    margin-top: 1px;
+    color: #6a7076;
+    font-size: 10px;
+}
+
+/* Полная фотография остаётся видимой независимо от её пропорций */
+.product-modal-image,
+.photo-preview-item {
+    background-size: contain;
+    background-color: #f1f2f3;
+}
+
+@media (max-width: 700px) {
+    .category-page .seller-card {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    .seller-featured-products {
+        gap: 7px;
+    }
+
+    .seller-featured-product {
+        padding: 5px;
+    }
+}

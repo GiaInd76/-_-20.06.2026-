@@ -584,6 +584,7 @@ function initSellerPanel() {
     const productMessage = document.getElementById("productMessage");
     const toggleProfileBtn = document.getElementById("toggleProfileBtn");
     const sellerProfilePanel = document.getElementById("sellerProfilePanel");
+    const featuredProductsPicker = document.getElementById("featuredProductsPicker");
     const seller = getSellerById(currentSeller);
 
     selectedSellerCover = seller?.coverImage || "";
@@ -602,6 +603,43 @@ function initSellerPanel() {
         openInput.value = seller.open || "";
         closeInput.value = seller.close || "";
     }
+
+    const renderFeaturedProductsPicker = () => {
+        if (!featuredProductsPicker) return;
+
+        const sellerProducts = readStorage("products")
+            .filter(product => product.seller === currentSeller);
+        const selectedIds = new Set(seller?.featuredProductIds || []);
+
+        if (!sellerProducts.length) {
+            featuredProductsPicker.innerHTML = `
+                <p class="field-note">Сначала добавьте товары, затем выберите лучшие.</p>
+            `;
+            return;
+        }
+
+        featuredProductsPicker.innerHTML = sellerProducts.map(product => `
+            <label class="featured-product-option">
+                <input
+                    type="checkbox"
+                    value="${escapeHtml(product.id)}"
+                    ${selectedIds.has(product.id) ? "checked" : ""}
+                >
+                <span>${escapeHtml(product.name)}</span>
+            </label>
+        `).join("");
+
+        featuredProductsPicker.addEventListener("change", event => {
+            const checked = [...featuredProductsPicker.querySelectorAll("input:checked")];
+
+            if (checked.length > 3) {
+                event.target.checked = false;
+                showMessage(profileMessage, "Можно выбрать не больше трёх товаров.");
+            }
+        });
+    };
+
+    renderFeaturedProductsPicker();
 
     const updateSellerCoverPreview = () => {
         if (!sellerCoverPreview || !removeSellerCoverBtn) return;
@@ -818,6 +856,11 @@ function initSellerPanel() {
         const category = categorySelect.value;
         const open = openInput.value;
         const close = closeInput.value;
+        const featuredProductIds = featuredProductsPicker
+            ? [...featuredProductsPicker.querySelectorAll("input:checked")]
+                .slice(0, 3)
+                .map(input => input.value)
+            : (seller?.featuredProductIds || []);
 
         if (!name) {
             showMessage(profileMessage, "Введите название лавки.");
@@ -847,7 +890,8 @@ function initSellerPanel() {
             telegram,
             instagram,
             viber,
-            coverImage: selectedSellerCover
+            coverImage: selectedSellerCover,
+            featuredProductIds
         };
 
         writeStorage("sellers", sellers);
@@ -925,6 +969,7 @@ function initSellerPanel() {
         renderPanelProducts();
         renderLiveSessionProducts();
         renderDepartmentSuggestions();
+        renderFeaturedProductsPicker();
     });
 
     renderLiveProductPreview();
@@ -1225,18 +1270,53 @@ function renderCategorySellers(container, sellers) {
         return;
     }
 
+    const allProducts = readStorage("products");
+
     sellers.forEach(seller => {
         const card = document.createElement("div");
         card.className = "seller-card";
         card.dataset.seller = seller.id;
+        const sellerProducts = allProducts.filter(product => product.seller === seller.id);
+        const featuredIds = Array.isArray(seller.featuredProductIds)
+            ? seller.featuredProductIds.slice(0, 3)
+            : [];
+        const featuredProducts = featuredIds
+            .map(id => sellerProducts.find(product => product.id === id))
+            .filter(Boolean);
+        const productsToShow = featuredProducts.length
+            ? featuredProducts
+            : sellerProducts.slice(0, 3);
+        const featuredMarkup = productsToShow.length
+            ? `
+                <div class="seller-featured-products">
+                    ${productsToShow.map(product => {
+                        const image = getProductImages(product)[0];
+
+                        return `
+                            <div class="seller-featured-product">
+                                <div
+                                    class="seller-featured-image ${image ? "has-image" : ""}"
+                                    ${image ? `style="background-image: url('${escapeHtml(image)}')"` : ""}
+                                ></div>
+                                <strong>${escapeHtml(product.name)}</strong>
+                                <small>${escapeHtml(getProductPriceText(product))}</small>
+                            </div>
+                        `;
+                    }).join("")}
+                </div>
+            `
+            : "";
 
         card.innerHTML = `
-            <h3>${escapeHtml(seller.name)}</h3>
-            <p>${escapeHtml(seller.description || "Описание пока не заполнено.")}</p>
-            <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
-                ${escapeHtml(getCategoryLabel(seller.category))}
-            </span>
-            <span>🕒 ${escapeHtml(seller.open || "--:--")} - ${escapeHtml(seller.close || "--:--")}</span>
+            <div class="seller-card-summary">
+                <h3>${escapeHtml(seller.name)}</h3>
+                <p>${escapeHtml(seller.description || "Описание пока не заполнено.")}</p>
+                <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
+                    ${escapeHtml(getCategoryLabel(seller.category))}
+                </span>
+                <span>🕒 ${escapeHtml(seller.open || "--:--")} - ${escapeHtml(seller.close || "--:--")}</span>
+            </div>
+            ${featuredMarkup}
         `;
 
         card.addEventListener("click", () => {
