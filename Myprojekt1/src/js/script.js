@@ -68,6 +68,37 @@ function escapeHtml(value) {
     return div.innerHTML;
 }
 
+function getPhoneHref(value) {
+    const phone = String(value || "").trim();
+    const normalized = phone.replace(/[^+\d]/g, "");
+    return normalized ? `tel:${normalized}` : "";
+}
+
+function getSocialHref(value, service) {
+    const contact = String(value || "").trim();
+
+    if (!contact) return "";
+
+    if (/^https?:\/\//i.test(contact)) return contact;
+
+    const account = contact.replace(/^@/, "");
+
+    if (service === "telegram") {
+        return `https://t.me/${encodeURIComponent(account)}`;
+    }
+
+    if (service === "instagram") {
+        return `https://instagram.com/${encodeURIComponent(account)}`;
+    }
+
+    if (service === "viber") {
+        const phone = account.replace(/[^+\d]/g, "");
+        return phone ? `viber://chat?number=${encodeURIComponent(phone)}` : "";
+    }
+
+    return "";
+}
+
 function makeId(value) {
     return value
         .trim()
@@ -352,7 +383,11 @@ function initSellerCreation() {
             category,
             open,
             close,
-            findInfo: "Информация о месте пока не заполнена."
+            findInfo: "Информация о месте пока не заполнена.",
+            phone: "",
+            telegram: "",
+            instagram: "",
+            viber: ""
         });
 
         writeStorage("sellers", sellers);
@@ -437,6 +472,10 @@ function initSellerPanel() {
     const nameInput = document.getElementById("profileSellerName");
     const descriptionInput = document.getElementById("profileSellerDescription");
     const findInfoInput = document.getElementById("profileFindInfo");
+    const phoneInput = document.getElementById("profilePhone");
+    const telegramInput = document.getElementById("profileTelegram");
+    const instagramInput = document.getElementById("profileInstagram");
+    const viberInput = document.getElementById("profileViber");
     const categorySelect = document.getElementById("profileSellerCategory");
     const openInput = document.getElementById("profileOpenTime");
     const closeInput = document.getElementById("profileCloseTime");
@@ -453,6 +492,8 @@ function initSellerPanel() {
     const removeSellerCoverBtn = document.getElementById("removeSellerCoverBtn");
     const profileMessage = document.getElementById("profileMessage");
     const productMessage = document.getElementById("productMessage");
+    const toggleProfileBtn = document.getElementById("toggleProfileBtn");
+    const sellerProfilePanel = document.getElementById("sellerProfilePanel");
     const seller = getSellerById(currentSeller);
 
     selectedSellerCover = seller?.coverImage || "";
@@ -464,6 +505,10 @@ function initSellerPanel() {
         nameInput.value = seller.name || "";
         descriptionInput.value = seller.description || "";
         findInfoInput.value = seller.findInfo || "";
+        phoneInput.value = seller.phone || "";
+        telegramInput.value = seller.telegram || "";
+        instagramInput.value = seller.instagram || "";
+        viberInput.value = seller.viber || "";
         openInput.value = seller.open || "";
         closeInput.value = seller.close || "";
     }
@@ -514,6 +559,21 @@ function initSellerPanel() {
     };
 
     updateSellerCoverPreview();
+
+    const setProfilePanelOpen = isOpen => {
+        if (!toggleProfileBtn || !sellerProfilePanel) return;
+
+        sellerProfilePanel.classList.toggle("is-collapsed", !isOpen);
+        toggleProfileBtn.setAttribute("aria-expanded", String(isOpen));
+        toggleProfileBtn.textContent = isOpen
+            ? "Закрыть профиль"
+            : "Редактировать лавку";
+    };
+
+    toggleProfileBtn?.addEventListener("click", () => {
+        const isOpen = sellerProfilePanel?.classList.contains("is-collapsed");
+        setProfilePanelOpen(Boolean(isOpen));
+    });
 
     sellerCoverInput?.addEventListener("change", () => {
         const file = sellerCoverInput.files?.[0];
@@ -607,6 +667,10 @@ function initSellerPanel() {
         const name = nameInput.value.trim();
         const description = descriptionInput.value.trim();
         const findInfo = findInfoInput.value.trim();
+        const phone = phoneInput.value.trim();
+        const telegram = telegramInput.value.trim();
+        const instagram = instagramInput.value.trim();
+        const viber = viberInput.value.trim();
         const category = categorySelect.value;
         const open = openInput.value;
         const close = closeInput.value;
@@ -635,6 +699,10 @@ function initSellerPanel() {
             open,
             close,
             findInfo,
+            phone,
+            telegram,
+            instagram,
+            viber,
             coverImage: selectedSellerCover
         };
 
@@ -642,6 +710,7 @@ function initSellerPanel() {
         window.history.replaceState(null, "", `seller_panel.html?seller=${encodeURIComponent(currentSeller)}`);
         showMessage(profileMessage, "Профиль лавки сохранён.");
         renderPanelProducts();
+        setProfilePanelOpen(false);
     });
 
     addProductBtn?.addEventListener("click", () => {
@@ -1108,17 +1177,7 @@ function initSellerPage() {
         <p class="work-time">🕒 ${escapeHtml(seller.open || "--:--")} - ${escapeHtml(seller.close || "--:--")}</p>
         <div class="seller-actions">
             <button id="findBtn" class="btn-outline">Как найти</button>
-            <div class="contact-wrapper">
-                <button id="contactBtn" class="btn-outline">Связаться</button>
-                <div id="contactMenu" class="contact-menu">
-                    <button class="contact-call-item">Позвонить</button>
-                    <div class="contact-socials" aria-label="Мессенджеры продавца">
-                        <button class="contact-icon contact-telegram" title="Telegram" aria-label="Telegram">T</button>
-                        <button class="contact-icon contact-instagram" title="Instagram" aria-label="Instagram">I</button>
-                        <button class="contact-icon contact-viber" title="Viber" aria-label="Viber">V</button>
-                    </div>
-                </div>
-            </div>
+            <button id="contactBtn" class="btn-outline">Связаться</button>
         </div>
     `;
 
@@ -1129,6 +1188,41 @@ function initSellerPage() {
             seller.findInfo || "Информация о месте пока не заполнена.";
     }
 
+    const phoneLink = document.getElementById("sellerPhoneLink");
+    const contactLinks = [
+        [document.getElementById("sellerTelegramLink"), getSocialHref(seller.telegram, "telegram")],
+        [document.getElementById("sellerInstagramLink"), getSocialHref(seller.instagram, "instagram")],
+        [document.getElementById("sellerViberLink"), getSocialHref(seller.viber, "viber")]
+    ];
+
+    if (phoneLink) {
+        const phoneHref = getPhoneHref(seller.phone);
+        phoneLink.textContent = seller.phone || "Номер пока не указан";
+        phoneLink.classList.toggle("is-empty", !phoneHref);
+
+        if (phoneHref) {
+            phoneLink.setAttribute("href", phoneHref);
+        } else {
+            phoneLink.removeAttribute("href");
+        }
+    }
+
+    contactLinks.forEach(([link, href]) => {
+        if (!link) return;
+
+        link.classList.toggle("is-empty", !href);
+
+        if (href) {
+            link.setAttribute("href", href);
+            link.setAttribute("target", "_blank");
+            link.setAttribute("rel", "noopener noreferrer");
+        } else {
+            link.removeAttribute("href");
+            link.removeAttribute("target");
+            link.removeAttribute("rel");
+        }
+    });
+
     const products = readStorage("products")
         .filter(product => product.seller === currentSeller);
 
@@ -1138,6 +1232,7 @@ function initSellerPage() {
 function initModal() {
     document.addEventListener("click", event => {
         const modal = document.getElementById("modal");
+        const contactModal = document.getElementById("contactModal");
         const productModal = document.getElementById("productModal");
 
         if (productModal && productModal.style.display === "flex") {
@@ -1152,27 +1247,26 @@ function initModal() {
             return;
         }
 
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
-}
-
-function initContactMenu() {
-    document.addEventListener("click", event => {
-        const contactBtn = document.getElementById("contactBtn");
-        const contactMenu = document.getElementById("contactMenu");
-
-        if (!contactBtn || !contactMenu) return;
-
         if (event.target.id === "contactBtn") {
-            event.stopPropagation();
-            contactMenu.style.display =
-                contactMenu.style.display === "block" ? "none" : "block";
+            if (contactModal) contactModal.style.display = "flex";
             return;
         }
 
-        contactMenu.style.display = "none";
+        const openInfoModal = event.target.closest(".info-modal");
+
+        if (openInfoModal && openInfoModal.style.display === "flex") {
+            if (event.target.closest("a[href]")) {
+                openInfoModal.style.display = "none";
+                return;
+            }
+
+            openInfoModal.style.display = "none";
+            return;
+        }
+
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
     });
 }
 
@@ -1187,4 +1281,3 @@ initFishPage();
 initCategoryPage();
 initSellerPage();
 initModal();
-initContactMenu();

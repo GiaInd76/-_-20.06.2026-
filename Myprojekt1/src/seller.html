@@ -21,7 +21,7 @@
 
     <link
         rel="stylesheet"
-        href="css/style.css?v=20260621-1"
+        href="css/style.css?v=20260621-2"
     >
 
 </head>
@@ -35,7 +35,7 @@
 
         <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
             <button class="back-home-btn" type="button">
-                Назад
+                ← Назад
             </button>
 
             <a class="brand-title site-brand" href="index.html">
@@ -103,10 +103,10 @@
 
     <div
         id="modal"
-        class="modal"
+        class="modal info-modal"
     >
 
-        <div class="modal-content">
+        <div class="modal-content info-modal-content">
 
             <p id="findModalText">
 
@@ -114,6 +114,34 @@
 
             </p>
 
+            <p class="modal-tap-hint">Нажмите, чтобы закрыть</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Контакты продавца -->
+
+    <div
+        id="contactModal"
+        class="modal info-modal"
+    >
+
+        <div class="modal-content contact-modal-content">
+            <p class="contact-modal-label">Телефон</p>
+
+            <a id="sellerPhoneLink" class="seller-phone-link">
+                Номер пока не указан
+            </a>
+
+            <div class="contact-socials" aria-label="Ссылки продавца">
+                <a id="sellerTelegramLink" class="contact-icon contact-telegram" aria-label="Telegram">T</a>
+                <a id="sellerInstagramLink" class="contact-icon contact-instagram" aria-label="Instagram">I</a>
+                <a id="sellerViberLink" class="contact-icon contact-viber" aria-label="Viber">V</a>
+            </div>
+
+            <p class="modal-tap-hint">Нажмите, чтобы закрыть</p>
         </div>
 
     </div>
@@ -121,7 +149,7 @@
 
     <!-- Подключение JS -->
 
-    <script src="js/script.js?v=20260621-1"></script>
+    <script src="js/script.js?v=20260621-2"></script>
 
 </body>
 

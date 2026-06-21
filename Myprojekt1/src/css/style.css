@@ -14,10 +14,10 @@
 
 :root {
 
-    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    --font-soft: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    --font-accent: Georgia, "Times New Roman", serif;
-    --font-tech: "Segoe UI", "Arial Narrow", Arial, sans-serif;
+    --font-main: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+    --font-soft: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+    --font-accent: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --font-tech: "Avenir Next Condensed", "Arial Narrow", Arial, sans-serif;
     --weight-regular: 400;
     --weight-medium: 500;
     --weight-semibold: 600;
@@ -254,12 +254,45 @@ h2 {
 
     margin-bottom: 24px;
 
+    position: relative;
+
+    min-height: 42px;
+
+    justify-content: flex-start;
+
 }
 
 
 .page-navigation .back-home-btn {
 
     flex: 0 0 auto;
+
+}
+
+
+.page-navigation .site-brand {
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    margin: 0;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 20px;
+
+    font-weight: var(--weight-semibold);
+
+    letter-spacing: 0.025em;
+
+}
+
+
+.page-navigation .site-brand:hover {
+
+    transform: translate(-50%, calc(-50% - 2px));
 
 }
 
@@ -3342,6 +3375,356 @@ h2 {
     .home-all-category-card strong {
 
         font-size: 9px;
+
+    }
+
+}
+
+
+/* Финальные уточнения для стеклянной темы */
+
+.glass-page .modal.info-modal {
+
+    background: rgba(24, 27, 31, 0.28);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+}
+
+
+.glass-page .modal-content.info-modal-content {
+
+    background: rgba(255,255,255,0.94);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+}
+
+
+.glass-page.seller-panel-page .container {
+
+    max-width: 640px;
+
+}
+
+
+.glass-page.seller-panel-page .header {
+
+    padding: 16px 18px;
+
+    border-radius: 22px;
+
+}
+
+
+.glass-page.seller-panel-page .panel-section {
+
+    padding: 15px;
+
+    border-radius: 22px;
+
+}
+
+
+/* Информационные окна лавки */
+
+.glass-page .info-modal {
+
+    background: rgba(24, 27, 31, 0.28);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+}
+
+
+.glass-page .info-modal-content {
+
+    max-width: 320px;
+
+    padding: 22px;
+
+    border-radius: 24px;
+
+    background: rgba(255,255,255,0.94);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+    cursor: pointer;
+
+}
+
+
+.contact-modal-label,
+.modal-tap-hint {
+
+    color: rgba(25, 29, 33, 0.56) !important;
+
+    font-size: 12px !important;
+
+}
+
+
+.contact-modal-label {
+
+    margin-bottom: 5px;
+
+}
+
+
+.seller-phone-link {
+
+    display: block;
+
+    width: fit-content;
+
+    margin: 0 auto;
+
+    color: #17191c;
+
+    font-size: 18px;
+
+    font-weight: var(--weight-semibold);
+
+    text-decoration: none;
+
+}
+
+
+.seller-phone-link.is-empty {
+
+    color: rgba(25, 29, 33, 0.52);
+
+    font-size: 14px;
+
+    font-weight: var(--weight-medium);
+
+}
+
+
+.contact-modal-content .contact-socials {
+
+    justify-content: center;
+
+    margin: 16px 0 12px;
+
+    padding: 0;
+
+    background: transparent;
+
+}
+
+
+.contact-modal-content .contact-icon {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-decoration: none;
+
+}
+
+
+.contact-modal-content .contact-icon.is-empty {
+
+    opacity: 0.28;
+
+    filter: grayscale(0.65);
+
+    pointer-events: none;
+
+}
+
+
+.modal-tap-hint {
+
+    margin-top: 4px;
+
+}
+
+
+/* Компактный кабинет продавца */
+
+.seller-panel-page .container {
+
+    max-width: 640px;
+
+}
+
+
+.seller-panel-page .header {
+
+    margin-bottom: 12px;
+
+    padding: 16px 18px;
+
+}
+
+
+.seller-panel-page .header .logo {
+
+    font-size: 25px;
+
+    margin-bottom: 6px;
+
+}
+
+
+.seller-panel-page .header .subtitle {
+
+    margin-bottom: 0;
+
+}
+
+
+.cabinet-menu {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin: 0 auto 12px;
+
+}
+
+
+.cabinet-menu .btn-outline {
+
+    width: auto;
+
+    min-width: 0;
+
+    padding: 8px 13px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+}
+
+
+.seller-panel-page .panel-section {
+
+    padding: 15px;
+
+    border-radius: 22px;
+
+}
+
+
+.seller-panel-page .panel-section + .panel-section {
+
+    margin-top: 12px;
+
+}
+
+
+.seller-panel-page .profile-block {
+
+    max-height: 1200px;
+
+    overflow: hidden;
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transition:
+        max-height 0.26s ease,
+        opacity 0.18s ease,
+        padding 0.22s ease,
+        margin 0.22s ease;
+
+}
+
+
+.seller-panel-page .profile-block.is-collapsed {
+
+    max-height: 0;
+
+    margin: 0;
+
+    padding-top: 0;
+    padding-bottom: 0;
+
+    border-width: 0;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+}
+
+
+.contact-fields {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+}
+
+
+.seller-panel-page .add-btn,
+.seller-panel-page .photo-upload-btn,
+.seller-panel-page .btn-outline {
+
+    min-height: 36px;
+
+}
+
+
+@media (max-width: 560px) {
+
+    .page-navigation .site-brand {
+
+        font-size: 19px;
+
+    }
+
+
+    .seller-panel-page .container {
+
+        width: 100%;
+
+    }
+
+
+    .cabinet-menu {
+
+        gap: 6px;
+
+    }
+
+
+    .cabinet-menu .btn-outline {
+
+        padding: 8px 11px;
+
+        font-size: 11px;
+
+    }
+
+
+    .contact-fields {
+
+        grid-template-columns: 1fr;
 
     }
 

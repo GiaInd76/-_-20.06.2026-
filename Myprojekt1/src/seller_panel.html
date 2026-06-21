@@ -7,27 +7,20 @@
 
     <title>Панель продавца — Привоз Онлайн</title>
 
-    <link rel="stylesheet" href="css/style.css?v=20260621-1">
+    <link rel="stylesheet" href="css/style.css?v=20260621-2">
 </head>
 
-<body class="glass-page">
+<body class="glass-page seller-panel-page">
     <div class="container">
         <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
             <button class="back-home-btn" type="button">
-                Назад
+                ← Назад
             </button>
 
             <a class="brand-title site-brand" href="index.html">
                 Привоз
             </a>
         </nav>
-
-        <button
-            id="allCabinetsBtn"
-            class="back-home-btn"
-        >
-            Моя лавка
-        </button>
 
         <header class="header">
             <h1 class="logo">
@@ -39,7 +32,17 @@
             </p>
         </header>
 
-        <section class="panel-section profile-block">
+        <div class="cabinet-menu" aria-label="Меню кабинета">
+            <button id="toggleProfileBtn" class="btn-outline" type="button" aria-expanded="false">
+                Редактировать лавку
+            </button>
+
+            <button id="allCabinetsBtn" class="btn-outline" type="button">
+                Мои лавки
+            </button>
+        </div>
+
+        <section id="sellerProfilePanel" class="panel-section profile-block is-collapsed">
             <h2>
                 Профиль лавки
             </h2>
@@ -59,6 +62,32 @@
                 id="profileFindInfo"
                 placeholder="Описание для кнопки Как найти"
             ></textarea>
+
+            <div class="contact-fields">
+                <input
+                    type="tel"
+                    id="profilePhone"
+                    placeholder="Номер телефона"
+                >
+
+                <input
+                    type="text"
+                    id="profileTelegram"
+                    placeholder="Ссылка или имя Telegram"
+                >
+
+                <input
+                    type="text"
+                    id="profileInstagram"
+                    placeholder="Ссылка или имя Instagram"
+                >
+
+                <input
+                    type="text"
+                    id="profileViber"
+                    placeholder="Ссылка или номер Viber"
+                >
+            </div>
 
             <!-- Фон верхней карточки на странице продавца -->
             <div class="cover-upload">
@@ -234,7 +263,7 @@
         </section>
     </div>
 
-    <script src="js/script.js?v=20260621-1"></script>
+    <script src="js/script.js?v=20260621-2"></script>
 </body>
 
 </html>
