@@ -1,0 +1,344 @@
+/* Базовые стили: сброс, типографика, контейнеры и навигация. */
+
+/* Сброс стилей */
+
+* {
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+
+
+/* Общая типографика проекта */
+
+:root {
+
+    --font-main: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+    --font-soft: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+    --font-accent: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --font-tech: "Avenir Next Condensed", "Arial Narrow", Arial, sans-serif;
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+}
+
+
+/* Основа страницы */
+
+body {
+
+    font-family: var(--font-main);
+
+    font-weight: var(--weight-regular);
+
+    background: #f7f7f4;
+
+    color: #222;
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+
+    padding: 32px 15px 40px;
+
+}
+
+
+/* Шрифт для форм и кнопок */
+
+button,
+input,
+select,
+textarea {
+
+    font-family: var(--font-main);
+
+}
+
+
+/* Основной контейнер */
+
+.container {
+
+    width: 100%;
+
+    max-width: 460px;
+
+}
+
+
+/* Общие заголовки */
+
+h1 {
+
+    font-size: 40px;
+
+    font-weight: var(--weight-semibold);
+
+    text-align: center;
+
+    margin-bottom: 14px;
+
+    color: #1f1f1f;
+
+}
+
+
+h2 {
+
+    font-size: 28px;
+
+    font-weight: var(--weight-semibold);
+
+    margin-bottom: 20px;
+
+    color: #1f1f1f;
+
+}
+
+
+/* Подзаголовки */
+
+.subtitle {
+
+    text-align: center;
+
+    font-size: 14px;
+
+    color: #777;
+
+    margin-bottom: 26px;
+
+    line-height: 1.35;
+
+}
+
+
+
+/* Лого и заголовки */
+
+.logo {
+
+    font-size: 2.2rem;
+
+    font-weight: var(--weight-semibold);
+
+    text-align: center;
+
+    color: #1f1f1f;
+
+    margin-bottom: 12px;
+
+    line-height: 1.1;
+
+}
+
+
+/* Название проекта */
+
+.brand-title {
+
+    display: block;
+
+    margin: 0 auto 24px;
+
+    color: #173b2a;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    font-family: var(--font-accent);
+
+    font-size: 23px;
+
+    font-weight: var(--weight-bold);
+
+    letter-spacing: 0.055em;
+
+    line-height: 1.15;
+
+    text-shadow:
+        0 0 8px rgba(46, 204, 113, 0.14),
+        0 0 18px rgba(46, 204, 113, 0.12);
+
+}
+
+
+.site-brand {
+
+    width: fit-content;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    background: var(--category-bg, rgba(255,255,255,0.78));
+
+    box-shadow:
+        0 6px 18px rgba(0,0,0,0.05),
+        0 0 18px var(--category-glow, rgba(46,204,113,0.10));
+
+}
+
+
+.hero-brand {
+
+    width: fit-content;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.78);
+
+    margin-bottom: 14px;
+
+    font-size: 23px;
+
+    letter-spacing: 0.055em;
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.05),
+        0 0 22px rgba(46,204,113,0.10);
+
+}
+
+
+/* Верхняя панель */
+
+.top-bar {
+
+    margin-bottom: 22px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+}
+
+
+.top-bar .brand-title,
+.top-bar .back-home-btn {
+
+    margin: 0;
+
+}
+
+
+.top-bar .site-brand {
+
+    margin-left: auto;
+
+    flex: 0 0 auto;
+
+    width: fit-content;
+
+}
+
+
+/* Единая навигация внутренних страниц */
+
+.page-navigation {
+
+    margin-bottom: 24px;
+
+    position: relative;
+
+    min-height: 42px;
+
+    justify-content: flex-start;
+
+}
+
+
+.page-navigation .back-home-btn {
+
+    flex: 0 0 auto;
+
+}
+
+
+.page-navigation .site-brand {
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    margin: 0;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 20px;
+
+    font-weight: var(--weight-semibold);
+
+    letter-spacing: 0.025em;
+
+}
+
+
+.page-navigation .site-brand:hover {
+
+    transform: translate(-50%, calc(-50% - 2px));
+
+}
+
+
+/* Название лавки */
+
+.shop-title {
+
+    margin: 18px 0 12px;
+
+    color: #26332d;
+
+    text-align: center;
+
+    font-size: 28px;
+
+    font-weight: var(--weight-semibold);
+
+    line-height: 1.2;
+
+    letter-spacing: 0.005em;
+
+}
+
+
+.home-page .container {
+
+    max-width: 520px;
+
+}
+
+
+.categories-page {
+
+    background: #f7f7f4;
+
+    color: #202020;
+
+}
+
+
+.categories-container {
+
+    max-width: 720px;
+
+}
+

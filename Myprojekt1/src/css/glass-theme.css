@@ -1,0 +1,1452 @@
+/* Стеклянная тема главной страницы и кабинета. */
+
+/* Стеклянная главная страница */
+
+.home-page {
+
+    position: relative;
+
+    isolation: isolate;
+
+    overflow-x: hidden;
+
+    background: #f5f1e9;
+
+    color: #17191c;
+
+}
+
+
+/* Неподвижный рисунок под прокручиваемым содержимым */
+
+.home-page::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: -2;
+
+    background:
+        url("../images/privoz-arch-bg.png")
+        center 48% / cover no-repeat;
+
+}
+
+
+.home-page::after {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: -1;
+
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.26) 0%,
+        rgba(250,247,240,0.08) 48%,
+        rgba(255,255,255,0.34) 100%
+    );
+
+    pointer-events: none;
+
+}
+
+
+.home-page .container {
+
+    max-width: 700px;
+
+    padding: 28px 0 56px;
+
+}
+
+
+/* Общий эффект матового стекла */
+
+.home-page .home-header,
+.home-page .home-search,
+.home-page .home-category-section,
+.home-page .home-benefits button {
+
+    border: 1px solid rgba(255,255,255,0.76);
+
+    background: rgba(255,255,255,0.46);
+
+    box-shadow:
+        0 18px 48px rgba(48, 56, 63, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.90),
+        inset 0 -1px 0 rgba(255,255,255,0.25);
+
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+
+    backdrop-filter: blur(22px) saturate(135%);
+
+}
+
+
+.home-page .home-header {
+
+    max-width: 520px;
+
+    margin: 0 auto;
+
+    padding: 24px 24px 22px;
+
+    border-radius: 28px;
+
+}
+
+
+.home-kicker {
+
+    margin-bottom: 10px;
+
+    color: rgba(28, 33, 38, 0.62);
+
+    text-align: center;
+
+    font-size: 10px;
+
+    font-weight: var(--weight-semibold);
+
+    letter-spacing: 0.16em;
+
+    text-transform: uppercase;
+
+}
+
+
+.home-page .hero-brand {
+
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    box-shadow: none;
+
+    font-size: clamp(27px, 5vw, 38px);
+
+    letter-spacing: 0.015em;
+
+}
+
+
+.home-page .subtitle {
+
+    margin: 6px 0 0;
+
+    color: rgba(25, 29, 33, 0.72);
+
+    font-size: 13px;
+
+}
+
+
+.home-page .home-search {
+
+    max-width: 520px;
+
+    margin: 16px auto 0;
+
+    border-radius: 22px;
+
+}
+
+
+.home-page .home-search-icon {
+
+    left: 18px;
+
+    color: rgba(24, 28, 32, 0.76);
+
+}
+
+
+.home-page .search-section input {
+
+    padding: 15px 18px 15px 46px;
+
+    border: none;
+
+    background: transparent;
+
+    box-shadow: none;
+
+    font-size: 14px;
+
+}
+
+
+.home-page .search-section input:focus {
+
+    border: none;
+
+    box-shadow: none;
+
+}
+
+
+.home-page .home-category-section {
+
+    max-width: 620px;
+
+    margin: 18px auto 0;
+
+    padding: 20px;
+
+    border-radius: 30px;
+
+}
+
+
+.home-page .home-section-row {
+
+    margin-bottom: 16px;
+
+}
+
+
+.home-page .home-section-row h2 {
+
+    font-size: 18px;
+
+}
+
+
+.home-page .home-section-row button {
+
+    padding: 7px 10px;
+
+    border: 1px solid rgba(255,255,255,0.62);
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.34);
+
+    color: rgba(20, 24, 28, 0.72);
+
+}
+
+
+.home-section-note {
+
+    padding: 7px 10px;
+
+    border: 1px solid rgba(255,255,255,0.62);
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.34);
+
+    color: rgba(20, 24, 28, 0.62);
+
+    font-size: 10px;
+
+    font-weight: var(--weight-semibold);
+
+}
+
+
+.home-offers-placeholder {
+
+    min-height: 112px;
+
+    padding: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    border: 1px solid rgba(255,255,255,0.72);
+
+    border-radius: 22px;
+
+    background: rgba(255,255,255,0.42);
+
+    box-shadow:
+        0 12px 28px rgba(42, 49, 56, 0.09),
+        inset 0 1px 0 rgba(255,255,255,0.88);
+
+    -webkit-backdrop-filter: blur(16px) saturate(125%);
+
+    backdrop-filter: blur(16px) saturate(125%);
+
+}
+
+
+.home-offers-mark {
+
+    flex: 0 0 52px;
+
+    width: 52px;
+
+    height: 52px;
+
+    display: grid;
+
+    place-items: center;
+
+    border: 1px solid rgba(255,255,255,0.78);
+
+    border-radius: 18px;
+
+    background: rgba(255,255,255,0.48);
+
+    font-size: 23px;
+
+    box-shadow: 0 10px 22px rgba(42, 49, 56, 0.08);
+
+}
+
+
+.home-offers-placeholder strong {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 14px;
+
+}
+
+
+.home-offers-placeholder p {
+
+    color: rgba(25, 29, 33, 0.64);
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+}
+
+
+.home-page .home-category-grid {
+
+    gap: 12px;
+
+}
+
+
+.home-page .home-category-card {
+
+    min-height: 112px;
+
+    border: 1px solid rgba(255,255,255,0.72);
+
+    border-radius: 22px;
+
+    background: rgba(255,255,255,0.42);
+
+    box-shadow:
+        0 12px 28px rgba(42, 49, 56, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.88);
+
+    -webkit-backdrop-filter: blur(16px) saturate(125%);
+
+    backdrop-filter: blur(16px) saturate(125%);
+
+}
+
+
+.home-page .home-category-card:hover {
+
+    background: rgba(255,255,255,0.58);
+
+    transform: translateY(-3px);
+
+}
+
+
+.home-page .home-category-icon {
+
+    font-size: 29px;
+
+    filter: grayscale(0.16);
+
+}
+
+
+.home-page .home-benefits {
+
+    max-width: 620px;
+
+    margin: 18px auto 0;
+
+    padding: 0;
+
+    gap: 12px;
+
+    border: none;
+
+    background: transparent;
+
+    box-shadow: none;
+
+}
+
+
+.home-page .home-benefits button {
+
+    min-height: 82px;
+
+    padding: 12px 8px;
+
+    border-radius: 22px;
+
+    color: #17191c;
+
+    transition: 0.2s ease;
+
+}
+
+
+.home-page .home-benefits button:hover {
+
+    background: rgba(255,255,255,0.62);
+
+    transform: translateY(-3px);
+
+}
+
+
+.home-page .home-benefits span {
+
+    margin-bottom: 8px;
+
+    font-size: 20px;
+
+}
+
+
+.home-page .home-benefits p {
+
+    font-size: 11px;
+
+    font-weight: var(--weight-semibold);
+
+}
+
+
+/* Раскрывающийся список всех категорий на главной */
+
+.home-page .home-all-categories {
+
+    max-width: 620px;
+
+    max-height: 0;
+
+    margin: 0 auto;
+
+    padding: 0 20px;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    border: 1px solid transparent;
+
+    border-radius: 30px;
+
+    transform: translateY(-12px);
+
+    pointer-events: none;
+
+    transition:
+        max-height 0.42s ease,
+        margin 0.32s ease,
+        padding 0.32s ease,
+        opacity 0.26s ease,
+        transform 0.32s ease;
+
+}
+
+
+.home-page .home-all-categories.is-open {
+
+    max-height: 900px;
+
+    margin-top: 18px;
+
+    padding: 20px;
+
+    opacity: 1;
+
+    border-color: rgba(255,255,255,0.76);
+
+    background: rgba(255,255,255,0.42);
+
+    box-shadow:
+        0 18px 48px rgba(48, 56, 63, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.90);
+
+    transform: translateY(0);
+
+    pointer-events: auto;
+
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+
+    backdrop-filter: blur(22px) saturate(135%);
+
+}
+
+
+.home-all-categories-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.home-all-category-card {
+
+    min-height: 92px;
+
+    padding: 12px 8px;
+
+    border: 1px solid rgba(255,255,255,0.74);
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.48);
+
+    color: #17191c;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 12px 28px rgba(48, 56, 63, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.88);
+
+    transition: 0.2s ease;
+
+    -webkit-backdrop-filter: blur(16px) saturate(125%);
+
+    backdrop-filter: blur(16px) saturate(125%);
+
+}
+
+
+.home-all-category-card:hover {
+
+    background: rgba(255,255,255,0.66);
+
+    transform: translateY(-3px);
+
+}
+
+
+.home-all-category-card span,
+.home-all-category-card strong {
+
+    display: block;
+
+    text-align: center;
+
+}
+
+
+.home-all-category-card span {
+
+    margin-bottom: 8px;
+
+    font-size: 25px;
+
+}
+
+
+.home-all-category-card strong {
+
+    font-size: 11px;
+
+}
+
+
+@media (max-width: 719px) {
+
+    .home-page {
+
+        padding: 14px 12px 30px;
+
+    }
+
+
+    .home-page::before {
+
+        background-position: center 48%;
+
+    }
+
+
+    .home-page .container {
+
+        padding: 8px 0 26px;
+
+    }
+
+
+    .home-page .home-header {
+
+        padding: 20px 16px 18px;
+
+        border-radius: 24px;
+
+    }
+
+
+    .home-page .home-category-section {
+
+        padding: 15px;
+
+        border-radius: 26px;
+
+    }
+
+
+    .home-page .home-category-grid {
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    }
+
+
+    .home-page .home-category-card {
+
+        min-height: 96px;
+
+    }
+
+
+    .home-page .home-benefits {
+
+        gap: 8px;
+
+    }
+
+
+    .home-page .home-benefits button {
+
+        min-height: 74px;
+
+        border-radius: 19px;
+
+    }
+
+
+    .home-page .home-all-categories.is-open {
+
+        padding: 14px;
+
+        border-radius: 25px;
+
+    }
+
+
+    .home-all-categories-grid {
+
+        gap: 8px;
+
+    }
+
+
+    .home-all-category-card {
+
+        min-height: 78px;
+
+        padding: 10px 4px;
+
+        border-radius: 17px;
+
+    }
+
+
+    .home-all-category-card span {
+
+        margin-bottom: 6px;
+
+        font-size: 21px;
+
+    }
+
+
+    .home-all-category-card strong {
+
+        font-size: 9px;
+
+    }
+
+}
+
+
+/* Финальные уточнения для стеклянной темы */
+
+.glass-page .modal.info-modal {
+
+    background: rgba(24, 27, 31, 0.28);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+}
+
+
+.glass-page .modal-content.info-modal-content {
+
+    background: rgba(255,255,255,0.94);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+}
+
+
+.glass-page.seller-panel-page .container {
+
+    max-width: 640px;
+
+}
+
+
+.glass-page.seller-panel-page .header {
+
+    padding: 16px 18px;
+
+    border-radius: 22px;
+
+}
+
+
+.glass-page.seller-panel-page .panel-section {
+
+    padding: 15px;
+
+    border-radius: 22px;
+
+}
+
+
+/* Информационные окна лавки */
+
+.glass-page .info-modal {
+
+    background: rgba(24, 27, 31, 0.28);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+}
+
+
+.glass-page .info-modal-content {
+
+    max-width: 320px;
+
+    padding: 22px;
+
+    border-radius: 24px;
+
+    background: rgba(255,255,255,0.94);
+
+    -webkit-backdrop-filter: none;
+
+    backdrop-filter: none;
+
+    cursor: pointer;
+
+}
+
+
+.contact-modal-label,
+.modal-tap-hint {
+
+    color: rgba(25, 29, 33, 0.56) !important;
+
+    font-size: 12px !important;
+
+}
+
+
+.contact-modal-label {
+
+    margin-bottom: 5px;
+
+}
+
+
+.seller-phone-link {
+
+    display: block;
+
+    width: fit-content;
+
+    margin: 0 auto;
+
+    color: #17191c;
+
+    font-size: 18px;
+
+    font-weight: var(--weight-semibold);
+
+    text-decoration: none;
+
+}
+
+
+.seller-phone-link.is-empty {
+
+    color: rgba(25, 29, 33, 0.52);
+
+    font-size: 14px;
+
+    font-weight: var(--weight-medium);
+
+}
+
+
+.contact-modal-content .contact-socials {
+
+    justify-content: center;
+
+    margin: 16px 0 12px;
+
+    padding: 0;
+
+    background: transparent;
+
+}
+
+
+.contact-modal-content .contact-icon {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-decoration: none;
+
+}
+
+
+.contact-modal-content .contact-icon.is-empty {
+
+    opacity: 0.28;
+
+    filter: grayscale(0.65);
+
+    pointer-events: none;
+
+}
+
+
+.modal-tap-hint {
+
+    margin-top: 4px;
+
+}
+
+
+/* Компактный кабинет продавца */
+
+.seller-panel-page .container {
+
+    max-width: 640px;
+
+}
+
+
+.seller-panel-page .header {
+
+    margin-bottom: 12px;
+
+    padding: 16px 18px;
+
+}
+
+
+.seller-panel-page .header .logo {
+
+    font-size: 25px;
+
+    margin-bottom: 6px;
+
+}
+
+
+.seller-panel-page .header .subtitle {
+
+    margin-bottom: 0;
+
+}
+
+
+.cabinet-menu {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin: 0 auto 12px;
+
+}
+
+
+.cabinet-menu .btn-outline {
+
+    width: auto;
+
+    min-width: 0;
+
+    padding: 8px 13px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+}
+
+
+.seller-panel-page .panel-section {
+
+    padding: 15px;
+
+    border-radius: 22px;
+
+}
+
+
+.seller-panel-page .panel-section + .panel-section {
+
+    margin-top: 12px;
+
+}
+
+
+.seller-panel-page .profile-block {
+
+    max-height: 1200px;
+
+    overflow: hidden;
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transition:
+        max-height 0.26s ease,
+        opacity 0.18s ease,
+        padding 0.22s ease,
+        margin 0.22s ease;
+
+}
+
+
+.seller-panel-page .profile-block.is-collapsed {
+
+    max-height: 0;
+
+    margin: 0;
+
+    padding-top: 0;
+    padding-bottom: 0;
+
+    border-width: 0;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+}
+
+
+.contact-fields {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+}
+
+
+.seller-panel-page .add-btn,
+.seller-panel-page .photo-upload-btn,
+.seller-panel-page .btn-outline {
+
+    min-height: 36px;
+
+}
+
+
+@media (max-width: 560px) {
+
+    .page-navigation .site-brand {
+
+        font-size: 19px;
+
+    }
+
+
+    .seller-panel-page .container {
+
+        width: 100%;
+
+    }
+
+
+    .cabinet-menu {
+
+        gap: 6px;
+
+    }
+
+
+    .cabinet-menu .btn-outline {
+
+        padding: 8px 11px;
+
+        font-size: 11px;
+
+    }
+
+
+    .contact-fields {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
+
+
+/* Исправления профиля продавца и компактных товаров */
+
+.glass-page #sellerPage {
+
+    position: relative;
+
+    z-index: 30;
+
+    overflow: visible;
+
+}
+
+
+.glass-page #sellerPage.has-cover {
+
+    background-image:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.72),
+            rgba(255,255,255,0.58)
+        ),
+        var(--seller-cover-image);
+
+    background-position: center;
+
+    background-size: cover;
+
+}
+
+
+.glass-page .seller-menu {
+
+    position: relative;
+
+    z-index: 1;
+
+}
+
+
+.glass-page .contact-wrapper {
+
+    z-index: 40;
+
+}
+
+
+.glass-page .contact-menu {
+
+    z-index: 1000;
+
+}
+
+
+.cover-upload {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+}
+
+
+.cover-upload input[type="file"] {
+
+    display: none;
+
+}
+
+
+.seller-cover-preview {
+
+    width: 100%;
+
+    min-height: 150px;
+
+    aspect-ratio: 16 / 7;
+
+    border: 1px solid rgba(255,255,255,0.76);
+
+    border-radius: 18px;
+
+    background-color: rgba(255,255,255,0.42);
+
+    background-position: center;
+
+    background-size: cover;
+
+    box-shadow:
+        0 12px 26px rgba(48, 56, 63, 0.10),
+        inset 0 1px 0 rgba(255,255,255,0.86);
+
+}
+
+
+.field-note {
+
+    color: rgba(25, 29, 33, 0.60);
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+}
+
+
+.photo-status {
+
+    width: fit-content;
+
+    padding: 6px 10px;
+
+    border: 1px solid rgba(255,255,255,0.72);
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.54);
+
+    color: #245f3c;
+
+    font-size: 11px;
+
+    font-weight: var(--weight-semibold);
+
+    box-shadow: 0 8px 18px rgba(48, 56, 63, 0.08);
+
+}
+
+
+.glass-page .product-list {
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+}
+
+
+.glass-page .product-card {
+
+    min-width: 0;
+
+    min-height: 138px;
+
+    padding: 11px;
+
+    border-radius: 17px;
+
+}
+
+
+.glass-page .product-card h3 {
+
+    font-size: 13px;
+
+}
+
+
+.glass-page .product-card p {
+
+    font-size: 11px;
+
+}
+
+
+.glass-page .product-info span {
+
+    padding: 5px 7px;
+
+    font-size: 11px;
+
+}
+
+
+/* Единый стеклянный корпус для всех категорий и поиска */
+
+.category-page .category-results-panel {
+
+    margin-top: 0;
+
+    padding: 18px;
+
+    border: 1px solid rgba(255,255,255,0.76);
+
+    border-radius: 28px;
+
+    background: rgba(255,255,255,0.40);
+
+    box-shadow:
+        0 18px 48px rgba(48, 56, 63, 0.12),
+        inset 0 1px 0 rgba(255,255,255,0.90);
+
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+
+    backdrop-filter: blur(22px) saturate(135%);
+
+}
+
+
+.category-page .category-results-panel .sellers-list,
+.category-page .category-results-panel .product-list {
+
+    margin-top: 0;
+
+}
+
+
+.category-page-label {
+
+    width: fit-content;
+
+    margin-bottom: 14px;
+
+    padding: 8px 12px;
+
+    border: 1px solid rgba(255,255,255,0.76);
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.52);
+
+    color: #17191c;
+
+    font-size: 12px;
+
+    font-weight: var(--weight-semibold);
+
+    box-shadow: 0 9px 20px rgba(48, 56, 63, 0.08);
+
+}
+
+
+.product-seller-link {
+
+    width: 100%;
+
+    margin-top: 9px;
+
+    padding: 7px 8px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(255,255,255,0.74);
+
+    border-radius: 11px;
+
+    background: rgba(28, 31, 35, 0.84);
+
+    color: #ffffff;
+
+    font-size: 10px;
+
+    font-weight: var(--weight-semibold);
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 18px rgba(28, 31, 35, 0.14),
+        inset 0 1px 0 rgba(255,255,255,0.16);
+
+    transition: 0.2s ease;
+
+}
+
+
+.product-seller-link:hover {
+
+    background: rgba(18, 20, 23, 0.94);
+
+    transform: translateY(-1px);
+
+}
+
+
+.seller-link-short {
+
+    display: none;
+
+}
+
+
+@media (max-width: 719px) {
+
+    .glass-page .product-list {
+
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        gap: 7px;
+
+    }
+
+
+    .glass-page .product-card {
+
+        min-height: 126px;
+
+        padding: 9px;
+
+    }
+
+
+    .glass-page .product-card h3 {
+
+        padding-right: 17px;
+
+        font-size: 10px;
+
+        line-height: 1.25;
+
+        overflow-wrap: anywhere;
+
+    }
+
+
+    .glass-page .product-card p {
+
+        font-size: 9px;
+
+    }
+
+
+    .glass-page .product-info span {
+
+        padding: 4px 5px;
+
+        font-size: 9px;
+
+    }
+
+
+    .glass-page .favorite-btn {
+
+        width: 21px;
+
+        height: 21px;
+
+        font-size: 13px;
+
+    }
+
+
+    .glass-page .products-section .product-list {
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 9px;
+
+    }
+
+
+    .glass-page .products-section .product-card {
+
+        min-height: 158px;
+
+        padding: 11px;
+
+    }
+
+
+    .category-page .category-results-panel {
+
+        padding: 12px;
+
+        border-radius: 24px;
+
+    }
+
+
+    .category-page-label {
+
+        margin-bottom: 10px;
+
+        font-size: 10px;
+
+    }
+
+
+    .product-seller-link {
+
+        margin-top: 7px;
+
+        padding: 6px 5px;
+
+        font-size: 8px;
+
+    }
+
+
+    .seller-link-full {
+
+        display: none;
+
+    }
+
+
+    .seller-link-short {
+
+        display: inline;
+
+    }
+
+}
+

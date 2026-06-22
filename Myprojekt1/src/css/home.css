@@ -1,0 +1,926 @@
+/* Главная страница и исходная сетка категорий. */
+
+/* Главная страница */
+
+.home-page {
+
+    background: #f7f7f4;
+
+    color: #202020;
+
+}
+
+
+.home-header {
+
+    padding-top: 42px;
+
+}
+
+
+.home-page .hero-brand {
+
+    color: #202020;
+
+    background: #ffffff;
+
+    border: 1px solid #202020;
+
+    font-family: var(--font-accent);
+
+    letter-spacing: 0.02em;
+
+    box-shadow:
+        0 10px 24px rgba(0,0,0,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.90);
+
+    text-shadow: none;
+
+}
+
+
+.home-page .subtitle {
+
+    color: #777;
+
+}
+
+
+/* Подзаголовок */
+
+.subtitle {
+
+    margin-top: 8px;
+
+    margin-bottom: 24px;
+
+    color: #777;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    line-height: 1.35;
+
+}
+
+
+/* Секция поиска */
+
+.search-section {
+
+    margin-top: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 0;
+
+}
+
+
+.home-search {
+
+    position: relative;
+
+    max-width: 310px;
+
+    margin: 32px auto 0;
+
+}
+
+
+.home-search-icon {
+
+    position: absolute;
+
+    left: 16px;
+
+    color: #202020;
+
+    font-size: 20px;
+
+    line-height: 1;
+
+    z-index: 1;
+
+}
+
+
+/* Поле поиска */
+
+.search-section input {
+
+    width: 100%;
+
+    max-width: 100%;
+
+    padding: 13px 16px 13px 42px;
+
+    border-radius: 16px;
+
+    border: 1px solid #d9d9d4;
+
+    background: #ffffff;
+
+    font-size: 13px;
+
+    color: #202020;
+
+    box-shadow:
+        0 9px 24px rgba(0,0,0,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.86);
+
+    outline: none;
+
+    transition: 0.2s;
+
+}
+
+
+.search-section input:focus {
+
+    border-color: #202020;
+
+    box-shadow:
+        0 9px 24px rgba(0,0,0,0.06),
+        0 0 0 4px rgba(0,0,0,0.06);
+
+}
+
+
+/* Кнопка поиска */
+
+.search-section button {
+
+    display: none;
+
+    padding: 7px 13px;
+
+    border: none;
+
+    background: #202020;
+
+    color: #ffffff;
+
+    border-radius: 999px;
+
+    font-family: var(--font-soft);
+
+    font-size: 12px;
+
+    font-weight: var(--weight-semibold);
+
+    box-shadow:
+        0 9px 24px rgba(35, 89, 121, 0.08),
+        inset 0 1px 0 rgba(255,255,255,0.86);
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+/* Кнопки на главной */
+
+.home-actions {
+
+    width: 100%;
+
+    max-width: 360px;
+
+    margin: 22px auto 0;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+
+}
+
+
+.home-actions button {
+
+    width: 100%;
+
+    min-width: 0;
+
+    min-height: 58px;
+
+    padding: 10px 6px;
+
+    border: 1px solid #202020;
+
+    border-radius: 14px;
+
+    background: #202020;
+
+    color: #ffffff;
+
+    font-family: var(--font-main);
+
+    font-size: 11px;
+
+    font-weight: var(--weight-semibold);
+
+    line-height: 1.15;
+
+    overflow: hidden;
+
+    text-align: center;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.10);
+
+    transition: 0.2s;
+
+}
+
+
+.home-actions button span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 18px;
+
+    color: #ffffff;
+
+    line-height: 1;
+
+}
+
+
+.home-actions button:hover {
+
+    background: #111111;
+
+    transform: translateY(-2px);
+
+}
+
+
+.home-actions .btn-outline {
+
+    border: 1px solid #202020;
+
+    background: #202020;
+
+    color: #ffffff;
+
+}
+
+
+/* Наведение на кнопку */
+
+.search-section button:hover {
+
+    background: #111111;
+
+}
+
+
+/* Блок категорий на главной */
+
+.home-category-section {
+
+    max-width: 310px;
+
+    margin: 30px auto 0;
+
+}
+
+
+.home-section-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+
+}
+
+
+.home-section-row h2 {
+
+    margin: 0;
+
+    color: #202020;
+
+    font-size: 17px;
+
+    font-family: var(--font-main);
+
+}
+
+
+.home-section-row button {
+
+    border: none;
+
+    background: transparent;
+
+    color: #202020;
+
+    font-size: 11px;
+
+    font-weight: var(--weight-semibold);
+
+    cursor: pointer;
+
+}
+
+
+.home-category-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 11px;
+
+}
+
+
+.home-category-card {
+
+    min-height: 102px;
+
+    padding: 12px 8px;
+
+    border: 1px solid #deded8;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    color: #202020;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 9px 22px rgba(0,0,0,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.88);
+
+    transition: 0.2s;
+
+    animation: homeCategoryShow 0.55s ease;
+
+}
+
+
+.home-category-card:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+@keyframes homeCategoryShow {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(3px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+.home-category-icon {
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #202020;
+
+    font-size: 31px;
+
+    line-height: 1;
+
+}
+
+
+.home-category-card strong {
+
+    display: block;
+
+}
+
+
+.home-category-card strong {
+
+    font-size: 12px;
+
+    font-family: var(--font-main);
+
+}
+
+
+/* Нижняя панель преимуществ */
+
+.home-benefits {
+
+    max-width: 310px;
+
+    margin: 34px auto 0;
+
+    padding: 13px 8px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 6px;
+
+    border: 1px solid #deded8;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 10px 24px rgba(0,0,0,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.84);
+
+}
+
+
+.home-benefits div,
+.home-benefits button {
+
+    text-align: center;
+
+}
+
+
+.home-benefits button {
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+}
+
+
+.home-benefits span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #202020;
+
+    font-size: 17px;
+
+}
+
+
+.home-benefits p {
+
+    color: #202020;
+
+    font-size: 10px;
+
+    line-height: 1.25;
+
+}
+
+
+.odessa-line {
+
+    max-width: 310px;
+
+    margin: 30px auto 0;
+
+    color: rgba(50, 126, 170, 0.32);
+
+    text-align: center;
+
+    font-size: 18px;
+
+    letter-spacing: 0.16em;
+
+}
+
+
+/* CTA кнопка */
+
+.cta-section {
+
+    margin-top: 28px;
+
+    display: flex;
+
+    justify-content: center;
+
+}
+
+
+/* Кнопка перехода */
+
+.cta-section button {
+
+    width: 100%;
+
+    max-width: 260px;
+
+    padding: 13px 18px;
+
+    background: #222;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+
+    font-weight: var(--weight-semibold);
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+/* Наведение на CTA кнопку */
+
+.cta-section button:hover {
+
+    background: #111;
+
+    transform: translateY(-2px);
+
+}
+
+
+/* Сетка категорий */
+
+.categories-grid {
+
+    margin-top: 24px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 11px;
+
+}
+
+
+/* Карточка категории */
+
+.category-card {
+
+    min-height: 76px;
+
+    padding: 12px 8px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    border: 1px solid #deded8;
+
+    text-align: center;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #202020;
+
+    font-family: var(--font-main);
+
+    font-size: 14px;
+
+    font-weight: var(--weight-bold);
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    box-shadow:
+        0 9px 22px rgba(0,0,0,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.82);
+
+}
+
+
+/* Мягкие цвета категорий */
+
+.category-meat {
+
+    --category-color: #7f4b45;
+    --category-bg: #f0e3e1;
+    --category-glow: rgba(127, 75, 69, 0.14);
+
+}
+
+
+.category-fish {
+
+    --category-color: #40798c;
+    --category-bg: #e2eef2;
+    --category-glow: rgba(64, 121, 140, 0.14);
+
+}
+
+
+.category-vegetables {
+
+    --category-color: #557f62;
+    --category-bg: #e7efe8;
+    --category-glow: rgba(85, 127, 98, 0.14);
+
+}
+
+
+.category-fruits {
+
+    --category-color: #a87945;
+    --category-bg: #f2eadf;
+    --category-glow: rgba(168, 121, 69, 0.14);
+
+}
+
+
+.category-milk {
+
+    --category-color: #6f819b;
+    --category-bg: #e9edf3;
+    --category-glow: rgba(111, 129, 155, 0.14);
+
+}
+
+
+.category-bakery {
+
+    --category-color: #8f6b46;
+    --category-bg: #f0e8de;
+    --category-glow: rgba(143, 107, 70, 0.14);
+
+}
+
+
+.category-spices {
+
+    --category-color: #98684b;
+    --category-bg: #f0e6df;
+    --category-glow: rgba(152, 104, 75, 0.14);
+
+}
+
+
+.category-sweets {
+
+    --category-color: #9b627d;
+    --category-bg: #f0e3eb;
+    --category-glow: rgba(155, 98, 125, 0.14);
+
+}
+
+
+.category-clothing {
+
+    --category-color: #746889;
+    --category-bg: #ebe7f1;
+    --category-glow: rgba(116, 104, 137, 0.14);
+
+}
+
+
+.category-shoes {
+
+    --category-color: #66727b;
+    --category-bg: #e8ecef;
+    --category-glow: rgba(98, 111, 123, 0.14);
+
+}
+
+
+.category-electronics {
+
+    --category-color: #566a7a;
+    --category-bg: #e5ebef;
+    --category-glow: rgba(82, 103, 123, 0.14);
+
+}
+
+
+.category-discount {
+
+    --category-color: #927f4d;
+    --category-bg: #f3eedf;
+    --category-glow: rgba(155, 130, 66, 0.14);
+
+}
+
+
+.category-pets {
+
+    --category-color: #826f61;
+    --category-bg: #f0e9e3;
+    --category-glow: rgba(139, 113, 93, 0.14);
+
+}
+
+
+.category-other {
+
+    --category-color: #747d7c;
+    --category-bg: #e9eeee;
+    --category-glow: rgba(119, 128, 127, 0.14);
+
+}
+
+
+.category-badge {
+
+    display: inline-flex;
+
+    width: fit-content;
+
+    align-items: center;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    background: color-mix(in srgb, var(--category-color, #202020) 10%, white);
+
+    color: var(--category-color, #202020);
+
+    font-size: 12px;
+
+    font-weight: var(--weight-semibold);
+
+}
+
+
+.seller-category-badge {
+
+    margin: 0 auto;
+
+    font-size: 12px;
+
+    opacity: 0.92;
+
+}
+
+
+/* Наведение на категорию */
+
+.category-card:hover {
+
+    background: #ffffff;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+
+}
+
+
+@media (min-width: 720px) {
+
+    .home-page .container {
+
+        max-width: 760px;
+
+    }
+
+
+    .home-header {
+
+        padding-top: 54px;
+
+    }
+
+
+    .home-page .hero-brand {
+
+        font-size: 28px;
+
+        padding: 10px 24px;
+
+    }
+
+
+    .home-page .subtitle {
+
+        font-size: 15px;
+
+    }
+
+
+    .home-search,
+    .home-actions,
+    .home-category-section,
+    .home-benefits,
+    .odessa-line {
+
+        max-width: 620px;
+
+    }
+
+
+    .home-search {
+
+        margin-top: 38px;
+
+    }
+
+
+    .home-actions {
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 14px;
+
+    }
+
+
+    .home-actions button {
+
+        min-height: 76px;
+
+        font-size: 13px;
+
+    }
+
+
+    .home-category-section {
+
+        margin-top: 40px;
+
+    }
+
+
+    .home-category-card {
+
+        min-height: 118px;
+
+    }
+
+
+    .home-benefits {
+
+        margin-top: 42px;
+
+    }
+
+
+    .categories-grid {
+
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+
+        gap: 14px;
+
+    }
+
+
+    .category-card {
+
+        min-height: 82px;
+
+        font-size: 15px;
+
+    }
+
+}
