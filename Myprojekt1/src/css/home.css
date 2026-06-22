@@ -941,10 +941,19 @@
     background: rgba(255, 255, 255, 0.52);
     color: #20252a;
     text-align: left;
-    cursor: pointer;
     box-shadow: 0 9px 22px rgba(42, 49, 56, 0.07);
     backdrop-filter: blur(14px);
     transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.home-offer-photo {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    cursor: pointer;
 }
 
 .home-offer-card:hover {
@@ -958,6 +967,29 @@
     aspect-ratio: 4 / 3;
     border-radius: 12px;
     background: rgba(225, 229, 232, 0.72) center / contain no-repeat;
+}
+
+.home-offer-favorite {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    display: grid;
+    width: 29px;
+    height: 29px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.82);
+    color: #30383e;
+    font-size: 17px;
+    cursor: pointer;
+    box-shadow: 0 5px 13px rgba(30, 36, 41, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.home-offer-favorite.is-active {
+    color: #b28a27;
 }
 
 .home-offer-badge {
@@ -997,6 +1029,25 @@
     white-space: nowrap;
 }
 
+.home-offer-shop {
+    width: 100%;
+    min-height: 30px;
+    margin-top: 8px;
+    padding: 6px 8px;
+    border: 1px solid rgba(45, 57, 66, 0.12);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.62);
+    color: #38434a;
+    font: inherit;
+    font-size: 9px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.home-offer-shop:hover {
+    background: rgba(255, 255, 255, 0.90);
+}
+
 .home-offers-empty {
     grid-column: 1 / -1;
     display: flex;
@@ -1027,6 +1078,13 @@
         border-radius: 10px;
     }
 
+    .home-offer-favorite {
+        top: 11px;
+        right: 11px;
+        width: 28px;
+        height: 28px;
+    }
+
     .home-offer-card strong {
         min-height: 29px;
         font-size: 11px;
@@ -1034,5 +1092,9 @@
 
     .home-offer-card small {
         font-size: 9px;
+    }
+
+    .home-offer-shop {
+        min-height: 32px;
     }
 }

@@ -51,19 +51,31 @@ function initMainPage() {
 
         homeOffersGrid.innerHTML = products.map(product => {
             const hasNewPrice = Boolean(product.priceChangedAt);
+            const isFavorite = isFavoriteProduct(product.id);
 
             return `
-                <button
+                <article
                     class="home-offer-card"
                     data-product="${escapeHtml(product.id)}"
                     data-seller="${escapeHtml(product.seller)}"
-                    type="button"
                 >
-                    <span class="home-offer-image"></span>
+                    <button
+                        class="home-offer-photo"
+                        type="button"
+                        aria-label="Посмотреть фото товара ${escapeHtml(product.name)}"
+                    >
+                        <span class="home-offer-image"></span>
+                    </button>
+                    <button
+                        class="home-offer-favorite ${isFavorite ? "is-active" : ""}"
+                        type="button"
+                        aria-label="Добавить товар в избранное"
+                    >${isFavorite ? "★" : "☆"}</button>
                     <span class="home-offer-badge">${hasNewPrice ? "Цена обновлена" : "Новинка"}</span>
                     <strong>${escapeHtml(product.name)}</strong>
                     <small>${escapeHtml(getProductPriceText(product))}</small>
-                </button>
+                    <button class="home-offer-shop" type="button">В лавку</button>
+                </article>
             `;
         }).join("");
 
@@ -136,9 +148,26 @@ function initMainPage() {
 
     homeOffersGrid?.addEventListener("click", event => {
         const card = event.target.closest(".home-offer-card");
+        const productId = card?.dataset.product;
         const sellerId = card?.dataset.seller;
+        const product = readStorage("products")
+            .find(item => item.id === productId);
 
-        if (sellerId) {
+        if (!card || !product) return;
+        event.stopPropagation();
+
+        if (event.target.closest(".home-offer-favorite")) {
+            toggleFavoriteProduct(product.id);
+            renderHomeOffers();
+            return;
+        }
+
+        if (event.target.closest(".home-offer-photo")) {
+            openProductModal(product);
+            return;
+        }
+
+        if (event.target.closest(".home-offer-shop") && sellerId) {
             openPage(`seller.html?seller=${encodeURIComponent(sellerId)}`);
         }
     });
