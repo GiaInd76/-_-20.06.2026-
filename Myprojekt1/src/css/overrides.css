@@ -611,3 +611,58 @@ button:hover,
 .auth-card button {
     min-height: 42px;
 }
+
+/* Аккуратная опасная зона внизу профиля лавки */
+.shop-danger-zone {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(142, 47, 47, 0.10);
+}
+
+.delete-shop-btn {
+    padding: 7px 11px;
+    border: 1px solid rgba(151, 54, 54, 0.22);
+    border-radius: 11px;
+    background: transparent;
+    color: #8b3d3d;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.delete-shop-btn:hover {
+    background: rgba(151, 54, 54, 0.06);
+}
+
+.delete-shop-content {
+    width: min(420px, calc(100% - 28px));
+    padding: 22px;
+    text-align: left;
+}
+
+.delete-shop-content h2,
+.delete-shop-content p {
+    margin-top: 0;
+}
+
+.delete-shop-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.delete-shop-actions button {
+    min-height: 40px;
+}
+
+.delete-shop-confirm {
+    border: 1px solid #9b4545;
+    border-radius: 12px;
+    background: #9b4545;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}

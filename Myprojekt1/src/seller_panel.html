@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/seller.css?v=20260622-1">
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260622-1">
-    <link rel="stylesheet" href="css/overrides.css?v=20260622-1">
+    <link rel="stylesheet" href="css/overrides.css?v=20260622-3">
 </head>
 
 <body class="glass-page seller-panel-page" data-seller-auth="required">
@@ -164,6 +164,12 @@
                 id="profileMessage"
                 class="form-message"
             ></p>
+
+            <div class="shop-danger-zone">
+                <button id="deleteSellerBtn" class="delete-shop-btn" type="button">
+                    Удалить лавку
+                </button>
+            </div>
         </section>
 
         <div class="product-workbench">
@@ -284,11 +290,29 @@
 
     </div>
 
+    <!-- Подтверждение защищает лавку от случайного удаления -->
+    <div id="deleteSellerModal" class="modal delete-shop-modal" role="dialog" aria-modal="true">
+        <div class="modal-content delete-shop-content">
+            <p class="home-kicker">Необратимое действие</p>
+            <h2>Удалить лавку?</h2>
+            <p id="deleteSellerText">Лавка и все её товары будут удалены.</p>
+
+            <div class="delete-shop-actions">
+                <button id="cancelDeleteSellerBtn" class="btn-outline" type="button">
+                    Отмена
+                </button>
+                <button id="confirmDeleteSellerBtn" class="delete-shop-confirm" type="button">
+                    Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js?v=20260622-2"></script>
     <script src="js/core.js?v=20260622-2"></script>
     <script src="js/home.js?v=20260622-2"></script>
-    <script src="js/seller-panel.js?v=20260622-2"></script>
+    <script src="js/seller-panel.js?v=20260622-3"></script>
     <script src="js/catalog.js?v=20260622-2"></script>
     <script src="js/app.js?v=20260622-2"></script>
 </body>

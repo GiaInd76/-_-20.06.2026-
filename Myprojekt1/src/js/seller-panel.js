@@ -38,6 +38,11 @@ function initSellerPanel() {
     const toggleProfileBtn = document.getElementById("toggleProfileBtn");
     const sellerProfilePanel = document.getElementById("sellerProfilePanel");
     const featuredProductsPicker = document.getElementById("featuredProductsPicker");
+    const deleteSellerBtn = document.getElementById("deleteSellerBtn");
+    const deleteSellerModal = document.getElementById("deleteSellerModal");
+    const deleteSellerText = document.getElementById("deleteSellerText");
+    const cancelDeleteSellerBtn = document.getElementById("cancelDeleteSellerBtn");
+    const confirmDeleteSellerBtn = document.getElementById("confirmDeleteSellerBtn");
     const seller = getSellerById(currentSeller);
 
     selectedSellerCover = seller?.coverImage || "";
@@ -56,6 +61,55 @@ function initSellerPanel() {
         openInput.value = seller.open || "";
         closeInput.value = seller.close || "";
     }
+
+    deleteSellerBtn?.classList.toggle("hidden", !seller);
+
+    const closeDeleteSellerModal = () => {
+        if (deleteSellerModal) deleteSellerModal.style.display = "none";
+    };
+
+    deleteSellerBtn?.addEventListener("click", () => {
+        if (!seller || !deleteSellerModal) return;
+
+        if (deleteSellerText) {
+            deleteSellerText.textContent = `Лавка «${seller.name}» и все её товары будут удалены.`;
+        }
+
+        deleteSellerModal.style.display = "flex";
+    });
+
+    cancelDeleteSellerBtn?.addEventListener("click", closeDeleteSellerModal);
+
+    deleteSellerModal?.addEventListener("click", event => {
+        if (event.target === deleteSellerModal) closeDeleteSellerModal();
+    });
+
+    confirmDeleteSellerBtn?.addEventListener("click", () => {
+        if (!seller || seller.id !== currentSeller) return;
+
+        const products = readStorage("products");
+        const deletedProductIds = new Set(
+            products
+                .filter(product => product.seller === currentSeller)
+                .map(product => product.id)
+        );
+
+        writeStorage(
+            "products",
+            products.filter(product => product.seller !== currentSeller)
+        );
+        writeStorage(
+            "sellers",
+            readStorage("sellers").filter(item => item.id !== currentSeller)
+        );
+        writeStorage(
+            "favoriteProducts",
+            getFavoriteProducts().filter(productId => !deletedProductIds.has(productId))
+        );
+
+        closeDeleteSellerModal();
+        openPage("create_seller.html");
+    });
 
     const renderFeaturedProductsPicker = () => {
         if (!featuredProductsPicker) return;
