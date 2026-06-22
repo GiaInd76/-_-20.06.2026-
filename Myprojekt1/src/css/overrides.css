@@ -666,3 +666,55 @@ button:hover,
     font: inherit;
     cursor: pointer;
 }
+
+/* Выбранные фотографии удаляются по одной */
+.photo-preview-item {
+    position: relative;
+}
+
+.remove-photo-btn {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    display: grid;
+    width: 27px;
+    height: 27px;
+    padding: 0;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.78);
+    border-radius: 50%;
+    background: rgba(26, 30, 34, 0.72);
+    color: white;
+    font: 20px/1 Arial, sans-serif;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+}
+
+.remove-photo-btn:hover {
+    background: rgba(139, 61, 61, 0.88);
+}
+
+/* Системные списки приведены к общему стилю кабинета */
+.seller-panel-page select {
+    width: 100%;
+    min-height: 43px;
+    padding: 9px 38px 9px 12px;
+    border: 1px solid rgba(40, 49, 57, 0.13);
+    border-radius: 13px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: rgba(255, 255, 255, 0.70);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%235e6871' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: right 13px center;
+    background-repeat: no-repeat;
+    color: #252b30;
+    font: inherit;
+    cursor: pointer;
+    box-shadow: 0 5px 14px rgba(31, 38, 44, 0.04);
+}
+
+.seller-panel-page select:focus {
+    border-color: rgba(71, 128, 164, 0.45);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(71, 128, 164, 0.10);
+}

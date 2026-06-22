@@ -29,7 +29,6 @@ function initSellerPanel() {
     const productImagePreview = document.getElementById("productImagePreview");
     const productImageLabel = document.getElementById("productImageLabel");
     const productImageStatus = document.getElementById("productImageStatus");
-    const removeProductImageBtn = document.getElementById("removeProductImageBtn");
     const sellerCoverInput = document.getElementById("sellerCoverImage");
     const sellerCoverPreview = document.getElementById("sellerCoverPreview");
     const removeSellerCoverBtn = document.getElementById("removeSellerCoverBtn");
@@ -205,15 +204,15 @@ function initSellerPanel() {
     });
 
     const updateProductImagePreview = () => {
-        if (!productImagePreview || !removeProductImageBtn) return;
+        if (!productImagePreview) return;
 
         if (!selectedProductImages.length) {
             productImagePreview.classList.add("hidden");
             productImagePreview.innerHTML = "";
-            removeProductImageBtn.classList.add("hidden");
             productImageStatus?.classList.add("hidden");
             if (productImageLabel) {
-                productImageLabel.textContent = "Добавить до 2 фото";
+                productImageLabel.classList.remove("hidden");
+                productImageLabel.textContent = "Добавить фото";
             }
             renderLiveProductPreview();
             return;
@@ -221,7 +220,15 @@ function initSellerPanel() {
 
         productImagePreview.classList.remove("hidden");
         productImagePreview.innerHTML = selectedProductImages
-            .map(() => `<div class="photo-preview-item"></div>`)
+            .map((image, index) => `
+                <div class="photo-preview-item" data-photo-index="${index}">
+                    <button
+                        class="remove-photo-btn"
+                        type="button"
+                        aria-label="Удалить фотографию ${index + 1}"
+                    >×</button>
+                </div>
+            `)
             .join("");
 
         productImagePreview
@@ -229,10 +236,25 @@ function initSellerPanel() {
             .forEach((preview, index) => {
                 preview.style.backgroundImage = `url("${selectedProductImages[index]}")`;
             });
-        removeProductImageBtn.classList.remove("hidden");
+        productImagePreview
+            .querySelectorAll(".remove-photo-btn")
+            .forEach(button => {
+                button.addEventListener("click", event => {
+                    const preview = event.currentTarget.closest(".photo-preview-item");
+                    const photoIndex = Number(preview?.dataset.photoIndex);
+
+                    if (!Number.isInteger(photoIndex)) return;
+
+                    selectedProductImages.splice(photoIndex, 1);
+                    if (productImageInput) productImageInput.value = "";
+                    updateProductImagePreview();
+                    showMessage(productMessage, "Фотография удалена.");
+                });
+            });
 
         if (productImageLabel) {
-            productImageLabel.textContent = "Заменить фото";
+            productImageLabel.textContent = "Добавить фото";
+            productImageLabel.classList.toggle("hidden", selectedProductImages.length >= 2);
         }
 
         if (productImageStatus) {
@@ -314,9 +336,13 @@ function initSellerPanel() {
     };
 
     productImageInput?.addEventListener("change", () => {
-        const files = [...(productImageInput.files || [])].slice(0, 2);
+        const availableSlots = Math.max(0, 2 - selectedProductImages.length);
+        const files = [...(productImageInput.files || [])].slice(0, availableSlots);
 
-        if (!files.length) return;
+        if (!files.length) {
+            productImageInput.value = "";
+            return;
+        }
 
         if (files.some(file => !file.type.startsWith("image/"))) {
             showMessage(productMessage, "Выберите только изображения.");
@@ -326,25 +352,15 @@ function initSellerPanel() {
 
         Promise.all(files.map(file => resizeImageFile(file)))
             .then(images => {
-                selectedProductImages = images;
+                selectedProductImages = [...selectedProductImages, ...images].slice(0, 2);
                 updateProductImagePreview();
-                showMessage(productMessage, `Подготовлено фото: ${images.length}.`);
+                showMessage(productMessage, `Выбрано фото: ${selectedProductImages.length} из 2.`);
             })
             .catch(() => {
                 showMessage(productMessage, "Не удалось загрузить фотографии.");
-                selectedProductImages = [];
                 productImageInput.value = "";
                 updateProductImagePreview();
             });
-    });
-
-    removeProductImageBtn?.addEventListener("click", () => {
-        selectedProductImages = [];
-        if (productImageInput) {
-            productImageInput.value = "";
-        }
-        updateProductImagePreview();
-        showMessage(productMessage, "Фото убрано.");
     });
 
     cancelEditProductBtn?.addEventListener("click", () => {
