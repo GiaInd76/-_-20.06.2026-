@@ -81,7 +81,10 @@ function initMainPage() {
         if (sellerChoiceModal) sellerChoiceModal.style.display = "flex";
     });
 
-    sellerCabinetChoice?.addEventListener("click", () => {
+    sellerCabinetChoice?.addEventListener("click", async () => {
+        const user = await requireSellerSession("index.html");
+        if (!user) return;
+
         const sellers = readStorage("sellers");
         const seller = sellers[sellers.length - 1];
 
@@ -93,7 +96,10 @@ function initMainPage() {
         openPage(`seller.html?seller=${encodeURIComponent(seller.id)}&owner=1`);
     });
 
-    sellerEditChoice?.addEventListener("click", () => {
+    sellerEditChoice?.addEventListener("click", async () => {
+        const user = await requireSellerSession("index.html");
+        if (!user) return;
+
         const sellers = readStorage("sellers");
         const seller = sellers[sellers.length - 1];
 
@@ -105,7 +111,10 @@ function initMainPage() {
         openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
     });
 
-    sellerNewChoice?.addEventListener("click", () => {
+    sellerNewChoice?.addEventListener("click", async () => {
+        const user = await requireSellerSession("create_seller.html");
+        if (!user) return;
+
         openPage("create_seller.html");
     });
 

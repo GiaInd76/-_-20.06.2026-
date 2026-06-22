@@ -1,5 +1,6 @@
 /* Запуск функций после загрузки всех частей сайта. */
 
+initProtectedSellerPage();
 initBrandHeader();
 initCategoryColors();
 initMainPage();

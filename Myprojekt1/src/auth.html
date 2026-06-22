@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход продавца — Привоз Онлайн</title>
+
+    <link rel="stylesheet" href="css/base.css?v=20260622-2">
+    <link rel="stylesheet" href="css/home.css?v=20260622-2">
+    <link rel="stylesheet" href="css/components.css?v=20260622-2">
+    <link rel="stylesheet" href="css/seller.css?v=20260622-2">
+    <link rel="stylesheet" href="css/glass-theme.css?v=20260622-2">
+    <link rel="stylesheet" href="css/internal-pages.css?v=20260622-2">
+    <link rel="stylesheet" href="css/overrides.css?v=20260622-2">
+</head>
+<body class="glass-page auth-page">
+    <main class="container auth-container">
+        <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
+            <button class="back-home-btn" type="button" onclick="history.back()">Назад</button>
+            <a class="brand-title site-brand" href="index.html">Привоз</a>
+            <span class="auth-nav-space" aria-hidden="true"></span>
+        </nav>
+
+        <form id="authForm" class="panel-section auth-card">
+            <p class="home-kicker">Кабинет продавца</p>
+            <h1>Вход</h1>
+            <p class="subtitle">Войдите или создайте аккаунт продавца.</p>
+
+            <input id="authEmail" type="email" placeholder="Электронная почта" autocomplete="email" required>
+            <input id="authPassword" type="password" placeholder="Пароль, минимум 6 символов" autocomplete="current-password" minlength="6" required>
+
+            <button id="loginBtn" class="btn-primary" type="submit">Войти</button>
+            <button id="registerBtn" class="btn-outline" type="button">Создать аккаунт</button>
+            <p id="authMessage" class="form-message" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js?v=20260622-2"></script>
+    <script>initAuthPage();</script>
+</body>
+</html>
