@@ -718,3 +718,45 @@ button:hover,
     outline: none;
     box-shadow: 0 0 0 3px rgba(71, 128, 164, 0.10);
 }
+
+/* Переключатель языка не занимает место в основной навигации */
+.language-switcher {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 1200;
+    display: flex;
+    gap: 3px;
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.76);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.76);
+    box-shadow: 0 9px 24px rgba(35, 43, 49, 0.13);
+    backdrop-filter: blur(16px);
+}
+
+.language-option {
+    min-width: 31px;
+    min-height: 29px;
+    padding: 5px 7px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #657078;
+    font: inherit;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.language-option.is-active {
+    background: #252b30;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    .language-switcher {
+        right: 10px;
+        bottom: 10px;
+    }
+}
