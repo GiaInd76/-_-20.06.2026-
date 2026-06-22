@@ -39,18 +39,18 @@ const units = {
 const homeCategorySuggestions = [
     { id: "meat", icon: "🥩", title: "Мясо" },
     { id: "fish", icon: "🐟", title: "Рыба" },
-    { id: "vegetables", icon: "♧", title: "Овощи" },
-    { id: "fruits", icon: "🍊", title: "Фрукты" },
-    { id: "milk", icon: "◌", title: "Молочка" },
+    { id: "vegetables", icon: "🥬", title: "Овощи" },
+    { id: "fruits", icon: "🍎", title: "Фрукты" },
+    { id: "milk", icon: "🥛", title: "Молочка" },
     { id: "bakery", icon: "🥐", title: "Выпечка" },
-    { id: "spices", icon: "♧", title: "Специи" },
-    { id: "sweets", icon: "●", title: "Сладости" },
-    { id: "clothing", icon: "△", title: "Одежда" },
-    { id: "shoes", icon: "⌁", title: "Обувь" },
-    { id: "electronics", icon: "ϟ", title: "Техника" },
-    { id: "discount", icon: "◇", title: "Всё по 3" },
-    { id: "pets", icon: "⋯", title: "Зоотовары" },
-    { id: "other", icon: "◇", title: "Другое" }
+    { id: "spices", icon: "🧂", title: "Специи" },
+    { id: "sweets", icon: "🍬", title: "Сладости" },
+    { id: "clothing", icon: "👕", title: "Одежда" },
+    { id: "shoes", icon: "👟", title: "Обувь" },
+    { id: "electronics", icon: "📱", title: "Техника" },
+    { id: "discount", icon: "🏷️", title: "Всё по 3" },
+    { id: "pets", icon: "🐾", title: "Зоотовары" },
+    { id: "other", icon: "🛍️", title: "Другое" }
 ];
 
 function readStorage(key, fallback = []) {

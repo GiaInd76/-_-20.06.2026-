@@ -642,131 +642,24 @@
 }
 
 
-/* Мягкие цвета категорий */
-
-.category-meat {
-
-    --category-color: #7f4b45;
-    --category-bg: #f0e3e1;
-    --category-glow: rgba(127, 75, 69, 0.14);
-
-}
-
-
-.category-fish {
-
-    --category-color: #40798c;
-    --category-bg: #e2eef2;
-    --category-glow: rgba(64, 121, 140, 0.14);
-
-}
-
-
-.category-vegetables {
-
-    --category-color: #557f62;
-    --category-bg: #e7efe8;
-    --category-glow: rgba(85, 127, 98, 0.14);
-
-}
-
-
-.category-fruits {
-
-    --category-color: #a87945;
-    --category-bg: #f2eadf;
-    --category-glow: rgba(168, 121, 69, 0.14);
-
-}
-
-
-.category-milk {
-
-    --category-color: #6f819b;
-    --category-bg: #e9edf3;
-    --category-glow: rgba(111, 129, 155, 0.14);
-
-}
-
-
-.category-bakery {
-
-    --category-color: #8f6b46;
-    --category-bg: #f0e8de;
-    --category-glow: rgba(143, 107, 70, 0.14);
-
-}
-
-
-.category-spices {
-
-    --category-color: #98684b;
-    --category-bg: #f0e6df;
-    --category-glow: rgba(152, 104, 75, 0.14);
-
-}
-
-
-.category-sweets {
-
-    --category-color: #9b627d;
-    --category-bg: #f0e3eb;
-    --category-glow: rgba(155, 98, 125, 0.14);
-
-}
-
-
-.category-clothing {
-
-    --category-color: #746889;
-    --category-bg: #ebe7f1;
-    --category-glow: rgba(116, 104, 137, 0.14);
-
-}
-
-
-.category-shoes {
-
-    --category-color: #66727b;
-    --category-bg: #e8ecef;
-    --category-glow: rgba(98, 111, 123, 0.14);
-
-}
-
-
-.category-electronics {
-
-    --category-color: #566a7a;
-    --category-bg: #e5ebef;
-    --category-glow: rgba(82, 103, 123, 0.14);
-
-}
-
-
-.category-discount {
-
-    --category-color: #927f4d;
-    --category-bg: #f3eedf;
-    --category-glow: rgba(155, 130, 66, 0.14);
-
-}
-
-
-.category-pets {
-
-    --category-color: #826f61;
-    --category-bg: #f0e9e3;
-    --category-glow: rgba(139, 113, 93, 0.14);
-
-}
-
-
+/* Все категории используют единую спокойную палитру */
+.category-meat,
+.category-fish,
+.category-vegetables,
+.category-fruits,
+.category-milk,
+.category-bakery,
+.category-spices,
+.category-sweets,
+.category-clothing,
+.category-shoes,
+.category-electronics,
+.category-discount,
+.category-pets,
 .category-other {
-
-    --category-color: #747d7c;
-    --category-bg: #e9eeee;
-    --category-glow: rgba(119, 128, 127, 0.14);
-
+    --category-color: #4f5c64;
+    --category-bg: #edf0f2;
+    --category-glow: rgba(79, 92, 100, 0.12);
 }
 
 
