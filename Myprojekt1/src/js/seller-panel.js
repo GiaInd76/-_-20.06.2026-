@@ -459,6 +459,9 @@ function initSellerPanel() {
                 return;
             }
 
+            const now = new Date().toISOString();
+            const oldPrice = oldProduct.priceLabel || oldProduct.price;
+
             products[editingProductIndex] = {
                 ...oldProduct,
                 name,
@@ -469,11 +472,17 @@ function initSellerPanel() {
                 unit,
                 description,
                 images: [...selectedProductImages],
-                image: selectedProductImages[0] || ""
+                image: selectedProductImages[0] || "",
+                updatedAt: now,
+                priceChangedAt: oldPrice !== price
+                    ? now
+                    : (oldProduct.priceChangedAt || null)
             };
             savedProductId = oldProduct.id;
         } else {
             savedProductId = `product_${Date.now()}`;
+            const now = new Date().toISOString();
+
             products.push({
                 id: savedProductId,
                 seller: currentSeller,
@@ -485,7 +494,10 @@ function initSellerPanel() {
                 unit,
                 description,
                 images: [...selectedProductImages],
-                image: selectedProductImages[0] || ""
+                image: selectedProductImages[0] || "",
+                createdAt: now,
+                updatedAt: now,
+                priceChangedAt: null
             });
         }
 

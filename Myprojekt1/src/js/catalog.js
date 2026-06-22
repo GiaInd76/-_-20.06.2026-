@@ -358,14 +358,22 @@ function initOwnerProductEditor() {
             return;
         }
 
+        const oldProduct = products[productIndex];
+        const oldPrice = oldProduct.priceLabel || oldProduct.price;
+        const now = new Date().toISOString();
+
         products[productIndex] = {
-            ...products[productIndex],
+            ...oldProduct,
             name,
             department: document.getElementById("ownerProductDepartment").value.trim(),
             price,
             priceLabel: price,
             unit: document.getElementById("ownerProductUnit").value,
-            description: document.getElementById("ownerProductDescription").value.trim()
+            description: document.getElementById("ownerProductDescription").value.trim(),
+            updatedAt: now,
+            priceChangedAt: oldPrice !== price
+                ? now
+                : (oldProduct.priceChangedAt || null)
         };
 
         writeStorage("products", products);

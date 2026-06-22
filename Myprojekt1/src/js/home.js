@@ -13,6 +13,70 @@ function initMainPage() {
     const sellerCabinetChoice = document.getElementById("sellerCabinetChoice");
     const sellerEditChoice = document.getElementById("sellerEditChoice");
     const sellerNewChoice = document.getElementById("sellerNewChoice");
+    const homeOffersGrid = document.getElementById("homeOffersGrid");
+
+    const renderHomeOffers = () => {
+        if (!homeOffersGrid) return;
+
+        const products = readStorage("products")
+            .map((product, index) => ({ product, index }))
+            .sort((first, second) => {
+                const firstDate = Date.parse(
+                    first.product.priceChangedAt ||
+                    first.product.updatedAt ||
+                    first.product.createdAt ||
+                    ""
+                );
+                const secondDate = Date.parse(
+                    second.product.priceChangedAt ||
+                    second.product.updatedAt ||
+                    second.product.createdAt ||
+                    ""
+                );
+
+                return (secondDate || second.index) - (firstDate || first.index);
+            })
+            .slice(0, 6)
+            .map(item => item.product);
+
+        if (!products.length) {
+            homeOffersGrid.innerHTML = `
+                <div class="home-offers-empty">
+                    <span>✦</span>
+                    <p>Здесь появятся новые товары и обновлённые цены.</p>
+                </div>
+            `;
+            return;
+        }
+
+        homeOffersGrid.innerHTML = products.map(product => {
+            const hasNewPrice = Boolean(product.priceChangedAt);
+
+            return `
+                <button
+                    class="home-offer-card"
+                    data-product="${escapeHtml(product.id)}"
+                    data-seller="${escapeHtml(product.seller)}"
+                    type="button"
+                >
+                    <span class="home-offer-image"></span>
+                    <span class="home-offer-badge">${hasNewPrice ? "Цена обновлена" : "Новинка"}</span>
+                    <strong>${escapeHtml(product.name)}</strong>
+                    <small>${escapeHtml(getProductPriceText(product))}</small>
+                </button>
+            `;
+        }).join("");
+
+        homeOffersGrid.querySelectorAll(".home-offer-card").forEach((card, index) => {
+            const image = getProductImages(products[index])[0];
+            const imageElement = card.querySelector(".home-offer-image");
+
+            if (image && imageElement) {
+                imageElement.style.backgroundImage = `url("${image}")`;
+                imageElement.classList.add("has-image");
+            }
+        });
+    };
 
     const renderAllHomeCategories = () => {
         if (!homeAllCategoriesGrid) return;
@@ -57,6 +121,7 @@ function initMainPage() {
     });
 
     renderAllHomeCategories();
+    renderHomeOffers();
 
     categoriesToggleBtn?.addEventListener("click", toggleAllCategories);
 
@@ -67,6 +132,15 @@ function initMainPage() {
         if (!category) return;
 
         openPage(`category.html?type=${encodeURIComponent(category)}`);
+    });
+
+    homeOffersGrid?.addEventListener("click", event => {
+        const card = event.target.closest(".home-offer-card");
+        const sellerId = card?.dataset.seller;
+
+        if (sellerId) {
+            openPage(`seller.html?seller=${encodeURIComponent(sellerId)}`);
+        }
     });
 
     favoritesBtn?.addEventListener("click", () => {
