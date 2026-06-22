@@ -317,7 +317,7 @@ function openOwnerProductEditor(product) {
     modal.dataset.product = product.id;
     document.getElementById("ownerProductName").value = product.name || "";
     document.getElementById("ownerProductDepartment").value = product.department || "";
-    document.getElementById("ownerProductPrice").value = product.price || "";
+    document.getElementById("ownerProductPrice").value = product.priceLabel || product.price || "";
     document.getElementById("ownerProductUnit").value = product.unit || "kg";
     document.getElementById("ownerProductDescription").value = product.description || "";
     showMessage(document.getElementById("ownerProductMessage"), "");
@@ -340,7 +340,7 @@ function initOwnerProductEditor() {
         if (productIndex === -1) return;
 
         const name = document.getElementById("ownerProductName").value.trim();
-        const price = document.getElementById("ownerProductPrice").value.trim();
+        const price = normalizeProductPrice(document.getElementById("ownerProductPrice").value);
 
         if (!name || !price) {
             showMessage(
@@ -350,11 +350,20 @@ function initOwnerProductEditor() {
             return;
         }
 
+        if (!isValidProductPrice(price)) {
+            showMessage(
+                document.getElementById("ownerProductMessage"),
+                "Цена может быть числом или диапазоном, например 630/650."
+            );
+            return;
+        }
+
         products[productIndex] = {
             ...products[productIndex],
             name,
             department: document.getElementById("ownerProductDepartment").value.trim(),
             price,
+            priceLabel: price,
             unit: document.getElementById("ownerProductUnit").value,
             description: document.getElementById("ownerProductDescription").value.trim()
         };

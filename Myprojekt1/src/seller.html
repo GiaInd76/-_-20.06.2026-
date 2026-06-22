@@ -94,7 +94,13 @@
 
             <input id="ownerProductName" type="text" placeholder="Название товара">
             <input id="ownerProductDepartment" type="text" placeholder="Отдел">
-            <input id="ownerProductPrice" type="number" min="0" placeholder="Цена">
+            <input
+                id="ownerProductPrice"
+                type="text"
+                inputmode="decimal"
+                maxlength="24"
+                placeholder="Цена, например 630 или 630/650"
+            >
 
             <select id="ownerProductUnit">
                 <option value="kg">кг</option>
@@ -194,10 +200,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js?v=20260622-2"></script>
-    <script src="js/core.js?v=20260622-2"></script>
+    <script src="js/core.js?v=20260622-3"></script>
     <script src="js/home.js?v=20260622-2"></script>
     <script src="js/seller-panel.js?v=20260622-2"></script>
-    <script src="js/catalog.js?v=20260622-2"></script>
+    <script src="js/catalog.js?v=20260622-3"></script>
     <script src="js/app.js?v=20260622-2"></script>
 
 </body>

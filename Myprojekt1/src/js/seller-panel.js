@@ -433,12 +433,17 @@ function initSellerPanel() {
         const name = document.getElementById("productName").value.trim();
         const department = productDepartmentInput.value.trim();
         const category = document.getElementById("category").value;
-        const price = document.getElementById("price").value.trim();
+        const price = normalizeProductPrice(document.getElementById("price").value);
         const unit = document.getElementById("unit").value;
         const description = document.getElementById("productDescription").value.trim();
 
         if (!name || !price) {
             showMessage(productMessage, "Введите название товара и цену.");
+            return;
+        }
+
+        if (!isValidProductPrice(price)) {
+            showMessage(productMessage, "Цена может быть числом или диапазоном, например 630/650.");
             return;
         }
 
@@ -460,6 +465,7 @@ function initSellerPanel() {
                 department,
                 category,
                 price,
+                priceLabel: price,
                 unit,
                 description,
                 images: [...selectedProductImages],
@@ -475,6 +481,7 @@ function initSellerPanel() {
                 department,
                 category,
                 price,
+                priceLabel: price,
                 unit,
                 description,
                 images: [...selectedProductImages],

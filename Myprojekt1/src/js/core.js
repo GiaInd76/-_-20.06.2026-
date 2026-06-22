@@ -158,8 +158,21 @@ function showMessage(element, text) {
     element.textContent = text;
 }
 
+function normalizeProductPrice(value) {
+    return String(value || "")
+        .trim()
+        .replace(/\s*(\/|-|–|—)\s*/g, "$1");
+}
+
+function isValidProductPrice(value) {
+    const price = normalizeProductPrice(value);
+
+    return /^\d+(?:[.,]\d{1,2})?(?:(?:\/|-|–|—)\d+(?:[.,]\d{1,2})?)?$/.test(price);
+}
+
 function getProductPriceText(product) {
-    return `${product.price} грн / ${getUnitLabel(product.unit)}`;
+    const price = product.priceLabel || product.price;
+    return `${price} грн / ${getUnitLabel(product.unit)}`;
 }
 
 function getProductDepartment(product) {
