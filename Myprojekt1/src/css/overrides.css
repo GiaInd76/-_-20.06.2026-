@@ -1079,3 +1079,158 @@ button:hover,
         color: #aebdca;
     }
 }
+
+/* Телефонная адаптация: шире контент, читаемее текст, без Safari zoom */
+@media (max-width: 719px) {
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    body,
+    .home-page,
+    .glass-page {
+        padding-right: 6px;
+        padding-left: 6px;
+        font-size: 16px;
+    }
+
+    .container,
+    .home-page .container,
+    .glass-page .container,
+    .auth-container {
+        width: 100%;
+        max-width: none;
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .home-page .home-header,
+    .home-page .home-search,
+    .home-page .home-category-section,
+    .home-page .home-benefits,
+    .home-page .home-all-categories,
+    .home-page .home-all-categories.is-open,
+    .glass-page .header,
+    .glass-page #sellerPage,
+    .glass-page .seller-menu,
+    .glass-page .seller-create-block,
+    .glass-page .panel-section,
+    .glass-page .categories-grid,
+    .category-page .seller-card,
+    .auth-card {
+        width: 100%;
+        max-width: none;
+    }
+
+    .home-page .home-header,
+    .home-page .home-category-section,
+    .home-page .home-all-categories.is-open,
+    .glass-page .header,
+    .glass-page #sellerPage,
+    .glass-page .seller-menu,
+    .glass-page .seller-create-block,
+    .glass-page .panel-section,
+    .auth-card {
+        border-radius: 24px;
+    }
+
+    .home-page .home-search {
+        border-radius: 22px;
+    }
+
+    .home-page .home-section-row h2,
+    .panel-section h2,
+    .seller-create-block h2,
+    .auth-card h1 {
+        font-size: 22px;
+    }
+
+    .home-page .subtitle,
+    .glass-page .subtitle,
+    .home-section-note,
+    .field-note,
+    .form-message,
+    .session-empty,
+    .modal-content p {
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .home-offer-card strong,
+    .product-card h3,
+    .glass-page .product-card h3,
+    .seller-card h3,
+    .seller-featured-product strong {
+        font-size: 15px;
+    }
+
+    .home-offer-card small,
+    .home-offer-badge,
+    .home-offer-shop,
+    .product-card p,
+    .product-description,
+    .product-info span,
+    .product-department-label,
+    .photo-chip,
+    .seller-featured-product small,
+    .session-product-card span,
+    .session-product-card small {
+        font-size: 12px;
+    }
+
+    .home-offer-card {
+        padding: 8px;
+    }
+
+    .home-offer-shop {
+        min-height: 36px;
+    }
+
+    input,
+    select,
+    textarea,
+    button,
+    .home-page .search-section input,
+    .glass-page .input,
+    .glass-page .textarea,
+    .glass-page .form-block input,
+    .glass-page .form-block select,
+    .glass-page .form-block textarea,
+    .glass-page .profile-block input,
+    .glass-page .profile-block select,
+    .glass-page .profile-block textarea,
+    .owner-product-editor input,
+    .owner-product-editor select,
+    .owner-product-editor textarea,
+    .auth-card input,
+    .seller-panel-page select {
+        font-size: 16px;
+    }
+
+    .home-page .search-section input,
+    .glass-page .input,
+    .glass-page .form-block input,
+    .glass-page .form-block select,
+    .glass-page .profile-block input,
+    .glass-page .profile-block select,
+    .auth-card input,
+    .seller-panel-page select {
+        min-height: 48px;
+    }
+
+    .glass-page .form-block textarea,
+    .glass-page .profile-block textarea,
+    .owner-product-editor textarea {
+        min-height: 82px;
+    }
+
+    .page-navigation .back-home-btn,
+    .page-navigation .site-brand,
+    .page-navigation .favorites-nav-btn,
+    .home-offer-favorite {
+        font-size: inherit;
+    }
+}
