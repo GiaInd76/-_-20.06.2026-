@@ -835,8 +835,12 @@ button:hover,
     .page-navigation .site-brand,
     .home-page .home-benefits button,
     .home-page .home-benefits p,
+    .home-offer-card,
+    .home-offer-card strong,
     .home-all-category-card,
     .home-all-category-card strong,
+    .glass-page .product-card h3,
+    .product-card h3,
     .seller-featured-product strong,
     .owner-product-editor input,
     .owner-product-editor select,
@@ -848,6 +852,8 @@ button:hover,
     .home-page .subtitle,
     .glass-page .subtitle,
     .product-card p,
+    .product-description,
+    .home-offer-card small,
     .live-product-preview p,
     .session-empty,
     .home-offers-placeholder p,
@@ -932,13 +938,40 @@ button:hover,
         color: var(--theme-ink);
     }
 
+    .home-offer-card:hover,
+    .home-page .home-category-card:hover,
+    .home-page .home-all-category-card:hover {
+        background: rgba(31, 40, 52, 0.78);
+    }
+
     .product-department-label,
     .category-badge,
     .photo-chip,
     .home-offer-badge,
-    .home-offer-price {
+    .home-offer-price,
+    .product-info span {
         background: rgba(143, 199, 242, 0.16);
         color: #c3d9eb;
+    }
+
+    .home-offer-shop,
+    .owner-edit-product-btn {
+        background: rgba(238, 246, 255, 0.12);
+        color: var(--theme-ink);
+    }
+
+    .home-offer-shop:hover,
+    .owner-edit-product-btn:hover {
+        background: rgba(238, 246, 255, 0.18);
+    }
+
+    .home-offer-favorite {
+        background: rgba(18, 24, 32, 0.70);
+        color: #e7f1fa;
+    }
+
+    .home-offer-favorite.is-active {
+        color: #ffd46a;
     }
 
     .product-modal-content,
