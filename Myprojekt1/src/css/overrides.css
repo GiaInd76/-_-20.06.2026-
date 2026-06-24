@@ -810,6 +810,7 @@ button:hover,
     .glass-page .product-card,
     .glass-page .empty-card,
     .glass-page .modal-content,
+    .glass-page .contact-menu,
     .live-product-preview,
     .session-product-card,
     .seller-choice-content,
@@ -839,8 +840,17 @@ button:hover,
     .home-offer-card strong,
     .home-all-category-card,
     .home-all-category-card strong,
+    .glass-page .category-card,
+    .glass-page .seller-card h3,
     .glass-page .product-card h3,
     .product-card h3,
+    .product-modal-content h3,
+    .glass-page .product-modal-content h3,
+    .info-modal-content h2,
+    .info-modal-content h3,
+    .contact-modal-content h2,
+    .contact-modal-label,
+    .seller-phone-link,
     .seller-featured-product strong,
     .owner-product-editor input,
     .owner-product-editor select,
@@ -857,6 +867,11 @@ button:hover,
     .live-product-preview p,
     .session-empty,
     .home-offers-placeholder p,
+    .glass-page .seller-card p,
+    .glass-page .product-card p,
+    .modal-content p,
+    .info-modal-content p,
+    .contact-modal-content p,
     .home-page .home-benefits button small,
     .seller-featured-product small,
     .product-modal-price,
@@ -933,6 +948,7 @@ button:hover,
     .home-page .home-benefits button,
     .home-page .home-category-card,
     .home-page .home-all-category-card,
+    .glass-page .category-card,
     .page-navigation .favorites-nav-btn {
         background: rgba(24, 31, 40, 0.64);
         color: var(--theme-ink);
@@ -940,7 +956,10 @@ button:hover,
 
     .home-offer-card:hover,
     .home-page .home-category-card:hover,
-    .home-page .home-all-category-card:hover {
+    .home-page .home-all-category-card:hover,
+    .glass-page .seller-card:hover,
+    .glass-page .product-card:hover,
+    .glass-page .category-card:hover {
         background: rgba(31, 40, 52, 0.78);
     }
 
@@ -949,9 +968,42 @@ button:hover,
     .photo-chip,
     .home-offer-badge,
     .home-offer-price,
+    .product-modal-price,
     .product-info span {
         background: rgba(143, 199, 242, 0.16);
         color: #c3d9eb;
+    }
+
+    .product-modal-price {
+        color: #d4ecff !important;
+    }
+
+    .seller-phone-link {
+        display: inline-flex;
+        max-width: 100%;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(143, 199, 242, 0.14);
+        text-decoration: none;
+    }
+
+    .seller-phone-link.is-empty {
+        color: rgba(195, 217, 235, 0.64);
+    }
+
+    .contact-call-item {
+        border-bottom-color: rgba(145, 202, 245, 0.16);
+        background: rgba(18, 24, 32, 0.70);
+        color: #d4ecff;
+    }
+
+    .contact-call-item:hover {
+        background: rgba(35, 49, 64, 0.86);
+    }
+
+    .contact-socials,
+    .contact-modal-content .contact-socials {
+        background: rgba(13, 19, 26, 0.28);
     }
 
     .home-offer-shop,
@@ -977,6 +1029,7 @@ button:hover,
     .product-modal-content,
     .glass-page .product-modal-content {
         background: #111821;
+        color: var(--theme-ink);
         box-shadow:
             0 0 0 1px rgba(122, 191, 245, 0.26),
             0 0 16px rgba(74, 166, 255, 0.16),
@@ -995,6 +1048,15 @@ button:hover,
     .seller-choice-modal,
     .glass-page .modal.info-modal {
         background: rgba(6, 9, 13, 0.56);
+    }
+
+    .glass-page .modal-content.info-modal-content,
+    .glass-page .contact-modal-content,
+    .glass-page .modal-content,
+    .seller-choice-content,
+    .delete-shop-content {
+        background: rgba(17, 24, 32, 0.92);
+        color: var(--theme-ink);
     }
 
     .delete-shop-btn {
