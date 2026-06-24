@@ -11,6 +11,7 @@
     --theme-glass-strong: rgba(244, 250, 255, 0.78);
     --theme-line: rgba(113, 202, 255, 0.72);
     --theme-glow: rgba(45, 176, 255, 0.24);
+    color-scheme: light dark;
 }
 
 body,
@@ -758,5 +759,228 @@ button:hover,
     .language-switcher {
         right: 10px;
         bottom: 10px;
+    }
+}
+
+/* Автоматическая темная тема устройства */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --theme-ink: #edf4fb;
+        --theme-muted: #a8b5c2;
+        --theme-glass: rgba(22, 28, 36, 0.62);
+        --theme-glass-strong: rgba(31, 38, 48, 0.82);
+        --theme-line: rgba(120, 190, 245, 0.30);
+        --theme-glow: rgba(72, 170, 255, 0.20);
+    }
+
+    body,
+    .home-page,
+    .glass-page {
+        background: #10151c;
+        color: var(--theme-ink);
+    }
+
+    .home-page::before,
+    .glass-page::before {
+        background: radial-gradient(circle at 50% 0%, #25364a 0%, #111720 42%, #0b0f14 100%);
+    }
+
+    .home-page::after,
+    .glass-page::after {
+        background:
+            linear-gradient(180deg, rgba(12, 17, 23, 0.28), rgba(12, 17, 23, 0.72)),
+            radial-gradient(circle at 50% 18%, rgba(83, 150, 210, 0.16), transparent 38%);
+    }
+
+    .home-page .home-header,
+    .home-page .home-search,
+    .home-page .home-category-section,
+    .home-page .home-benefits button,
+    .home-page .home-all-categories.is-open,
+    .home-page .home-category-card,
+    .home-page .home-all-category-card,
+    .home-offers-placeholder,
+    .home-offer-card,
+    .glass-page .header,
+    .glass-page .seller-create-block,
+    .glass-page .panel-section,
+    .glass-page #sellerPage,
+    .glass-page .seller-menu,
+    .glass-page .seller-card,
+    .glass-page .product-card,
+    .glass-page .empty-card,
+    .glass-page .modal-content,
+    .live-product-preview,
+    .session-product-card,
+    .seller-choice-content,
+    .owner-product-editor,
+    .auth-card {
+        border-color: rgba(150, 210, 255, 0.22);
+        background: var(--theme-glass);
+        box-shadow:
+            0 16px 44px rgba(0, 0, 0, 0.34),
+            inset 0 1px 0 rgba(255, 255, 255, 0.10),
+            inset 0 -1px 0 rgba(129, 197, 255, 0.08);
+    }
+
+    h1,
+    h2,
+    h3,
+    .home-page .home-section-row h2,
+    .glass-page .logo,
+    .glass-page .page-title,
+    .glass-page .shop-title,
+    .brand-title,
+    .home-page .hero-brand,
+    .page-navigation .site-brand,
+    .home-page .home-benefits button,
+    .home-page .home-benefits p,
+    .home-all-category-card,
+    .home-all-category-card strong,
+    .seller-featured-product strong,
+    .owner-product-editor input,
+    .owner-product-editor select,
+    .owner-product-editor textarea {
+        color: var(--theme-ink);
+    }
+
+    .subtitle,
+    .home-page .subtitle,
+    .glass-page .subtitle,
+    .product-card p,
+    .live-product-preview p,
+    .session-empty,
+    .home-offers-placeholder p,
+    .home-page .home-benefits button small,
+    .seller-featured-product small,
+    .product-modal-price,
+    .home-section-note,
+    .home-kicker {
+        color: var(--theme-muted);
+    }
+
+    .home-page .search-section input,
+    .glass-page .input,
+    .glass-page .textarea,
+    .glass-page .form-block input,
+    .glass-page .form-block select,
+    .glass-page .form-block textarea,
+    .glass-page .profile-block input,
+    .glass-page .profile-block select,
+    .glass-page .profile-block textarea,
+    .owner-product-editor input,
+    .owner-product-editor select,
+    .owner-product-editor textarea,
+    .auth-card input,
+    .seller-panel-page select {
+        border-color: rgba(145, 202, 245, 0.24);
+        background-color: rgba(16, 22, 29, 0.70);
+        color: var(--theme-ink);
+    }
+
+    .home-page .search-section input::placeholder,
+    .glass-page input::placeholder,
+    .glass-page textarea::placeholder,
+    .auth-card input::placeholder {
+        color: rgba(188, 201, 213, 0.62);
+    }
+
+    button,
+    .photo-upload-btn,
+    .site-brand,
+    .contact-icon,
+    .page-navigation .favorites-nav-btn {
+        border-color: rgba(145, 202, 245, 0.28) !important;
+        background-color: rgba(24, 31, 40, 0.68);
+        color: var(--theme-ink);
+        box-shadow:
+            0 0 0 0.5px rgba(122, 191, 245, 0.16),
+            0 0 12px rgba(74, 166, 255, 0.14),
+            0 8px 22px rgba(0, 0, 0, 0.28) !important;
+    }
+
+    button:hover,
+    .photo-upload-btn:hover,
+    .site-brand:hover,
+    .contact-icon:hover {
+        border-color: rgba(160, 220, 255, 0.46) !important;
+        box-shadow:
+            0 0 0 0.5px rgba(160, 220, 255, 0.22),
+            0 0 16px rgba(74, 166, 255, 0.22),
+            0 10px 24px rgba(0, 0, 0, 0.34) !important;
+    }
+
+    .glass-page .btn-primary,
+    .glass-page .add-btn,
+    .home-page .home-search-btn,
+    .department-filter-btn.is-active,
+    .product-seller-link,
+    .language-option.is-active {
+        background: linear-gradient(145deg, #eef6ff, #a8c9e8);
+        color: #111923;
+    }
+
+    .glass-page .btn-outline,
+    .glass-page .back-home-btn,
+    .glass-page .photo-upload-btn,
+    .department-filter-btn,
+    .home-page .home-benefits button,
+    .home-page .home-category-card,
+    .home-page .home-all-category-card,
+    .page-navigation .favorites-nav-btn {
+        background: rgba(24, 31, 40, 0.64);
+        color: var(--theme-ink);
+    }
+
+    .product-department-label,
+    .category-badge,
+    .photo-chip,
+    .home-offer-badge,
+    .home-offer-price {
+        background: rgba(143, 199, 242, 0.16);
+        color: #c3d9eb;
+    }
+
+    .product-modal-content,
+    .glass-page .product-modal-content {
+        background: #111821;
+        box-shadow:
+            0 0 0 1px rgba(122, 191, 245, 0.26),
+            0 0 16px rgba(74, 166, 255, 0.16),
+            0 18px 48px rgba(0, 0, 0, 0.44);
+    }
+
+    .product-modal-image,
+    .photo-preview-item,
+    .seller-featured-image,
+    .live-preview-image {
+        background-color: #171f29;
+        background-image: linear-gradient(135deg, rgba(36, 47, 60, 0.88), rgba(17, 24, 32, 0.90));
+    }
+
+    .modal,
+    .seller-choice-modal,
+    .glass-page .modal.info-modal {
+        background: rgba(6, 9, 13, 0.56);
+    }
+
+    .delete-shop-btn {
+        color: #f1a8a8;
+    }
+
+    .delete-shop-confirm {
+        border-color: #c86565;
+        background: #c86565;
+        color: #fff;
+    }
+
+    .language-switcher {
+        border-color: rgba(145, 202, 245, 0.22);
+        background: rgba(20, 27, 36, 0.78);
+        box-shadow: 0 9px 24px rgba(0, 0, 0, 0.28);
+    }
+
+    .language-option {
+        color: #aebdca;
     }
 }
