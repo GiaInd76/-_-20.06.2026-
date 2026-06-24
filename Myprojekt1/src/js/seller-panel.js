@@ -295,17 +295,26 @@ function initSellerPanel() {
             return;
         }
 
-        resizeImageFile(file)
-            .then(imageData => {
-                selectedSellerCover = imageData;
+        resizeImageFile(file, imageLimits.cover)
+            .then(result => {
+                selectedSellerCover = result.dataUrl;
                 updateSellerCoverPreview();
-                showMessage(profileMessage, "Фон лавки выбран. Сохраните профиль.");
+                showMessage(
+                    profileMessage,
+                    `Фон сжат: ${getReadableFileSize(result.originalBytes)} → ${getReadableFileSize(result.compressedBytes)}. Сохраните профиль.`
+                );
             })
-            .catch(() => {
+            .catch(error => {
                 selectedSellerCover = "";
                 sellerCoverInput.value = "";
                 updateSellerCoverPreview();
-                showMessage(profileMessage, "Не удалось загрузить фон лавки.");
+
+                showMessage(
+                    profileMessage,
+                    error.message === "too-large"
+                        ? `Фон слишком тяжёлый. Максимум: ${getReadableFileSize(imageLimits.cover.maxOriginalBytes)}.`
+                        : "Не удалось загрузить фон лавки. Попробуйте JPG или PNG."
+                );
             });
     });
 
@@ -350,14 +359,33 @@ function initSellerPanel() {
             return;
         }
 
-        Promise.all(files.map(file => resizeImageFile(file)))
-            .then(images => {
-                selectedProductImages = [...selectedProductImages, ...images].slice(0, 2);
+        if (files.some(file => file.size > imageLimits.product.maxOriginalBytes)) {
+            showMessage(
+                productMessage,
+                `Фото слишком тяжёлое. Максимум: ${getReadableFileSize(imageLimits.product.maxOriginalBytes)}.`
+            );
+            productImageInput.value = "";
+            return;
+        }
+
+        Promise.all(files.map(file => resizeImageFile(file, imageLimits.product)))
+            .then(results => {
+                selectedProductImages = [
+                    ...selectedProductImages,
+                    ...results.map(result => result.dataUrl)
+                ].slice(0, 2);
                 updateProductImagePreview();
-                showMessage(productMessage, `Выбрано фото: ${selectedProductImages.length} из 2.`);
+
+                const originalBytes = results.reduce((sum, result) => sum + result.originalBytes, 0);
+                const compressedBytes = results.reduce((sum, result) => sum + result.compressedBytes, 0);
+
+                showMessage(
+                    productMessage,
+                    `Фото сжато: ${getReadableFileSize(originalBytes)} → ${getReadableFileSize(compressedBytes)}. Выбрано: ${selectedProductImages.length} из 2.`
+                );
             })
             .catch(() => {
-                showMessage(productMessage, "Не удалось загрузить фотографии.");
+                showMessage(productMessage, "Не удалось загрузить фотографии. Попробуйте JPG или PNG.");
                 productImageInput.value = "";
                 updateProductImagePreview();
             });

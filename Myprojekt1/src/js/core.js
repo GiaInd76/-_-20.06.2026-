@@ -11,6 +11,23 @@ const sessionProductIds = new Set();
 let modalProductImages = [];
 let modalProductImageIndex = 0;
 
+const imageLimits = {
+    product: {
+        maxOriginalBytes: 12 * 1024 * 1024,
+        maxSize: 1200,
+        maxOutputBytes: 420 * 1024,
+        startQuality: 0.82,
+        minQuality: 0.58
+    },
+    cover: {
+        maxOriginalBytes: 16 * 1024 * 1024,
+        maxSize: 1600,
+        maxOutputBytes: 620 * 1024,
+        startQuality: 0.82,
+        minQuality: 0.56
+    }
+};
+
 const categories = [
     { id: "meat", label: "Мясо" },
     { id: "fish", label: "Рыба и морепродукты" },
@@ -227,8 +244,53 @@ function toggleFavoriteProduct(productId) {
     writeStorage("favoriteProducts", favorites);
 }
 
-function resizeImageFile(file, maxSize = 900, quality = 0.78) {
+function getReadableFileSize(bytes) {
+    if (!Number.isFinite(bytes)) return "0 МБ";
+
+    if (bytes < 1024 * 1024) {
+        return `${Math.max(1, Math.round(bytes / 1024))} КБ`;
+    }
+
+    return `${(bytes / 1024 / 1024).toFixed(1)} МБ`;
+}
+
+function getDataUrlBytes(dataUrl) {
+    const base64 = String(dataUrl || "").split(",")[1] || "";
+    return Math.ceil((base64.length * 3) / 4);
+}
+
+function drawImageToDataUrl(image, maxSize, quality) {
+    const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+    const canvas = document.createElement("canvas");
+
+    canvas.width = Math.max(1, Math.round(image.width * scale));
+    canvas.height = Math.max(1, Math.round(image.height * scale));
+
+    const context = canvas.getContext("2d", { alpha: false });
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    return canvas.toDataURL("image/jpeg", quality);
+}
+
+function resizeImageFile(file, options = {}) {
+    const limits = {
+        ...imageLimits.product,
+        ...options
+    };
+
     return new Promise((resolve, reject) => {
+        if (!file || !file.type.startsWith("image/")) {
+            reject(new Error("not-image"));
+            return;
+        }
+
+        if (file.size > limits.maxOriginalBytes) {
+            reject(new Error("too-large"));
+            return;
+        }
+
         const reader = new FileReader();
 
         reader.addEventListener("error", reject);
@@ -239,16 +301,28 @@ function resizeImageFile(file, maxSize = 900, quality = 0.78) {
             image.addEventListener("error", reject);
 
             image.addEventListener("load", () => {
-                const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
-                const canvas = document.createElement("canvas");
+                let quality = limits.startQuality;
+                let maxSize = limits.maxSize;
+                let result = drawImageToDataUrl(image, maxSize, quality);
 
-                canvas.width = Math.round(image.width * scale);
-                canvas.height = Math.round(image.height * scale);
+                while (
+                    getDataUrlBytes(result) > limits.maxOutputBytes &&
+                    quality > limits.minQuality
+                ) {
+                    quality = Math.max(limits.minQuality, quality - 0.08);
+                    result = drawImageToDataUrl(image, maxSize, quality);
+                }
 
-                const context = canvas.getContext("2d");
-                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                while (getDataUrlBytes(result) > limits.maxOutputBytes && maxSize > 760) {
+                    maxSize = Math.round(maxSize * 0.86);
+                    result = drawImageToDataUrl(image, maxSize, limits.minQuality);
+                }
 
-                resolve(canvas.toDataURL("image/jpeg", quality));
+                resolve({
+                    dataUrl: result,
+                    originalBytes: file.size,
+                    compressedBytes: getDataUrlBytes(result)
+                });
             });
 
             image.src = reader.result;
