@@ -1,7 +1,10 @@
 /* Запуск функций после загрузки всех частей сайта. */
 
 async function initApp() {
-    await initProtectedSellerPage();
+    const canContinue = await initProtectedSellerPage();
+
+    if (!canContinue) return;
+
     await hydrateMarketplaceFromSupabase();
 
     initBrandHeader();

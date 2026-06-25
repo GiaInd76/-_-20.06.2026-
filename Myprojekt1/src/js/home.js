@@ -312,6 +312,15 @@ function initSellerCreation() {
         createSellerBtn.textContent = "Сохраняем...";
 
         try {
+            if (isSupabaseReady()) {
+                const user = await getCurrentSupabaseUser();
+
+                if (!user) {
+                    await requireSellerSession("create_seller.html");
+                    return;
+                }
+            }
+
             const savedSeller = isSupabaseReady()
                 ? await saveSellerToSupabase(draftSeller)
                 : draftSeller;
@@ -323,7 +332,7 @@ function initSellerCreation() {
             console.warn("Seller creation failed", error);
             createSellerBtn.disabled = false;
             createSellerBtn.textContent = originalText;
-            alert("Не удалось создать лавку в базе. Проверьте вход и настройки Supabase.");
+            alert(`Не удалось создать лавку: ${getSupabaseErrorMessage(error)}`);
         }
     });
 }

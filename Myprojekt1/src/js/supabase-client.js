@@ -46,6 +46,20 @@ async function requireSellerSession(returnUrl = window.location.href) {
     return null;
 }
 
+function getSupabaseErrorMessage(error) {
+    if (!error) return "Неизвестная ошибка.";
+
+    if (error.message === "auth-required") {
+        return "Сначала войдите в аккаунт продавца.";
+    }
+
+    if (error.message === "shop-not-synced") {
+        return "Сначала сохраните профиль лавки в базе.";
+    }
+
+    return error.message || "Неизвестная ошибка Supabase.";
+}
+
 function isSupabaseReady() {
     return Boolean(supabaseClient);
 }
@@ -306,9 +320,11 @@ async function initProtectedSellerPage() {
     const requiresAuth = document.body.dataset.sellerAuth === "required";
     const ownerView = new URLSearchParams(window.location.search).get("owner") === "1";
 
-    if (!requiresAuth && !ownerView) return;
+    if (!requiresAuth && !ownerView) return true;
 
-    await requireSellerSession(window.location.href);
+    const user = await requireSellerSession(window.location.href);
+
+    return Boolean(user);
 }
 
 function initAuthPage() {
