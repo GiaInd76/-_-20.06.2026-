@@ -281,7 +281,7 @@ function initSellerCreation() {
     fillCategorySelect(sellerCategorySelect);
     renderSellerCabinets();
 
-    createSellerBtn?.addEventListener("click", () => {
+    createSellerBtn?.addEventListener("click", async () => {
         const name = document.getElementById("sellerName").value.trim();
         const description = document.getElementById("sellerDescription").value.trim();
         const category = document.getElementById("sellerCategory").value;
@@ -291,17 +291,8 @@ function initSellerCreation() {
         if (!name) return;
 
         const sellers = readStorage("sellers");
-        const baseId = makeId(name) || `seller_${Date.now()}`;
-        let id = baseId;
-        let counter = 2;
-
-        while (sellers.some(seller => seller.id === id)) {
-            id = `${baseId}_${counter}`;
-            counter += 1;
-        }
-
-        sellers.push({
-            id,
+        const draftSeller = {
+            id: makeId(name) || `seller_${Date.now()}`,
             name,
             description,
             category,
@@ -311,11 +302,29 @@ function initSellerCreation() {
             phone: "",
             telegram: "",
             instagram: "",
-            viber: ""
-        });
+            viber: "",
+            coverImage: "",
+            featuredProductIds: []
+        };
+        const originalText = createSellerBtn.textContent;
 
-        writeStorage("sellers", sellers);
-        openPage(`seller_panel.html?seller=${encodeURIComponent(id)}`);
+        createSellerBtn.disabled = true;
+        createSellerBtn.textContent = "Сохраняем...";
+
+        try {
+            const savedSeller = isSupabaseReady()
+                ? await saveSellerToSupabase(draftSeller)
+                : draftSeller;
+
+            sellers.push(savedSeller);
+            writeStorage("sellers", sellers);
+            openPage(`seller_panel.html?seller=${encodeURIComponent(savedSeller.id)}`);
+        } catch (error) {
+            console.warn("Seller creation failed", error);
+            createSellerBtn.disabled = false;
+            createSellerBtn.textContent = originalText;
+            alert("Не удалось создать лавку в базе. Проверьте вход и настройки Supabase.");
+        }
     });
 }
 
@@ -324,7 +333,9 @@ function renderSellerCabinets() {
 
     if (!cabinetList) return;
 
-    const sellers = readStorage("sellers");
+    const user = getCachedSupabaseUser();
+    const sellers = readStorage("sellers")
+        .filter(seller => !user || !seller.ownerId || seller.ownerId === user.id);
 
     cabinetList.innerHTML = "";
 

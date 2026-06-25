@@ -83,8 +83,20 @@ function initSellerPanel() {
         if (event.target === deleteSellerModal) closeDeleteSellerModal();
     });
 
-    confirmDeleteSellerBtn?.addEventListener("click", () => {
+    confirmDeleteSellerBtn?.addEventListener("click", async () => {
         if (!seller || seller.id !== currentSeller) return;
+
+        confirmDeleteSellerBtn.disabled = true;
+
+        try {
+            await deleteSellerFromSupabase(seller.id);
+        } catch (error) {
+            console.warn("Seller deletion failed", error);
+            confirmDeleteSellerBtn.disabled = false;
+            showMessage(profileMessage, "Не удалось удалить лавку из базы.");
+            closeDeleteSellerModal();
+            return;
+        }
 
         const products = readStorage("products");
         const deletedProductIds = new Set(
@@ -396,7 +408,7 @@ function initSellerPanel() {
         showMessage(productMessage, "Редактирование отменено.");
     });
 
-    saveProfileBtn?.addEventListener("click", () => {
+    saveProfileBtn?.addEventListener("click", async () => {
         const name = nameInput.value.trim();
         const description = descriptionInput.value.trim();
         const findInfo = findInfoInput.value.trim();
@@ -427,8 +439,7 @@ function initSellerPanel() {
         }
 
         const existingSeller = sellers[sellerIndex] || {};
-
-        sellers[sellerIndex] = {
+        const draftSeller = {
             ...existingSeller,
             id: currentSeller,
             name,
@@ -445,14 +456,35 @@ function initSellerPanel() {
             featuredProductIds
         };
 
-        writeStorage("sellers", sellers);
-        window.history.replaceState(null, "", `seller_panel.html?seller=${encodeURIComponent(currentSeller)}`);
-        showMessage(profileMessage, "Профиль лавки сохранён.");
-        renderPanelProducts();
-        setProfilePanelOpen(false);
+        saveProfileBtn.disabled = true;
+        showMessage(profileMessage, "Сохраняем профиль...");
+
+        try {
+            const savedSeller = isSupabaseReady()
+                ? await saveSellerToSupabase(draftSeller)
+                : draftSeller;
+
+            if (savedSeller.id !== currentSeller) {
+                currentSeller = savedSeller.id;
+                sellerIndex = sellers.findIndex(item => item.id === existingSeller.id);
+            }
+
+            sellers[sellerIndex === -1 ? sellers.length : sellerIndex] = savedSeller;
+            selectedSellerCover = savedSeller.coverImage || "";
+            writeStorage("sellers", sellers);
+            window.history.replaceState(null, "", `seller_panel.html?seller=${encodeURIComponent(currentSeller)}`);
+            showMessage(profileMessage, "Профиль лавки сохранён.");
+            renderPanelProducts();
+            setProfilePanelOpen(false);
+        } catch (error) {
+            console.warn("Seller save failed", error);
+            showMessage(profileMessage, "Не удалось сохранить профиль в базе.");
+        } finally {
+            saveProfileBtn.disabled = false;
+        }
     });
 
-    addProductBtn?.addEventListener("click", () => {
+    addProductBtn?.addEventListener("click", async () => {
         if (!currentSeller) {
             showMessage(productMessage, "Сначала сохраните профиль лавки.");
             return;
@@ -477,6 +509,7 @@ function initSellerPanel() {
 
         const products = readStorage("products");
         let savedProductId = "";
+        let nextProduct = null;
 
         if (editingProductIndex !== null) {
             const oldProduct = products[editingProductIndex];
@@ -490,7 +523,7 @@ function initSellerPanel() {
             const now = new Date().toISOString();
             const oldPrice = oldProduct.priceLabel || oldProduct.price;
 
-            products[editingProductIndex] = {
+            nextProduct = {
                 ...oldProduct,
                 name,
                 department,
@@ -511,7 +544,7 @@ function initSellerPanel() {
             savedProductId = `product_${Date.now()}`;
             const now = new Date().toISOString();
 
-            products.push({
+            nextProduct = {
                 id: savedProductId,
                 seller: currentSeller,
                 name,
@@ -526,7 +559,29 @@ function initSellerPanel() {
                 createdAt: now,
                 updatedAt: now,
                 priceChangedAt: null
-            });
+            };
+        }
+
+        addProductBtn.disabled = true;
+        showMessage(productMessage, editingProductIndex !== null ? "Сохраняем товар..." : "Добавляем товар...");
+
+        try {
+            const savedProduct = isSupabaseReady()
+                ? await saveProductToSupabase(nextProduct)
+                : nextProduct;
+
+            if (editingProductIndex !== null) {
+                products[editingProductIndex] = savedProduct;
+            } else {
+                products.push(savedProduct);
+            }
+
+            savedProductId = savedProduct.id;
+        } catch (error) {
+            console.warn("Product save failed", error);
+            showMessage(productMessage, "Не удалось сохранить товар в базе.");
+            addProductBtn.disabled = false;
+            return;
         }
 
         writeStorage("products", products);
@@ -540,6 +595,7 @@ function initSellerPanel() {
         renderLiveSessionProducts();
         renderDepartmentSuggestions();
         renderFeaturedProductsPicker();
+        addProductBtn.disabled = false;
     });
 
     renderLiveProductPreview();
@@ -683,9 +739,19 @@ function renderPanelProducts() {
     productList
         .querySelectorAll(".delete-btn")
         .forEach(button => {
-            button.addEventListener("click", () => {
+            button.addEventListener("click", async () => {
                 const index = Number(button.dataset.index);
                 const products = readStorage("products");
+
+                button.disabled = true;
+
+                try {
+                    await deleteProductFromSupabase(products[index]?.id);
+                } catch (error) {
+                    console.warn("Product deletion failed", error);
+                    button.disabled = false;
+                    return;
+                }
 
                 sessionProductIds.delete(products[index]?.id);
 

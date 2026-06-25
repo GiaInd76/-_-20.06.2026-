@@ -331,7 +331,7 @@ function initOwnerProductEditor() {
 
     if (!modal || params.get("owner") !== "1") return;
 
-    saveButton?.addEventListener("click", () => {
+    saveButton?.addEventListener("click", async () => {
         const products = readStorage("products");
         const productIndex = products.findIndex(product => {
             return product.id === modal.dataset.product && product.seller === currentSeller;
@@ -362,7 +362,7 @@ function initOwnerProductEditor() {
         const oldPrice = oldProduct.priceLabel || oldProduct.price;
         const now = new Date().toISOString();
 
-        products[productIndex] = {
+        const updatedProduct = {
             ...oldProduct,
             name,
             department: document.getElementById("ownerProductDepartment").value.trim(),
@@ -376,8 +376,23 @@ function initOwnerProductEditor() {
                 : (oldProduct.priceChangedAt || null)
         };
 
-        writeStorage("products", products);
-        window.location.reload();
+        saveButton.disabled = true;
+
+        try {
+            products[productIndex] = isSupabaseReady()
+                ? await saveProductToSupabase(updatedProduct)
+                : updatedProduct;
+
+            writeStorage("products", products);
+            window.location.reload();
+        } catch (error) {
+            console.warn("Owner product save failed", error);
+            saveButton.disabled = false;
+            showMessage(
+                document.getElementById("ownerProductMessage"),
+                "Не удалось сохранить товар в базе."
+            );
+        }
     });
 
     cancelButton?.addEventListener("click", () => {
