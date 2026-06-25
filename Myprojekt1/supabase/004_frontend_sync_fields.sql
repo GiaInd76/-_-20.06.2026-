@@ -5,6 +5,26 @@ alter table public.shops
     add column if not exists cover_url text,
     add column if not exists featured_product_ids text[];
 
+-- В первой версии цена была числом, и Supabase мог создать правило price >= 0.
+-- Теперь цена текстовая, чтобы продавец мог писать оптовый диапазон вроде 630/650.
+do $$
+declare
+    constraint_item record;
+begin
+    for constraint_item in
+        select conname
+        from pg_constraint
+        where conrelid = 'public.products'::regclass
+            and contype = 'c'
+            and pg_get_constraintdef(oid) ilike '%price%'
+    loop
+        execute format(
+            'alter table public.products drop constraint if exists %I',
+            constraint_item.conname
+        );
+    end loop;
+end $$;
+
 alter table public.products
     alter column price type text using price::text,
     add column if not exists department text,
