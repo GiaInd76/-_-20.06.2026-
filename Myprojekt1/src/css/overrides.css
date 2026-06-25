@@ -1233,4 +1233,67 @@ button:hover,
     .home-offer-favorite {
         font-size: inherit;
     }
+
+    .seller-panel-page .product-workbench,
+    .seller-panel-page .profile-block,
+    .seller-panel-page .form-block,
+    .seller-panel-page .product-editor,
+    .seller-panel-page .live-products-panel,
+    .seller-panel-page .featured-products-picker,
+    .seller-panel-page .photo-preview,
+    .seller-panel-page .seller-cover-preview,
+    .seller-panel-page .photo-upload-btn,
+    .seller-panel-page .btn-primary,
+    .seller-panel-page .btn-outline {
+        width: 100%;
+        max-width: none;
+    }
+
+    .seller-panel-page .product-workbench {
+        display: block;
+    }
+
+    .seller-panel-page .panel-section {
+        overflow: visible;
+    }
+
+    .seller-panel-page .seller-cover-preview {
+        min-height: 190px;
+        background-size: cover;
+    }
+
+    .seller-panel-page .photo-preview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .seller-panel-page .live-product-preview {
+        max-width: none;
+    }
+
+    .seller-page .product-list,
+    .seller-page .department-products-grid,
+    .glass-page.seller-page .product-list,
+    .glass-page.seller-page .department-products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .seller-page .product-card,
+    .glass-page.seller-page .product-card {
+        min-height: 0;
+        padding: 14px;
+    }
+
+    .seller-page .product-card h3,
+    .glass-page.seller-page .product-card h3 {
+        padding-right: 34px;
+        overflow-wrap: anywhere;
+        word-break: normal;
+        line-height: 1.28;
+    }
+
+    .seller-page .product-description,
+    .glass-page.seller-page .product-description {
+        -webkit-line-clamp: 3;
+        overflow-wrap: anywhere;
+    }
 }
