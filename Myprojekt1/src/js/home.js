@@ -277,6 +277,7 @@ function initCategoryCards() {
 function initSellerCreation() {
     const createSellerBtn = document.getElementById("createSellerBtn");
     const sellerCategorySelect = document.getElementById("sellerCategory");
+    const createSellerMessage = document.getElementById("createSellerMessage");
 
     fillCategorySelect(sellerCategorySelect);
     renderSellerCabinets();
@@ -288,7 +289,10 @@ function initSellerCreation() {
         const open = document.getElementById("openTime").value;
         const close = document.getElementById("closeTime").value;
 
-        if (!name) return;
+        if (!name) {
+            showMessage(createSellerMessage, "Введите название лавки.");
+            return;
+        }
 
         const sellers = readStorage("sellers");
         const draftSeller = {
@@ -310,12 +314,14 @@ function initSellerCreation() {
 
         createSellerBtn.disabled = true;
         createSellerBtn.textContent = "Сохраняем...";
+        showMessage(createSellerMessage, "Проверяем вход и сохраняем лавку...");
 
         try {
             if (isSupabaseReady()) {
                 const user = await getCurrentSupabaseUser();
 
                 if (!user) {
+                    showMessage(createSellerMessage, "Нужно войти в аккаунт продавца.");
                     await requireSellerSession("create_seller.html");
                     return;
                 }
@@ -327,11 +333,16 @@ function initSellerCreation() {
 
             sellers.push(savedSeller);
             writeStorage("sellers", sellers);
+            showMessage(createSellerMessage, "Лавка создана.");
             openPage(`seller_panel.html?seller=${encodeURIComponent(savedSeller.id)}`);
         } catch (error) {
             console.warn("Seller creation failed", error);
             createSellerBtn.disabled = false;
             createSellerBtn.textContent = originalText;
+            showMessage(
+                createSellerMessage,
+                `Не удалось создать лавку: ${getSupabaseErrorMessage(error)}`
+            );
             alert(`Не удалось создать лавку: ${getSupabaseErrorMessage(error)}`);
         }
     });

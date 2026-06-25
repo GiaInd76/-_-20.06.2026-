@@ -10,6 +10,19 @@ const supabaseClient = window.supabase?.createClient(
 
 let cachedSupabaseUser = null;
 
+function withTimeout(promise, ms, label = "operation") {
+    let timeoutId;
+
+    const timeout = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+            reject(new Error(`${label}-timeout`));
+        }, ms);
+    });
+
+    return Promise.race([promise, timeout])
+        .finally(() => clearTimeout(timeoutId));
+}
+
 function getSafeReturnUrl() {
     const requestedUrl = new URLSearchParams(window.location.search).get("return");
 
@@ -55,6 +68,10 @@ function getSupabaseErrorMessage(error) {
 
     if (error.message === "shop-not-synced") {
         return "Сначала сохраните профиль лавки в базе.";
+    }
+
+    if (error.message.endsWith("-timeout")) {
+        return "Supabase долго не отвечает. Проверьте интернет и попробуйте ещё раз.";
     }
 
     return error.message || "Неизвестная ошибка Supabase.";
@@ -172,16 +189,28 @@ function toLocalProduct(row) {
 async function hydrateMarketplaceFromSupabase() {
     if (!supabaseClient) return;
 
-    const [shopsResult, productsResult] = await Promise.all([
-        supabaseClient
-            .from("shops")
-            .select("*")
-            .order("created_at", { ascending: true }),
-        supabaseClient
-            .from("products")
-            .select("*")
-            .order("created_at", { ascending: true })
-    ]);
+    let shopsResult;
+    let productsResult;
+
+    try {
+        [shopsResult, productsResult] = await withTimeout(
+            Promise.all([
+                supabaseClient
+                    .from("shops")
+                    .select("*")
+                    .order("created_at", { ascending: true }),
+                supabaseClient
+                    .from("products")
+                    .select("*")
+                    .order("created_at", { ascending: true })
+            ]),
+            6000,
+            "hydrate-marketplace"
+        );
+    } catch (error) {
+        console.warn("Supabase sync timeout", error);
+        return;
+    }
 
     if (shopsResult.error || productsResult.error) {
         console.warn("Supabase sync skipped", shopsResult.error || productsResult.error);
@@ -230,7 +259,7 @@ async function saveSellerToSupabase(seller) {
             .insert(payload)
             .select()
             .single();
-    const { data, error } = await request;
+    const { data, error } = await withTimeout(request, 12000, "save-seller");
 
     if (error) throw error;
 
@@ -298,7 +327,7 @@ async function saveProductToSupabase(product) {
             .insert(payload)
             .select()
             .single();
-    const { data, error } = await request;
+    const { data, error } = await withTimeout(request, 12000, "save-product");
 
     if (error) throw error;
 
