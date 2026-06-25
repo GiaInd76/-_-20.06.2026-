@@ -315,6 +315,7 @@ function initAuthPage() {
     const form = document.getElementById("authForm");
     const emailInput = document.getElementById("authEmail");
     const passwordInput = document.getElementById("authPassword");
+    const passwordConfirmInput = document.getElementById("authPasswordConfirm");
     const loginButton = document.getElementById("loginBtn");
     const registerButton = document.getElementById("registerBtn");
     const message = document.getElementById("authMessage");
@@ -356,9 +357,16 @@ function initAuthPage() {
 
     registerButton.addEventListener("click", async () => {
         const credentials = getCredentials();
+        const repeatedPassword = passwordConfirmInput?.value || "";
 
         if (!credentials.email || credentials.password.length < 6) {
             message.textContent = "Введите почту и пароль не короче 6 символов.";
+            return;
+        }
+
+        if (credentials.password !== repeatedPassword) {
+            message.textContent = "Пароли не совпадают. Повторите пароль ещё раз.";
+            passwordConfirmInput?.focus();
             return;
         }
 
