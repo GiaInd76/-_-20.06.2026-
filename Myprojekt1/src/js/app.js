@@ -5,6 +5,7 @@ async function initApp() {
 
     if (!canContinue) return;
 
+    await getCurrentSupabaseUser();
     await hydrateMarketplaceFromSupabase();
 
     initBrandHeader();

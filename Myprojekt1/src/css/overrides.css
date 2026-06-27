@@ -356,6 +356,22 @@ button:hover,
     cursor: pointer;
 }
 
+/* Текст лавки на загруженной заставке должен читаться на любом фото */
+.glass-page #sellerPage.has-cover .shop-title {
+    color: #1c242d !important;
+    text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.80),
+        0 0 14px rgba(255, 255, 255, 0.72);
+}
+
+.glass-page #sellerPage.has-cover .subtitle,
+.glass-page #sellerPage.has-cover .work-time {
+    color: #2f3b47 !important;
+    text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.78),
+        0 0 12px rgba(255, 255, 255, 0.62);
+}
+
 /* Правая кнопка верхней навигации */
 
 .page-navigation .favorites-nav-btn,
@@ -912,7 +928,8 @@ button:hover,
     .photo-upload-btn,
     .site-brand,
     .contact-icon,
-    .page-navigation .favorites-nav-btn {
+    .page-navigation .favorites-nav-btn,
+    .page-navigation .seller-edit-nav-btn {
         border-color: rgba(145, 202, 245, 0.28) !important;
         background-color: rgba(24, 31, 40, 0.68);
         color: var(--theme-ink);
@@ -951,7 +968,8 @@ button:hover,
     .home-page .home-category-card,
     .home-page .home-all-category-card,
     .glass-page .category-card,
-    .page-navigation .favorites-nav-btn {
+    .page-navigation .favorites-nav-btn,
+    .page-navigation .seller-edit-nav-btn {
         background: rgba(24, 31, 40, 0.64);
         color: var(--theme-ink);
     }

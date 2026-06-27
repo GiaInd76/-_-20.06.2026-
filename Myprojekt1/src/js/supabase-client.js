@@ -427,10 +427,19 @@ function initAuthPage() {
 
     registerButton.addEventListener("click", async () => {
         const credentials = getCredentials();
+        const isConfirmVisible = !passwordConfirmInput?.classList.contains("hidden");
         const repeatedPassword = passwordConfirmInput?.value || "";
 
         if (!credentials.email || credentials.password.length < 6) {
             message.textContent = "Введите почту и пароль не короче 6 символов.";
+            return;
+        }
+
+        if (!isConfirmVisible) {
+            passwordConfirmInput?.classList.remove("hidden");
+            passwordInput.setAttribute("autocomplete", "new-password");
+            passwordConfirmInput?.focus();
+            message.textContent = "Повторите пароль и нажмите регистрацию ещё раз.";
             return;
         }
 
