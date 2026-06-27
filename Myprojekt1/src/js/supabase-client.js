@@ -47,6 +47,16 @@ function getCachedSupabaseUser() {
     return cachedSupabaseUser;
 }
 
+async function signOutSeller() {
+    cachedSupabaseUser = null;
+
+    if (!supabaseClient) return;
+
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) throw error;
+}
+
 async function requireSellerSession(returnUrl = window.location.href) {
     const user = await getCurrentSupabaseUser();
 

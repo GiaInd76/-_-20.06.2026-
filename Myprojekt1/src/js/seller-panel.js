@@ -37,6 +37,7 @@ function initSellerPanel() {
     const toggleProfileBtn = document.getElementById("toggleProfileBtn");
     const sellerProfilePanel = document.getElementById("sellerProfilePanel");
     const featuredProductsPicker = document.getElementById("featuredProductsPicker");
+    const sellerLogoutBtn = document.getElementById("sellerLogoutBtn");
     const deleteSellerBtn = document.getElementById("deleteSellerBtn");
     const deleteSellerModal = document.getElementById("deleteSellerModal");
     const deleteSellerText = document.getElementById("deleteSellerText");
@@ -74,6 +75,20 @@ function initSellerPanel() {
     }
 
     deleteSellerBtn?.classList.toggle("hidden", !seller);
+
+    sellerLogoutBtn?.addEventListener("click", async () => {
+        sellerLogoutBtn.disabled = true;
+        showMessage(profileMessage, "Выходим из аккаунта...");
+
+        try {
+            await signOutSeller();
+            openPage("index.html");
+        } catch (error) {
+            console.warn("Seller logout failed", error);
+            sellerLogoutBtn.disabled = false;
+            showMessage(profileMessage, `Не удалось выйти: ${getSupabaseErrorMessage(error)}`);
+        }
+    });
 
     const closeDeleteSellerModal = () => {
         if (deleteSellerModal) deleteSellerModal.style.display = "none";
@@ -622,17 +637,22 @@ function renderLiveSessionProducts() {
     if (!container) return;
 
     const products = readStorage("products")
-        .filter(product => product.seller === currentSeller && sessionProductIds.has(product.id));
+        .filter(product => product.seller === currentSeller)
+        .sort((first, second) => {
+            const firstDate = Date.parse(first.createdAt || first.updatedAt || "");
+            const secondDate = Date.parse(second.createdAt || second.updatedAt || "");
+
+            return (secondDate || 0) - (firstDate || 0);
+        });
 
     if (!products.length) {
-        container.innerHTML = `<p class="session-empty">Добавленные товары появятся здесь.</p>`;
+        container.innerHTML = `<p class="session-empty">Последние товары появятся здесь.</p>`;
         return;
     }
 
     container.innerHTML = products
         .map(product => `
             <article class="session-product-card">
-                <span>${escapeHtml(getProductDepartment(product))}</span>
                 <strong>${escapeHtml(product.name)}</strong>
                 <small>${escapeHtml(getProductPriceText(product))}</small>
             </article>
