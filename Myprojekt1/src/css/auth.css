@@ -1,0 +1,35 @@
+/* Страница входа и регистрации продавца. */
+
+.auth-container {
+    max-width: 520px;
+}
+
+.auth-nav-space {
+    width: 68px;
+}
+
+.auth-card {
+    display: grid;
+    gap: 11px;
+    margin: 70px auto 0;
+    padding: 24px;
+}
+
+.auth-card h1,
+.auth-card p {
+    margin: 0;
+}
+
+.auth-card input {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid rgba(28, 35, 42, 0.12);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.72);
+    font: inherit;
+}
+
+.auth-card button {
+    min-height: 42px;
+}
