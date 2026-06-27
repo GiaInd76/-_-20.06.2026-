@@ -308,7 +308,9 @@ function renderCategoryProducts(container, products, options = {}) {
 }
 
 function openOwnerProductEditor(product) {
-    if (params.get("owner") !== "1") return;
+    const seller = getSellerById(currentSeller);
+
+    if (!isSellerOwnedByCurrentUser(seller)) return;
 
     const modal = document.getElementById("ownerProductModal");
 
@@ -328,8 +330,9 @@ function initOwnerProductEditor() {
     const modal = document.getElementById("ownerProductModal");
     const saveButton = document.getElementById("saveOwnerProductBtn");
     const cancelButton = document.getElementById("cancelOwnerProductBtn");
+    const seller = getSellerById(currentSeller);
 
-    if (!modal || params.get("owner") !== "1") return;
+    if (!modal || !isSellerOwnedByCurrentUser(seller)) return;
 
     saveButton?.addEventListener("click", async () => {
         const products = readStorage("products");
@@ -390,7 +393,7 @@ function initOwnerProductEditor() {
             saveButton.disabled = false;
             showMessage(
                 document.getElementById("ownerProductMessage"),
-                "Не удалось сохранить товар в базе."
+                `Не удалось сохранить товар: ${getSupabaseErrorMessage(error)}`
             );
         }
     });
@@ -442,7 +445,7 @@ function initSellerPage() {
     const sellerPage = document.getElementById("sellerPage");
     const sellerProductsContainer = document.getElementById("sellerProducts");
     const departmentsContainer = document.getElementById("sellerDepartments");
-    const ownerMode = params.get("owner") === "1";
+    const editNavBtn = document.getElementById("sellerEditNavBtn");
 
     if (!sellerPage && !sellerProductsContainer) return;
 
@@ -456,8 +459,14 @@ function initSellerPage() {
         return;
     }
 
+    const ownerMode = isSellerOwnedByCurrentUser(seller);
+
     setBrandCategory(seller.category);
     document.body.classList.toggle("owner-mode", ownerMode);
+    editNavBtn?.classList.toggle("hidden", !ownerMode);
+    editNavBtn?.addEventListener("click", () => {
+        openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
+    });
 
     sellerPage.classList.toggle("has-cover", Boolean(seller.coverImage));
 

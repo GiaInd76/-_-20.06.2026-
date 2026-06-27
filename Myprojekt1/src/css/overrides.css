@@ -358,7 +358,8 @@ button:hover,
 
 /* Правая кнопка верхней навигации */
 
-.page-navigation .favorites-nav-btn {
+.page-navigation .favorites-nav-btn,
+.page-navigation .seller-edit-nav-btn {
     width: auto;
     margin-left: auto;
     padding: 8px 11px;
@@ -400,7 +401,8 @@ button:hover,
 }
 
 @media (max-width: 430px) {
-    .page-navigation .favorites-nav-btn {
+    .page-navigation .favorites-nav-btn,
+    .page-navigation .seller-edit-nav-btn {
         padding: 7px 9px;
         font-size: 10px;
     }

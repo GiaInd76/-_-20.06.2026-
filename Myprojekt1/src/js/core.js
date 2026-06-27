@@ -165,6 +165,27 @@ function getSellerById(sellerId) {
     return sellers.find(seller => seller.id === sellerId);
 }
 
+function getSellerForUser(user = getCachedSupabaseUser()) {
+    const sellers = readStorage("sellers");
+
+    if (user) {
+        const ownedSeller = sellers.find(seller => seller.ownerId === user.id);
+
+        if (ownedSeller) return ownedSeller;
+    }
+
+    return sellers.length === 1 ? sellers[0] : null;
+}
+
+function isSellerOwnedByCurrentUser(seller, user = getCachedSupabaseUser()) {
+    if (!seller) return false;
+
+    if (!isSupabaseReady()) return true;
+    if (!user) return false;
+
+    return seller.ownerId === user.id;
+}
+
 function getSellerName(sellerId) {
     const seller = getSellerById(sellerId);
     return seller ? seller.name : "Продавец";

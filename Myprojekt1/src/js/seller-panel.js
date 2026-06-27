@@ -44,6 +44,18 @@ function initSellerPanel() {
     const confirmDeleteSellerBtn = document.getElementById("confirmDeleteSellerBtn");
     const seller = getSellerById(currentSeller);
 
+    if (!isSellerOwnedByCurrentUser(seller)) {
+        const ownSeller = getSellerForUser();
+
+        if (ownSeller) {
+            openPage(`seller_panel.html?seller=${encodeURIComponent(ownSeller.id)}`);
+        } else {
+            openPage("create_seller.html");
+        }
+
+        return;
+    }
+
     selectedSellerCover = seller?.coverImage || "";
 
     fillCategorySelect(categorySelect, seller?.category);
@@ -478,7 +490,7 @@ function initSellerPanel() {
             setProfilePanelOpen(false);
         } catch (error) {
             console.warn("Seller save failed", error);
-            showMessage(profileMessage, "Не удалось сохранить профиль в базе.");
+            showMessage(profileMessage, `Не удалось сохранить профиль: ${getSupabaseErrorMessage(error)}`);
         } finally {
             saveProfileBtn.disabled = false;
         }
@@ -579,7 +591,7 @@ function initSellerPanel() {
             savedProductId = savedProduct.id;
         } catch (error) {
             console.warn("Product save failed", error);
-            showMessage(productMessage, "Не удалось сохранить товар в базе.");
+            showMessage(productMessage, `Не удалось сохранить товар: ${getSupabaseErrorMessage(error)}`);
             addProductBtn.disabled = false;
             return;
         }

@@ -188,23 +188,21 @@ function initMainPage() {
         const user = await requireSellerSession("index.html");
         if (!user) return;
 
-        const sellers = readStorage("sellers");
-        const seller = sellers[sellers.length - 1];
+        const seller = getSellerForUser(user);
 
         if (!seller) {
             openPage("create_seller.html");
             return;
         }
 
-        openPage(`seller.html?seller=${encodeURIComponent(seller.id)}&owner=1`);
+        openPage(`seller.html?seller=${encodeURIComponent(seller.id)}`);
     });
 
     sellerEditChoice?.addEventListener("click", async () => {
         const user = await requireSellerSession("index.html");
         if (!user) return;
 
-        const sellers = readStorage("sellers");
-        const seller = sellers[sellers.length - 1];
+        const seller = getSellerForUser(user);
 
         if (!seller) {
             openPage("create_seller.html");
@@ -217,6 +215,13 @@ function initMainPage() {
     sellerNewChoice?.addEventListener("click", async () => {
         const user = await requireSellerSession("create_seller.html");
         if (!user) return;
+
+        const seller = getSellerForUser(user);
+
+        if (seller) {
+            openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
+            return;
+        }
 
         openPage("create_seller.html");
     });
@@ -278,9 +283,38 @@ function initSellerCreation() {
     const createSellerBtn = document.getElementById("createSellerBtn");
     const sellerCategorySelect = document.getElementById("sellerCategory");
     const createSellerMessage = document.getElementById("createSellerMessage");
+    const sellerCreateBlock = document.querySelector(".seller-create-block");
+    const cabinetSubtitle = document.querySelector(".cabinet-subtitle");
 
     fillCategorySelect(sellerCategorySelect);
-    renderSellerCabinets();
+
+    const prepareSellerCreationPage = async () => {
+        if (!createSellerBtn && !sellerCreateBlock) return;
+
+        const user = isSupabaseReady()
+            ? await getCurrentSupabaseUser()
+            : getCachedSupabaseUser();
+        const existingSeller = getSellerForUser(user);
+
+        if (!existingSeller) {
+            renderSellerCabinets();
+            return;
+        }
+
+        sellerCreateBlock?.classList.add("hidden");
+
+        if (cabinetSubtitle) {
+            cabinetSubtitle.textContent = "У этого аккаунта уже есть лавка. Откройте её для управления.";
+        }
+
+        showMessage(
+            createSellerMessage,
+            "Новая лавка недоступна: один аккаунт управляет одной лавкой."
+        );
+        renderSellerCabinets();
+    };
+
+    prepareSellerCreationPage();
 
     createSellerBtn?.addEventListener("click", async () => {
         const name = document.getElementById("sellerName").value.trim();
@@ -317,14 +351,27 @@ function initSellerCreation() {
         showMessage(createSellerMessage, "Проверяем вход и сохраняем лавку...");
 
         try {
-            if (isSupabaseReady()) {
-                const user = await getCurrentSupabaseUser();
+            let currentUser = null;
 
-                if (!user) {
+            if (isSupabaseReady()) {
+                currentUser = await getCurrentSupabaseUser();
+
+                if (!currentUser) {
                     showMessage(createSellerMessage, "Нужно войти в аккаунт продавца.");
                     await requireSellerSession("create_seller.html");
                     return;
                 }
+            }
+
+            const existingSeller = getSellerForUser(currentUser);
+
+            if (existingSeller) {
+                showMessage(
+                    createSellerMessage,
+                    "У этого аккаунта уже есть лавка. Открываю редактирование."
+                );
+                openPage(`seller_panel.html?seller=${encodeURIComponent(existingSeller.id)}`);
+                return;
             }
 
             const savedSeller = isSupabaseReady()
@@ -355,14 +402,14 @@ function renderSellerCabinets() {
 
     const user = getCachedSupabaseUser();
     const sellers = readStorage("sellers")
-        .filter(seller => !user || !seller.ownerId || seller.ownerId === user.id);
+        .filter(seller => !user || seller.ownerId === user.id);
 
     cabinetList.innerHTML = "";
 
     if (!sellers.length) {
         cabinetList.innerHTML = `
             <div class="empty-card">
-                Пока нет созданных лавок. Создайте первую выше.
+                У этого аккаунта пока нет лавки. Создайте первую выше.
             </div>
         `;
         return;

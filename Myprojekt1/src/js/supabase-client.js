@@ -62,6 +62,8 @@ async function requireSellerSession(returnUrl = window.location.href) {
 function getSupabaseErrorMessage(error) {
     if (!error) return "Неизвестная ошибка.";
 
+    const missingColumn = getMissingColumnName(error);
+
     if (error.message === "auth-required") {
         return "Сначала войдите в аккаунт продавца.";
     }
@@ -74,7 +76,30 @@ function getSupabaseErrorMessage(error) {
         return "Supabase долго не отвечает. Проверьте интернет и попробуйте ещё раз.";
     }
 
+    if (error.message === "Email not confirmed") {
+        return "Почта ещё не подтверждена. Проверьте письмо или временно отключите подтверждение email в Supabase.";
+    }
+
+    if (error.code === "23505") {
+        return "У этого аккаунта уже есть лавка.";
+    }
+
+    if (missingColumn) {
+        return `В базе нет колонки ${missingColumn}. Запустите SQL-файл 006_repair_marketplace_schema.sql в Supabase.`;
+    }
+
+    if (error.code === "PGRST204") {
+        return "Схема Supabase отстаёт от сайта. Запустите SQL-файл 006_repair_marketplace_schema.sql в Supabase.";
+    }
+
     return error.message || "Неизвестная ошибка Supabase.";
+}
+
+function getMissingColumnName(error) {
+    const text = `${error?.message || ""} ${error?.details || ""} ${error?.hint || ""}`;
+    const match = text.match(/'([^']+)' column/i) || text.match(/column "?([a-z0-9_]+)"?/i);
+
+    return match?.[1] || "";
 }
 
 function isSupabaseReady() {
@@ -393,7 +418,7 @@ function initAuthPage() {
         setBusy(false);
 
         if (error) {
-            message.textContent = "Не удалось войти. Проверьте почту и пароль.";
+            message.textContent = getSupabaseErrorMessage(error);
             return;
         }
 
@@ -423,7 +448,7 @@ function initAuthPage() {
         setBusy(false);
 
         if (error) {
-            message.textContent = error.message;
+            message.textContent = getSupabaseErrorMessage(error);
             return;
         }
 
@@ -432,7 +457,7 @@ function initAuthPage() {
             return;
         }
 
-        message.textContent = "Проверьте почту и подтвердите регистрацию.";
+        message.textContent = "Аккаунт создан, но Supabase ждёт подтверждение почты. Проверьте письмо или отключите Confirm email для тестов.";
     });
 
     form.addEventListener("submit", event => {
