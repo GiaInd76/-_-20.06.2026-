@@ -98,7 +98,7 @@
     font-size: 11px;
 }
 
-.admin-category-card.is-active {
+.admin-category-card:hover {
     border-color: rgba(53, 104, 145, 0.36);
     background: rgba(228, 242, 255, 0.78);
     box-shadow:
@@ -219,7 +219,7 @@
         background: rgba(22, 28, 36, 0.58);
     }
 
-    .admin-category-card.is-active {
+    .admin-category-card:hover {
         border-color: rgba(145, 202, 245, 0.36);
         background: rgba(28, 45, 62, 0.82);
     }

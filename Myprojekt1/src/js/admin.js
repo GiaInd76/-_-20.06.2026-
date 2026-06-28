@@ -1,6 +1,5 @@
-/* Админ-кабинет: проверка проекта и просмотр лавок по категориям. */
+/* Админ-кабинет: проверка проекта и быстрый переход по категориям. */
 
-let selectedAdminCategory = "";
 let adminDashboardData = {
     shops: [],
     products: []
@@ -138,22 +137,13 @@ function renderAdminCategories({ shops, products }) {
 
     if (!list) return;
 
-    if (!selectedAdminCategory) {
-        const categoryWithShops = categories.find(category => {
-            return shops.some(shop => shop.category === category.id);
-        });
-
-        selectedAdminCategory = categoryWithShops?.id || categories[0]?.id || "other";
-    }
-
     list.innerHTML = categories.map(category => {
         const categoryShops = shops.filter(shop => shop.category === category.id);
         const categoryProducts = products.filter(product => product.category === category.id);
-        const activeClass = category.id === selectedAdminCategory ? "is-active" : "";
 
         return `
             <button
-                class="admin-category-card ${activeClass}"
+                class="admin-category-card"
                 type="button"
                 data-admin-category="${escapeHtml(category.id)}"
             >
@@ -166,68 +156,9 @@ function renderAdminCategories({ shops, products }) {
 
     list.querySelectorAll("[data-admin-category]").forEach(button => {
         button.addEventListener("click", () => {
-            selectedAdminCategory = button.dataset.adminCategory || "other";
-            renderAdminCategories(adminDashboardData);
-        });
-    });
+            const category = button.dataset.adminCategory || "other";
 
-    renderAdminCategoryShops(adminDashboardData);
-}
-
-function renderAdminCategoryShops({ shops, products }) {
-    const list = document.getElementById("adminCategoryShopsList");
-
-    if (!list) return;
-
-    const categoryShops = shops.filter(shop => shop.category === selectedAdminCategory);
-    const title = getCategoryLabel(selectedAdminCategory);
-
-    if (!categoryShops.length) {
-        list.innerHTML = `<div class="empty-card">В категории «${escapeHtml(title)}» лавок пока нет.</div>`;
-        return;
-    }
-
-    list.innerHTML = categoryShops.map(shop => {
-        const count = products.filter(product => product.seller === shop.id).length;
-        const contacts = [shop.phone, shop.telegram, shop.instagram, shop.viber]
-            .filter(Boolean)
-            .length;
-
-        return `
-            <article class="admin-row" data-shop="${escapeHtml(shop.id)}">
-                <div class="admin-row-main">
-                    <div class="admin-row-title">
-                        <strong>${escapeHtml(shop.name || "Без названия")}</strong>
-                        <small>${escapeHtml(title)} · товаров: ${count} · контактов: ${contacts}</small>
-                    </div>
-                    <div class="admin-row-actions">
-                        <a class="btn-outline" href="category.html?type=${encodeURIComponent(selectedAdminCategory)}">Категория</a>
-                        <a class="btn-outline" href="seller.html?seller=${encodeURIComponent(shop.id)}">Лавка</a>
-                        <button class="admin-danger-btn" type="button" data-delete-shop="${escapeHtml(shop.id)}">
-                            Удалить
-                        </button>
-                    </div>
-                </div>
-                <p class="admin-row-meta">${escapeHtml(shop.description || "Описание не заполнено.")}</p>
-            </article>
-        `;
-    }).join("");
-
-    list.querySelectorAll("[data-delete-shop]").forEach(button => {
-        button.addEventListener("click", async () => {
-            const shopId = button.dataset.deleteShop;
-            const shop = shops.find(item => item.id === shopId);
-
-            if (!confirm(`Удалить лавку "${shop?.name || "без названия"}" и её товары?`)) return;
-
-            button.disabled = true;
-            try {
-                await adminDeleteShop(shopId);
-                await loadAdminDashboard();
-            } catch (error) {
-                alert(getSupabaseErrorMessage(error));
-                button.disabled = false;
-            }
+            window.location.href = `category.html?type=${encodeURIComponent(category)}`;
         });
     });
 }
