@@ -55,6 +55,15 @@
     max-width: 660px;
 }
 
+.seller-panel-page .profile-block:not(.is-collapsed) {
+    max-height: none;
+    overflow: visible;
+}
+
+.seller-panel-page .profile-block:not(.is-collapsed) + .product-workbench {
+    margin-top: 18px;
+}
+
 .seller-panel-page select {
     width: 100%;
     min-height: 43px;
@@ -92,7 +101,7 @@
 
 .seller-panel-page .featured-products-picker {
     display: grid;
-    max-height: 238px;
+    max-height: 206px;
     overflow-y: auto;
     gap: 7px;
     padding-right: 4px;
@@ -109,7 +118,9 @@
 }
 
 .seller-panel-page .featured-product-option {
-    min-height: 52px;
+    min-height: 44px;
+    padding-top: 8px;
+    padding-bottom: 8px;
     margin: 0;
 }
 
