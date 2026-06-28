@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ — Привоз Онлайн</title>
+
+    <link rel="stylesheet" href="css/base.css?v=20260622-1">
+    <link rel="stylesheet" href="css/home.css?v=20260623-3">
+    <link rel="stylesheet" href="css/components.css?v=20260622-1">
+    <link rel="stylesheet" href="css/seller.css?v=20260622-1">
+    <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
+    <link rel="stylesheet" href="css/internal-pages.css?v=20260622-1">
+    <link rel="stylesheet" href="css/overrides.css?v=20260627-3">
+    <link rel="stylesheet" href="css/admin.css?v=20260628-1">
+</head>
+<body class="glass-page admin-page">
+    <main class="container admin-container">
+        <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
+            <button class="back-home-btn" type="button" onclick="history.back()">Назад</button>
+            <a class="brand-title site-brand" href="index.html">Привоз</a>
+            <button id="adminLogoutBtn" class="favorites-nav-btn" type="button">Выйти</button>
+        </nav>
+
+        <header class="header admin-header">
+            <p class="home-kicker">Управление проектом</p>
+            <h1 class="logo">Админ-кабинет</h1>
+            <p id="adminStatus" class="subtitle">Проверяем доступ...</p>
+        </header>
+
+        <section id="adminAccessCard" class="panel-section admin-access-card hidden">
+            <h2>Нет доступа</h2>
+            <p>
+                Войдите под админским аккаунтом и добавьте этот аккаунт в таблицу
+                <strong>admin_users</strong> через SQL-файл 007_admin_access.sql.
+            </p>
+            <a class="btn-primary admin-login-link" href="auth.html?return=admin.html">Войти</a>
+        </section>
+
+        <section id="adminDashboard" class="admin-dashboard hidden">
+            <div class="admin-stats">
+                <article class="panel-section admin-stat-card">
+                    <span>Лавки</span>
+                    <strong id="adminShopsCount">0</strong>
+                </article>
+                <article class="panel-section admin-stat-card">
+                    <span>Товары</span>
+                    <strong id="adminProductsCount">0</strong>
+                </article>
+                <article class="panel-section admin-stat-card">
+                    <span>Без товаров</span>
+                    <strong id="adminEmptyShopsCount">0</strong>
+                </article>
+                <article class="panel-section admin-stat-card">
+                    <span>Без контактов</span>
+                    <strong id="adminNoContactsCount">0</strong>
+                </article>
+            </div>
+
+            <section class="panel-section admin-section">
+                <div class="admin-section-head">
+                    <div>
+                        <h2>Проверка перед запуском</h2>
+                        <p>30-дневный ориентир: тут видны самые грубые проблемы.</p>
+                    </div>
+                    <button id="adminRefreshBtn" class="btn-outline" type="button">Обновить</button>
+                </div>
+                <div id="adminChecklist" class="admin-checklist"></div>
+            </section>
+
+            <section class="panel-section admin-section">
+                <h2>Лавки</h2>
+                <div id="adminShopsList" class="admin-list"></div>
+            </section>
+
+            <section class="panel-section admin-section">
+                <h2>Последние товары</h2>
+                <div id="adminProductsList" class="admin-list"></div>
+            </section>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js?v=20260628-1"></script>
+    <script src="js/core.js?v=20260626-2"></script>
+    <script src="js/admin.js?v=20260628-1"></script>
+</body>
+</html>

@@ -82,6 +82,10 @@ function getSupabaseErrorMessage(error) {
         return "Сначала сохраните профиль лавки в базе.";
     }
 
+    if (error.message === "admin-required") {
+        return "У этого аккаунта нет прав администратора.";
+    }
+
     if (error.message.endsWith("-timeout")) {
         return "Supabase долго не отвечает. Проверьте интернет и попробуйте ещё раз.";
     }
@@ -376,6 +380,100 @@ async function deleteProductFromSupabase(productId) {
         .from("products")
         .delete()
         .eq("id", productId);
+
+    if (error) throw error;
+}
+
+async function isCurrentUserAdmin() {
+    if (!supabaseClient) return false;
+
+    const user = await getCurrentSupabaseUser();
+
+    if (!user) return false;
+
+    const { data, error } = await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (error) {
+        console.warn("Admin check failed", error);
+        return false;
+    }
+
+    return Boolean(data);
+}
+
+async function fetchAdminDashboardData() {
+    if (!supabaseClient) {
+        return {
+            shops: readStorage("sellers"),
+            products: readStorage("products")
+        };
+    }
+
+    const isAdmin = await isCurrentUserAdmin();
+
+    if (!isAdmin) throw new Error("admin-required");
+
+    const [shopsResult, productsResult] = await withTimeout(
+        Promise.all([
+            supabaseClient
+                .from("shops")
+                .select("*")
+                .order("created_at", { ascending: false }),
+            supabaseClient
+                .from("products")
+                .select("*")
+                .order("updated_at", { ascending: false })
+        ]),
+        9000,
+        "admin-dashboard"
+    );
+
+    if (shopsResult.error) throw shopsResult.error;
+    if (productsResult.error) throw productsResult.error;
+
+    return {
+        shops: (shopsResult.data || []).map(toLocalSeller),
+        products: (productsResult.data || []).map(toLocalProduct)
+    };
+}
+
+async function adminDeleteProduct(productId) {
+    if (!supabaseClient || !isUuid(productId)) return;
+
+    const isAdmin = await isCurrentUserAdmin();
+
+    if (!isAdmin) throw new Error("admin-required");
+
+    const { error } = await supabaseClient
+        .from("products")
+        .delete()
+        .eq("id", productId);
+
+    if (error) throw error;
+}
+
+async function adminDeleteShop(shopId) {
+    if (!supabaseClient || !isUuid(shopId)) return;
+
+    const isAdmin = await isCurrentUserAdmin();
+
+    if (!isAdmin) throw new Error("admin-required");
+
+    const productsResult = await supabaseClient
+        .from("products")
+        .delete()
+        .eq("shop_id", shopId);
+
+    if (productsResult.error) throw productsResult.error;
+
+    const { error } = await supabaseClient
+        .from("shops")
+        .delete()
+        .eq("id", shopId);
 
     if (error) throw error;
 }
