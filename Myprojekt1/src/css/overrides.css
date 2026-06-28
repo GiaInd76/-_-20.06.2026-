@@ -44,8 +44,7 @@ body,
 .glass-page .product-card,
 .glass-page .empty-card,
 .glass-page .modal-content,
-.live-product-preview,
-.session-product-card {
+.live-product-preview {
     border-color: rgba(192, 227, 255, 0.76);
     background: var(--theme-glass);
     box-shadow:
@@ -196,8 +195,7 @@ body,
 .glass-page .product-card,
 .glass-page .empty-card,
 .glass-page .modal-content,
-.live-product-preview,
-.session-product-card {
+.live-product-preview {
     border-color: rgba(255,255,255,0.86);
     background: var(--theme-glass);
     box-shadow:
@@ -669,7 +667,6 @@ button:hover,
     .glass-page .modal-content,
     .glass-page .contact-menu,
     .live-product-preview,
-    .session-product-card,
     .seller-choice-content,
     .owner-product-editor,
     .auth-card {
@@ -1040,9 +1037,7 @@ button:hover,
     .product-info span,
     .product-department-label,
     .photo-chip,
-    .seller-featured-product small,
-    .session-product-card span,
-    .session-product-card small {
+    .seller-featured-product small {
         font-size: 12px;
     }
 
@@ -1104,7 +1099,6 @@ button:hover,
     .seller-panel-page .profile-block,
     .seller-panel-page .form-block,
     .seller-panel-page .product-editor,
-    .seller-panel-page .live-products-panel,
     .seller-panel-page .featured-products-picker,
     .seller-panel-page .photo-preview,
     .seller-panel-page .seller-cover-preview,

@@ -7,7 +7,6 @@ let selectedProductImages = [];
 let selectedSellerCover = "";
 let refreshProductImagePreview = () => {};
 let refreshLiveProductPreview = () => {};
-const sessionProductIds = new Set();
 let modalProductImages = [];
 let modalProductImageIndex = 0;
 

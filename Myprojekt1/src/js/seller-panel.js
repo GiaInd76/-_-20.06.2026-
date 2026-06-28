@@ -612,52 +612,20 @@ function initSellerPanel() {
         }
 
         writeStorage("products", products);
-        sessionProductIds.add(savedProductId);
         showMessage(
             productMessage,
             editingProductIndex !== null ? "Товар сохранён." : "Товар добавлен."
         );
         resetProductForm();
         renderPanelProducts();
-        renderLiveSessionProducts();
         renderDepartmentSuggestions();
         renderFeaturedProductsPicker();
         addProductBtn.disabled = false;
     });
 
     renderLiveProductPreview();
-    renderLiveSessionProducts();
     renderDepartmentSuggestions();
     renderPanelProducts();
-}
-
-function renderLiveSessionProducts() {
-    const container = document.getElementById("liveSessionProducts");
-
-    if (!container) return;
-
-    const products = readStorage("products")
-        .filter(product => product.seller === currentSeller)
-        .sort((first, second) => {
-            const firstDate = Date.parse(first.createdAt || first.updatedAt || "");
-            const secondDate = Date.parse(second.createdAt || second.updatedAt || "");
-
-            return (secondDate || 0) - (firstDate || 0);
-        });
-
-    if (!products.length) {
-        container.innerHTML = `<p class="session-empty">Последние товары появятся здесь.</p>`;
-        return;
-    }
-
-    container.innerHTML = products
-        .map(product => `
-            <article class="session-product-card">
-                <strong>${escapeHtml(product.name)}</strong>
-                <small>${escapeHtml(getProductPriceText(product))}</small>
-            </article>
-        `)
-        .join("");
 }
 
 function renderPanelProducts() {
@@ -785,13 +753,10 @@ function renderPanelProducts() {
                     return;
                 }
 
-                sessionProductIds.delete(products[index]?.id);
-
                 products.splice(index, 1);
                 writeStorage("products", products);
                 editingProductIndex = null;
                 renderPanelProducts();
-                renderLiveSessionProducts();
                 renderDepartmentSuggestions();
             });
         });

@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="css/components.css?v=20260622-1">
     <link rel="stylesheet" href="css/seller.css?v=20260622-1">
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
-    <link rel="stylesheet" href="css/internal-pages.css?v=20260622-1">
-    <link rel="stylesheet" href="css/overrides.css?v=20260628-1">
+    <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
+    <link rel="stylesheet" href="css/overrides.css?v=20260628-2">
     <link rel="stylesheet" href="css/admin.css?v=20260628-1">
 </head>
 <body class="glass-page admin-page">
@@ -52,8 +52,8 @@
                     <strong id="adminEmptyShopsCount">0</strong>
                 </article>
                 <article class="panel-section admin-stat-card">
-                    <span>Без контактов</span>
-                    <strong id="adminNoContactsCount">0</strong>
+                    <span>Уведомления</span>
+                    <strong id="adminNotificationsCount">0</strong>
                 </article>
             </div>
 
@@ -69,13 +69,14 @@
             </section>
 
             <section class="panel-section admin-section">
-                <h2>Лавки</h2>
-                <div id="adminShopsList" class="admin-list"></div>
-            </section>
-
-            <section class="panel-section admin-section">
-                <h2>Последние товары</h2>
-                <div id="adminProductsList" class="admin-list"></div>
+                <div class="admin-section-head">
+                    <div>
+                        <h2>Категории</h2>
+                        <p>Выбирайте категорию и смотрите лавки внутри неё.</p>
+                    </div>
+                </div>
+                <div id="adminCategoriesList" class="admin-category-grid"></div>
+                <div id="adminCategoryShopsList" class="admin-list"></div>
             </section>
         </section>
     </main>
@@ -83,6 +84,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js?v=20260628-1"></script>
     <script src="js/core.js?v=20260626-2"></script>
-    <script src="js/admin.js?v=20260628-1"></script>
+    <script src="js/admin.js?v=20260628-2"></script>
 </body>
 </html>
