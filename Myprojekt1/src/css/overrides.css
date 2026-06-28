@@ -338,10 +338,24 @@ button:hover,
 
 .glass-page #sellerPage.has-cover .subtitle,
 .glass-page #sellerPage.has-cover .work-time {
-    color: #2f3b47 !important;
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.68);
+    color: #18212b !important;
     text-shadow:
-        0 1px 0 rgba(255, 255, 255, 0.78),
-        0 0 12px rgba(255, 255, 255, 0.62);
+        0 1px 0 rgba(255, 255, 255, 0.62),
+        0 0 10px rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(10px);
+}
+
+.glass-page #sellerPage.has-cover .category-badge {
+    background: rgba(255, 255, 255, 0.72);
+    color: #18212b;
 }
 
 /* Правая кнопка верхней навигации */
@@ -1126,18 +1140,21 @@ button:hover,
     .seller-page .department-products-grid,
     .glass-page.seller-page .product-list,
     .glass-page.seller-page .department-products-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
     }
 
     .seller-page .product-card,
     .glass-page.seller-page .product-card {
         min-height: 0;
-        padding: 14px;
+        padding: 10px;
+        border-radius: 18px;
     }
 
     .seller-page .product-card h3,
     .glass-page.seller-page .product-card h3 {
-        padding-right: 34px;
+        padding-right: 24px;
+        font-size: 14px;
         overflow-wrap: anywhere;
         word-break: normal;
         line-height: 1.28;
@@ -1147,5 +1164,29 @@ button:hover,
     .glass-page.seller-page .product-description {
         -webkit-line-clamp: 3;
         overflow-wrap: anywhere;
+    }
+
+    .seller-page .favorite-btn,
+    .glass-page.seller-page .favorite-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 14px;
+    }
+
+    .seller-page .product-department-label,
+    .glass-page.seller-page .product-department-label {
+        max-width: calc(100% - 30px);
+        font-size: 11px;
+    }
+
+    .seller-page .product-info,
+    .glass-page.seller-page .product-info {
+        gap: 6px;
+    }
+
+    .seller-page .product-info span,
+    .glass-page.seller-page .product-info span {
+        padding: 5px 7px;
+        font-size: 11px;
     }
 }

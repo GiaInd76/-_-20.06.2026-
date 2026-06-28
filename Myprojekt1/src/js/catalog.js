@@ -1,5 +1,17 @@
 /* Категории, карточки продавцов, витрина лавки и окна товаров. */
 
+function formatSellerTime(value) {
+    const time = String(value || "").trim();
+
+    if (!time) return "--:--";
+
+    const match = time.match(/^(\d{1,2}):(\d{2})/);
+
+    if (!match) return time;
+
+    return `${match[1].padStart(2, "0")}:${match[2]}`;
+}
+
 function renderSellersList(containerId, filterCategory = "") {
     const container = document.getElementById(containerId);
 
@@ -30,7 +42,7 @@ function renderSellersList(containerId, filterCategory = "") {
             <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
                 ${escapeHtml(getCategoryLabel(seller.category))}
             </span>
-            <span>🕒 ${escapeHtml(seller.open || "--:--")} - ${escapeHtml(seller.close || "--:--")}</span>
+            <span>🕒 ${escapeHtml(formatSellerTime(seller.open))} - ${escapeHtml(formatSellerTime(seller.close))}</span>
         `;
 
         card.addEventListener("click", () => {
@@ -185,7 +197,7 @@ function renderCategorySellers(container, sellers) {
                 <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
                     ${escapeHtml(getCategoryLabel(seller.category))}
                 </span>
-                <span>🕒 ${escapeHtml(seller.open || "--:--")} - ${escapeHtml(seller.close || "--:--")}</span>
+                <span>🕒 ${escapeHtml(formatSellerTime(seller.open))} - ${escapeHtml(formatSellerTime(seller.close))}</span>
             </div>
             ${featuredMarkup}
         `;
@@ -487,7 +499,7 @@ function initSellerPage() {
                 ${escapeHtml(getCategoryLabel(seller.category))}
             </span>
         </p>
-        <p class="work-time">🕒 ${escapeHtml(seller.open || "--:--")} - ${escapeHtml(seller.close || "--:--")}</p>
+        <p class="work-time">🕒 ${escapeHtml(formatSellerTime(seller.open))} - ${escapeHtml(formatSellerTime(seller.close))}</p>
         <div class="seller-actions">
             <button id="findBtn" class="btn-outline">Как найти</button>
             <button id="contactBtn" class="btn-outline">Связаться</button>
