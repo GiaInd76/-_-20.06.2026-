@@ -15,6 +15,20 @@ function initMainPage() {
     const sellerNewChoice = document.getElementById("sellerNewChoice");
     const homeOffersGrid = document.getElementById("homeOffersGrid");
 
+    const showSellerChoiceMessage = text => {
+        if (!sellerChoiceModal) return;
+
+        let message = sellerChoiceModal.querySelector(".seller-choice-message");
+
+        if (!message) {
+            message = document.createElement("p");
+            message.className = "seller-choice-message form-message";
+            sellerChoiceModal.querySelector(".seller-choice-content")?.appendChild(message);
+        }
+
+        message.textContent = text;
+    };
+
     const renderHomeOffers = () => {
         if (!homeOffersGrid) return;
 
@@ -191,7 +205,7 @@ function initMainPage() {
         const seller = getSellerForUser(user);
 
         if (!seller) {
-            openPage("create_seller.html");
+            showSellerChoiceMessage("Лавка для этого аккаунта пока не найдена. Нажмите «+ Новая лавка», если хотите создать её.");
             return;
         }
 
@@ -205,7 +219,7 @@ function initMainPage() {
         const seller = getSellerForUser(user);
 
         if (!seller) {
-            openPage("create_seller.html");
+            showSellerChoiceMessage("Лавка для этого аккаунта пока не найдена. Нажмите «+ Новая лавка», если хотите создать её.");
             return;
         }
 
