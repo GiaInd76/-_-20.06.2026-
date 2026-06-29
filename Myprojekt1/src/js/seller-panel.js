@@ -47,11 +47,54 @@ function initSellerPanel() {
 
     if (!isSellerOwnedByCurrentUser(seller)) {
         const ownSeller = getSellerForUser();
+        const container = document.querySelector(".seller-workspace")
+            || document.querySelector(".container");
 
-        if (ownSeller) {
-            openPage(`seller_panel.html?seller=${encodeURIComponent(ownSeller.id)}`);
-        } else {
-            openPage("create_seller.html");
+        if (container) {
+            container.innerHTML = `
+                <section class="panel-section auth-card">
+                    <h2>Лавка не найдена</h2>
+                    <p class="subtitle">
+                        Аккаунт вошёл, но эта страница не связана с твоей лавкой.
+                    </p>
+                    <div class="seller-actions">
+                        ${
+                            ownSeller
+                                ? `
+                                    <button id="openOwnSellerPanelBtn" class="btn-primary" type="button">
+                                        Открыть мою лавку
+                                    </button>
+                                `
+                                : `
+                                    <button id="createOwnSellerBtn" class="btn-primary" type="button">
+                                        Создать лавку
+                                    </button>
+                                `
+                        }
+                        <button id="sellerPanelHomeBtn" class="btn-outline" type="button">
+                            На главную
+                        </button>
+                    </div>
+                </section>
+            `;
+
+            document
+                .getElementById("openOwnSellerPanelBtn")
+                ?.addEventListener("click", () => {
+                    openPage(`seller_panel.html?seller=${encodeURIComponent(ownSeller.id)}`);
+                });
+
+            document
+                .getElementById("createOwnSellerBtn")
+                ?.addEventListener("click", () => {
+                    openPage("create_seller.html");
+                });
+
+            document
+                .getElementById("sellerPanelHomeBtn")
+                ?.addEventListener("click", () => {
+                    openPage("index.html");
+                });
         }
 
         return;

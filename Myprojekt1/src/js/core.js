@@ -173,6 +173,8 @@ function getSellerForUser(user = getCachedSupabaseUser()) {
         if (ownedSeller) return ownedSeller;
     }
 
+    if (isSupabaseReady()) return null;
+
     return sellers.length === 1 ? sellers[0] : null;
 }
 
