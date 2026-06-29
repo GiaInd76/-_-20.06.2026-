@@ -56,6 +56,7 @@ const interfaceTranslations = {
     howToFind: { ru: "Как найти", uk: "Як знайти", en: "How to find" },
     contact: { ru: "Связаться", uk: "Зв'язатися", en: "Contact" },
     telephone: { ru: "Телефон", uk: "Телефон", en: "Phone" },
+    all: { ru: "Все", uk: "Усі", en: "All" },
     allCategories: { ru: "Все категории", uk: "Усі категорії", en: "All categories" },
     favoriteProducts: { ru: "Избранные товары", uk: "Обрані товари", en: "Favorite products" },
     meat: { ru: "Мясо", uk: "М'ясо", en: "Meat" },

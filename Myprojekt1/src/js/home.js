@@ -58,7 +58,7 @@ function initMainPage() {
         offersFilterPanel.innerHTML = `
             <label class="offers-filter-option">
                 <input type="checkbox" value="all" ${activeFilters.length ? "" : "checked"}>
-                <span>Все</span>
+                <span>${escapeHtml(translateInterfaceValue("all"))}</span>
             </label>
             ${categories.map(category => `
                 <label class="offers-filter-option">
