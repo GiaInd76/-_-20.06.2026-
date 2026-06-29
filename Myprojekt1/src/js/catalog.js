@@ -399,7 +399,9 @@ function initOwnerProductEditor() {
                 : updatedProduct;
 
             writeStorage("products", products);
-            window.location.reload();
+            modal.style.display = "none";
+            saveButton.disabled = false;
+            initSellerPage();
         } catch (error) {
             console.warn("Owner product save failed", error);
             saveButton.disabled = false;

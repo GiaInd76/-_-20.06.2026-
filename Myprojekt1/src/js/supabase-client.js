@@ -36,9 +36,20 @@ function getSafeReturnUrl() {
 async function getCurrentSupabaseUser() {
     if (!supabaseClient) return null;
 
+    const sessionResult = await supabaseClient.auth.getSession();
+
+    if (!sessionResult.data?.session) {
+        cachedSupabaseUser = null;
+        return null;
+    }
+
     const { data, error } = await supabaseClient.auth.getUser();
 
-    if (error) return null;
+    if (error) {
+        cachedSupabaseUser = sessionResult.data.session.user || null;
+        return cachedSupabaseUser;
+    }
+
     cachedSupabaseUser = data.user || null;
     return cachedSupabaseUser;
 }
@@ -57,6 +68,17 @@ async function signOutSeller() {
     if (error) throw error;
 }
 
+async function getActiveAuthUser(authData = null) {
+    const sessionUser = authData?.session?.user || authData?.user || null;
+
+    if (sessionUser) {
+        cachedSupabaseUser = sessionUser;
+        return sessionUser;
+    }
+
+    return getCurrentSupabaseUser();
+}
+
 async function requireSellerSession(returnUrl = window.location.href) {
     const user = await getCurrentSupabaseUser();
 
@@ -65,7 +87,7 @@ async function requireSellerSession(returnUrl = window.location.href) {
     const localReturnUrl = new URL(returnUrl, window.location.href);
     const returnPath = `${localReturnUrl.pathname.split("/").pop()}${localReturnUrl.search}`;
 
-    window.location.href = `auth.html?return=${encodeURIComponent(returnPath)}`;
+    window.location.replace(`auth.html?return=${encodeURIComponent(returnPath)}`);
     return null;
 }
 
@@ -521,7 +543,7 @@ function initAuthPage() {
         setBusy(true);
         message.textContent = "Входим...";
 
-        const { error } = await supabaseClient.auth.signInWithPassword(credentials);
+        const { data, error } = await supabaseClient.auth.signInWithPassword(credentials);
 
         setBusy(false);
 
@@ -530,7 +552,14 @@ function initAuthPage() {
             return;
         }
 
-        window.location.href = getSafeReturnUrl();
+        const user = await getActiveAuthUser(data);
+
+        if (!user) {
+            message.textContent = "Вход не закрепился в браузере. Обновите страницу входа и попробуйте ещё раз.";
+            return;
+        }
+
+        window.location.replace(getSafeReturnUrl());
     };
 
     form.addEventListener("submit", event => {
@@ -585,7 +614,14 @@ function initAuthPage() {
                 setBusy(false);
 
                 if (!signInResult.error) {
-                    window.location.href = getSafeReturnUrl();
+                    const user = await getActiveAuthUser(signInResult.data);
+
+                    if (!user) {
+                        message.textContent = "Аккаунт найден, но браузер не сохранил вход. Попробуйте войти вручную.";
+                        return;
+                    }
+
+                    window.location.replace(getSafeReturnUrl());
                     return;
                 }
             }
@@ -596,7 +632,8 @@ function initAuthPage() {
         }
 
         if (data.session) {
-            window.location.href = getSafeReturnUrl();
+            await getActiveAuthUser(data);
+            window.location.replace(getSafeReturnUrl());
             return;
         }
 
@@ -605,7 +642,14 @@ function initAuthPage() {
         setBusy(false);
 
         if (!signInResult.error) {
-            window.location.href = getSafeReturnUrl();
+            const user = await getActiveAuthUser(signInResult.data);
+
+            if (!user) {
+                message.textContent = "Аккаунт создан, но браузер не сохранил вход. Попробуйте войти вручную.";
+                return;
+            }
+
+            window.location.replace(getSafeReturnUrl());
             return;
         }
 

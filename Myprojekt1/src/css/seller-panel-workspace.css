@@ -201,14 +201,34 @@
     cursor: pointer;
 }
 
-@media (max-width: 430px) {
+@media (max-width: 719px) {
+    .seller-panel-page .profile-block:not(.is-collapsed) {
+        padding-bottom: 22px;
+    }
+
     .seller-panel-page .product-workbench {
         width: 100%;
         max-width: none;
+        margin-top: 24px;
     }
 
     .seller-panel-page .product-editor {
         width: 100%;
+    }
+
+    .seller-panel-page .featured-products-picker {
+        max-height: 178px;
+        padding-bottom: 4px;
+    }
+
+    .seller-panel-page #saveSellerProfileBtn {
+        position: static;
+        width: 100%;
+        margin: 14px 0 8px;
+    }
+
+    .seller-panel-page .shop-danger-zone {
+        margin-top: 10px;
     }
 }
 
