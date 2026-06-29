@@ -692,11 +692,11 @@ function renderPanelProducts() {
                         : ""
                 }
                 <div class="product-actions">
-                    <button class="edit-btn" data-index="${product.storageIndex}">
+                    <button class="edit-btn" type="button" data-index="${product.storageIndex}">
                         Редактировать
                     </button>
 
-                    <button class="delete-btn" data-index="${product.storageIndex}">
+                    <button class="delete-btn" type="button" data-index="${product.storageIndex}">
                         Удалить
                     </button>
                 </div>

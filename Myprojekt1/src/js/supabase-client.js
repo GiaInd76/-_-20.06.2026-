@@ -510,7 +510,7 @@ function initAuthPage() {
         password: passwordInput.value
     });
 
-    loginButton.addEventListener("click", async () => {
+    const signIn = async () => {
         const credentials = getCredentials();
 
         if (!credentials.email || credentials.password.length < 6) {
@@ -531,9 +531,16 @@ function initAuthPage() {
         }
 
         window.location.href = getSafeReturnUrl();
+    };
+
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+        signIn();
     });
 
-    registerButton.addEventListener("click", async () => {
+    registerButton.addEventListener("click", async event => {
+        event.preventDefault();
+
         const credentials = getCredentials();
         const isConfirmVisible = !passwordConfirmInput?.classList.contains("hidden");
         const repeatedPassword = passwordConfirmInput?.value || "";
@@ -560,11 +567,30 @@ function initAuthPage() {
         setBusy(true);
         message.textContent = "Создаём аккаунт...";
 
-        const { data, error } = await supabaseClient.auth.signUp(credentials);
-
-        setBusy(false);
+        const redirectUrl = new URL(getSafeReturnUrl(), window.location.href).href;
+        const { data, error } = await supabaseClient.auth.signUp({
+            ...credentials,
+            options: {
+                emailRedirectTo: redirectUrl
+            }
+        });
 
         if (error) {
+            const alreadyRegistered = /already|registered|exists/i.test(error.message || "");
+
+            if (alreadyRegistered) {
+                message.textContent = "Аккаунт уже есть, пробуем войти...";
+                const signInResult = await supabaseClient.auth.signInWithPassword(credentials);
+
+                setBusy(false);
+
+                if (!signInResult.error) {
+                    window.location.href = getSafeReturnUrl();
+                    return;
+                }
+            }
+
+            setBusy(false);
             message.textContent = getSupabaseErrorMessage(error);
             return;
         }
@@ -574,11 +600,15 @@ function initAuthPage() {
             return;
         }
 
-        message.textContent = "Аккаунт создан, но Supabase ждёт подтверждение почты. Проверьте письмо или отключите Confirm email для тестов.";
-    });
+        const signInResult = await supabaseClient.auth.signInWithPassword(credentials);
 
-    form.addEventListener("submit", event => {
-        event.preventDefault();
-        loginButton.click();
+        setBusy(false);
+
+        if (!signInResult.error) {
+            window.location.href = getSafeReturnUrl();
+            return;
+        }
+
+        message.textContent = "Аккаунт создан, но Supabase всё ещё ждёт подтверждение почты. Для тестов отключите Confirm email или подтвердите пользователя в Supabase.";
     });
 }
