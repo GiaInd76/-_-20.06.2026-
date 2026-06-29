@@ -53,10 +53,6 @@ function renderSellersList(containerId, filterCategory = "") {
     });
 }
 
-function initFishPage() {
-    renderSellersList("fishSellers", "fish");
-}
-
 function initCategoryPage() {
     const title = document.getElementById("categoryTitle");
     const sellerContainer = document.getElementById("categorySellers");

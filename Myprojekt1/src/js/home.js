@@ -14,6 +14,9 @@ function initMainPage() {
     const sellerEditChoice = document.getElementById("sellerEditChoice");
     const sellerNewChoice = document.getElementById("sellerNewChoice");
     const homeOffersGrid = document.getElementById("homeOffersGrid");
+    const offersFilterBtn = document.getElementById("offersFilterBtn");
+    const offersFilterPanel = document.getElementById("offersFilterPanel");
+    const offersFilterKey = "homeOfferCategories";
 
     const showSellerChoiceMessage = text => {
         if (!sellerChoiceModal) return;
@@ -29,10 +32,57 @@ function initMainPage() {
         message.textContent = text;
     };
 
+    const getOfferCategoryFilters = () => {
+        const savedFilters = readStorage(offersFilterKey, []);
+
+        return Array.isArray(savedFilters) ? savedFilters : [];
+    };
+
+    const saveOfferCategoryFilters = filters => {
+        writeStorage(offersFilterKey, filters);
+    };
+
+    const updateOffersFilterButton = filters => {
+        if (!offersFilterBtn) return;
+
+        offersFilterBtn.textContent = filters.length
+            ? `Предложения · ${filters.length}`
+            : "Предложения";
+    };
+
+    const renderOffersFilterPanel = () => {
+        if (!offersFilterPanel) return;
+
+        const activeFilters = getOfferCategoryFilters();
+
+        offersFilterPanel.innerHTML = `
+            <label class="offers-filter-option">
+                <input type="checkbox" value="all" ${activeFilters.length ? "" : "checked"}>
+                <span>Все</span>
+            </label>
+            ${categories.map(category => `
+                <label class="offers-filter-option">
+                    <input
+                        type="checkbox"
+                        value="${escapeHtml(category.id)}"
+                        ${activeFilters.includes(category.id) ? "checked" : ""}
+                    >
+                    <span>${escapeHtml(category.label)}</span>
+                </label>
+            `).join("")}
+        `;
+
+        updateOffersFilterButton(activeFilters);
+    };
+
     const renderHomeOffers = () => {
         if (!homeOffersGrid) return;
 
+        const activeFilters = getOfferCategoryFilters();
         const products = readStorage("products")
+            .filter(product => {
+                return !activeFilters.length || activeFilters.includes(product.category);
+            })
             .map((product, index) => ({ product, index }))
             .sort((first, second) => {
                 const firstDate = Date.parse(
@@ -57,7 +107,9 @@ function initMainPage() {
             homeOffersGrid.innerHTML = `
                 <div class="home-offers-empty">
                     <span>✦</span>
-                    <p>Здесь появятся новые товары и обновлённые цены.</p>
+                    <p>${activeFilters.length
+                        ? "В выбранных категориях пока нет свежих предложений."
+                        : "Здесь появятся новые товары и обновлённые цены."}</p>
                 </div>
             `;
             return;
@@ -147,9 +199,40 @@ function initMainPage() {
     });
 
     renderAllHomeCategories();
+    renderOffersFilterPanel();
     renderHomeOffers();
 
     categoriesToggleBtn?.addEventListener("click", toggleAllCategories);
+
+    offersFilterBtn?.addEventListener("click", () => {
+        if (!offersFilterPanel) return;
+
+        const isOpen = offersFilterPanel.classList.toggle("is-open");
+
+        offersFilterPanel.setAttribute("aria-hidden", String(!isOpen));
+        offersFilterBtn.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    offersFilterPanel?.addEventListener("change", event => {
+        const input = event.target.closest("input");
+
+        if (!input) return;
+
+        if (input.value === "all") {
+            saveOfferCategoryFilters([]);
+            renderOffersFilterPanel();
+            renderHomeOffers();
+            return;
+        }
+
+        const selectedFilters = Array.from(
+            offersFilterPanel.querySelectorAll("input:not([value='all']):checked")
+        ).map(item => item.value);
+
+        saveOfferCategoryFilters(selectedFilters);
+        renderOffersFilterPanel();
+        renderHomeOffers();
+    });
 
     homeAllCategoriesGrid?.addEventListener("click", event => {
         const card = event.target.closest(".home-all-category-card");

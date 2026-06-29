@@ -16,7 +16,6 @@ async function initApp() {
     initCategoryCards();
     initSellerCreation();
     initSellerPanel();
-    initFishPage();
     initCategoryPage();
     initSellerPage();
     initOwnerProductEditor();

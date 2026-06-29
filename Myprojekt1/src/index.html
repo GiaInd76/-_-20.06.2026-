@@ -80,9 +80,22 @@
         <section class="home-category-section home-offers-section">
 
             <div class="home-section-row">
-                <h2>Предложения</h2>
+                <button
+                    id="offersFilterBtn"
+                    class="home-offers-title-btn"
+                    type="button"
+                    aria-expanded="false"
+                >
+                    Предложения
+                </button>
                 <span class="home-section-note">Новинки и свежие цены</span>
             </div>
+
+            <div
+                id="offersFilterPanel"
+                class="offers-filter-panel"
+                aria-hidden="true"
+            ></div>
 
             <div id="homeOffersGrid" class="home-offers-grid"></div>
 
