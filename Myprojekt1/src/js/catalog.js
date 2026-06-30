@@ -66,6 +66,8 @@ function initCategoryPage() {
     const sellers = readStorage("sellers");
     const products = readStorage("products");
 
+    document.body.classList.toggle("favorites-page", showFavorites);
+
     if (showFavorites) {
         const favoriteIds = getFavoriteProducts();
         const favoriteProducts = products.filter(product => favoriteIds.includes(product.id));

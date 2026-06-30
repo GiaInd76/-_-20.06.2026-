@@ -510,6 +510,16 @@ button:hover,
     align-items: center;
 }
 
+.favorites-page .category-results-panel .empty-card {
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--theme-muted);
+}
+
 .seller-featured-products {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -828,8 +838,17 @@ button:hover,
     .home-offer-price,
     .product-modal-price,
     .product-info span {
-        background: rgba(143, 199, 242, 0.16);
-        color: #c3d9eb;
+        background: rgba(184, 219, 246, 0.30);
+        color: #edf8ff;
+        border: 1px solid rgba(214, 236, 255, 0.20);
+    }
+
+    .seller-category-badge,
+    .glass-page #sellerPage.has-cover .category-badge {
+        opacity: 1;
+        background: rgba(200, 228, 248, 0.34);
+        color: #f2fbff !important;
+        text-shadow: none;
     }
 
     .product-modal-price {
