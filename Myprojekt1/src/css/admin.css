@@ -63,6 +63,91 @@
     gap: 8px;
 }
 
+.admin-quick-actions,
+.admin-issues-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.admin-quick-actions {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.admin-quick-actions a {
+    min-height: 42px;
+    text-decoration: none;
+}
+
+.admin-issues-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.admin-issue-card {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    min-height: 150px;
+    padding: 13px;
+    border: 1px solid rgba(28, 35, 42, 0.08);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.44);
+    box-shadow: 0 14px 34px rgba(33, 39, 45, 0.06);
+}
+
+.admin-issue-head,
+.admin-issue-row,
+.admin-product-mini {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.admin-issue-head strong {
+    color: var(--theme-ink);
+}
+
+.admin-issue-head span {
+    display: grid;
+    min-width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(33, 39, 45, 0.08);
+    color: var(--theme-ink);
+    font-weight: 800;
+}
+
+.admin-issue-list {
+    display: grid;
+    gap: 7px;
+}
+
+.admin-issue-row {
+    padding: 7px 0;
+    border-top: 1px solid rgba(28, 35, 42, 0.07);
+    color: var(--theme-ink);
+    font-size: 12px;
+}
+
+.admin-issue-row span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-issue-row a,
+.admin-issue-row button {
+    border: 0;
+    background: transparent;
+    color: var(--theme-blue);
+    font: inherit;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 .admin-category-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -104,6 +189,14 @@
     box-shadow:
         0 16px 36px rgba(47, 111, 163, 0.13),
         inset 0 0 0 1px rgba(255, 255, 255, 0.70);
+}
+
+.admin-category-card.is-active {
+    border-color: rgba(53, 104, 145, 0.46);
+    background: rgba(214, 236, 255, 0.86);
+    box-shadow:
+        0 16px 36px rgba(47, 111, 163, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.86);
 }
 
 .admin-check-item,
@@ -185,6 +278,59 @@
     border: 1px solid rgba(151, 54, 54, 0.22);
     background: transparent;
     color: #8b3d3d;
+    cursor: pointer;
+}
+
+.admin-product-mini-list {
+    display: grid;
+    gap: 7px;
+    margin-top: 8px;
+}
+
+.admin-product-mini {
+    padding: 8px 10px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.42);
+}
+
+.admin-product-mini span {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--theme-ink);
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-product-mini small {
+    color: var(--theme-muted);
+    white-space: nowrap;
+}
+
+.admin-product-mini .admin-danger-btn {
+    min-height: 28px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+}
+
+.admin-muted {
+    margin: 0;
+    color: var(--theme-muted);
+    font-size: 12px;
+}
+
+.admin-notes {
+    width: 100%;
+    min-height: 150px;
+    resize: vertical;
+    padding: 14px 16px;
+    border: 1px solid rgba(28, 35, 42, 0.10);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.55);
+    color: var(--theme-ink);
+    font: inherit;
+    line-height: 1.5;
 }
 
 .admin-access-card {
@@ -201,6 +347,11 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .admin-quick-actions,
+    .admin-issues-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .admin-section-head,
     .admin-row-main {
         display: grid;
@@ -214,7 +365,9 @@
 @media (prefers-color-scheme: dark) {
     .admin-check-item,
     .admin-row,
-    .admin-category-card {
+    .admin-category-card,
+    .admin-issue-card,
+    .admin-notes {
         border-color: rgba(150, 210, 255, 0.18);
         background: rgba(22, 28, 36, 0.58);
     }
@@ -222,5 +375,20 @@
     .admin-category-card:hover {
         border-color: rgba(145, 202, 245, 0.36);
         background: rgba(28, 45, 62, 0.82);
+    }
+
+    .admin-category-card.is-active,
+    .admin-product-mini {
+        border-color: rgba(145, 202, 245, 0.36);
+        background: rgba(47, 76, 104, 0.72);
+    }
+
+    .admin-issue-row {
+        border-top-color: rgba(150, 210, 255, 0.14);
+    }
+
+    .admin-issue-head span {
+        background: rgba(205, 229, 248, 0.14);
+        color: #edf8ff;
     }
 }

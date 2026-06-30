@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
     <link rel="stylesheet" href="css/overrides.css?v=20260630-4">
-    <link rel="stylesheet" href="css/admin.css?v=20260628-1">
+    <link rel="stylesheet" href="css/admin.css?v=20260630-1">
 </head>
 <body class="glass-page admin-page">
     <main class="container admin-container">
@@ -60,6 +60,22 @@
             <section class="panel-section admin-section">
                 <div class="admin-section-head">
                     <div>
+                        <h2>Быстрые действия</h2>
+                        <p>Основные переходы для контроля теста с телефона или ноутбука.</p>
+                    </div>
+                </div>
+                <div class="admin-quick-actions">
+                    <a class="btn-outline" href="index.html">Главная</a>
+                    <a class="btn-outline" href="auth.html">Вход</a>
+                    <a class="btn-outline" href="create_seller.html">Моя лавка</a>
+                    <a class="btn-outline" href="category.html?favorites=1">Избранное</a>
+                    <a class="btn-outline" href="https://supabase.com/dashboard/project/sdsmnahyobzmrafkexud/editor" target="_blank" rel="noopener noreferrer">Supabase</a>
+                </div>
+            </section>
+
+            <section class="panel-section admin-section">
+                <div class="admin-section-head">
+                    <div>
                         <h2>Проверка перед запуском</h2>
                         <p>30-дневный ориентир: тут видны самые грубые проблемы.</p>
                     </div>
@@ -71,11 +87,47 @@
             <section class="panel-section admin-section">
                 <div class="admin-section-head">
                     <div>
+                        <h2>Проблемные места</h2>
+                        <p>То, что нужно быстро увидеть во время закрытого теста.</p>
+                    </div>
+                </div>
+                <div id="adminIssuesList" class="admin-issues-grid"></div>
+            </section>
+
+            <section class="panel-section admin-section">
+                <div class="admin-section-head">
+                    <div>
                         <h2>Категории</h2>
-                        <p>На кнопках видно количество лавок. Нажмите категорию, чтобы перейти к ней.</p>
+                        <p>На кнопках видно количество лавок. Нажмите категорию, чтобы посмотреть лавки внутри админки.</p>
                     </div>
                 </div>
                 <div id="adminCategoriesList" class="admin-category-grid"></div>
+            </section>
+
+            <section id="adminCategoryDetails" class="panel-section admin-section hidden">
+                <div class="admin-section-head">
+                    <div>
+                        <h2 id="adminCategoryTitle">Категория</h2>
+                        <p id="adminCategoryMeta">Лавки и товары выбранной категории.</p>
+                    </div>
+                    <a id="adminOpenCategoryLink" class="btn-outline" href="category.html">Открыть страницу</a>
+                </div>
+                <div id="adminCategoryShops" class="admin-list"></div>
+            </section>
+
+            <section class="panel-section admin-section">
+                <div class="admin-section-head">
+                    <div>
+                        <h2>Заметки теста</h2>
+                        <p>Локальный список наблюдений. Хранится в этом браузере.</p>
+                    </div>
+                    <button id="adminClearNotesBtn" class="btn-outline" type="button">Очистить</button>
+                </div>
+                <textarea
+                    id="adminTestNotes"
+                    class="admin-notes"
+                    placeholder="Например: 1. На iPhone не видно кнопку сохранения. 2. Продавец не понял поле отдел..."
+                ></textarea>
             </section>
         </section>
     </main>
@@ -83,6 +135,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js?v=20260629-2"></script>
     <script src="js/core.js?v=20260629-1"></script>
-    <script src="js/admin.js?v=20260628-3"></script>
+    <script src="js/admin.js?v=20260630-1"></script>
 </body>
 </html>
