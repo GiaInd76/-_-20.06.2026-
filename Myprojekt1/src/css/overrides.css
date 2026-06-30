@@ -422,6 +422,31 @@ button:hover,
     font-weight: var(--weight-medium);
 }
 
+.home-page .home-benefit-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    margin: 0 auto 7px;
+    place-items: center;
+    border: 1px solid rgba(32, 75, 120, 0.22);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.52);
+    color: #203348;
+    box-shadow:
+        0 10px 24px rgba(32, 75, 120, 0.10),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.58);
+}
+
+.home-page .home-benefit-icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .owner-edit-product-btn {
     width: 100%;
     margin-top: 8px;
@@ -605,14 +630,40 @@ button:hover,
     right: 14px;
     bottom: 14px;
     z-index: 1200;
-    display: flex;
-    gap: 3px;
-    padding: 4px;
+    display: grid;
+    gap: 6px;
+    justify-items: end;
+}
+
+.language-current,
+.language-menu {
     border: 1px solid rgba(255, 255, 255, 0.76);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.76);
     box-shadow: 0 9px 24px rgba(35, 43, 49, 0.13);
+    -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
+}
+
+.language-current {
+    min-width: 42px;
+    min-height: 36px;
+    padding: 7px 10px;
+    color: #252b30;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.language-menu {
+    display: none;
+    gap: 3px;
+    padding: 4px;
+}
+
+.language-switcher.is-open .language-menu {
+    display: flex;
 }
 
 .language-option {
@@ -756,6 +807,15 @@ button:hover,
     .home-section-note,
     .home-kicker {
         color: var(--theme-muted);
+    }
+
+    .home-page .home-benefit-icon {
+        border-color: rgba(196, 226, 248, 0.22);
+        background: rgba(205, 226, 244, 0.16);
+        color: #eef8ff;
+        box-shadow:
+            0 10px 24px rgba(0, 0, 0, 0.20),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.06);
     }
 
     .home-page .search-section input,
@@ -965,9 +1025,17 @@ button:hover,
     }
 
     .language-switcher {
+        box-shadow: 0 9px 24px rgba(0, 0, 0, 0.28);
+    }
+
+    .language-current,
+    .language-menu {
         border-color: rgba(145, 202, 245, 0.22);
         background: rgba(20, 27, 36, 0.78);
-        box-shadow: 0 9px 24px rgba(0, 0, 0, 0.28);
+    }
+
+    .language-current {
+        color: #edf8ff;
     }
 
     .language-option {

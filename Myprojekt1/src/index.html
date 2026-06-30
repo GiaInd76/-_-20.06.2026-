@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="css/seller.css?v=20260622-1">
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
-    <link rel="stylesheet" href="css/overrides.css?v=20260630-4">
+    <link rel="stylesheet" href="css/overrides.css?v=20260630-5">
 
 </head>
 
@@ -110,7 +110,14 @@
                 type="button"
                 aria-expanded="false"
             >
-                <span>▦</span>
+                <span class="home-benefit-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="4" y="4" width="6" height="6" rx="1.5"></rect>
+                        <rect x="14" y="4" width="6" height="6" rx="1.5"></rect>
+                        <rect x="4" y="14" width="6" height="6" rx="1.5"></rect>
+                        <rect x="14" y="14" width="6" height="6" rx="1.5"></rect>
+                    </svg>
+                </span>
                 <p>Категории</p>
             </button>
 
@@ -118,7 +125,13 @@
                 id="sellerCabinetsBtn"
                 type="button"
             >
-                <span>▤</span>
+                <span class="home-benefit-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M5 9.5h14l-1.1-4.2H6.1L5 9.5Z"></path>
+                        <path d="M6.4 9.5v9.2h11.2V9.5"></path>
+                        <path d="M9 18.7v-5.2h6v5.2"></path>
+                    </svg>
+                </span>
                 <p>Лавка</p>
                 <small>+ Новая лавка</small>
             </button>
@@ -127,7 +140,11 @@
                 id="favoritesBtn"
                 type="button"
             >
-                <span>☆</span>
+                <span class="home-benefit-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="m12 4.3 2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4L7.5 18l.9-5-3.6-3.5 5-.7L12 4.3Z"></path>
+                    </svg>
+                </span>
                 <p>Избранное</p>
             </button>
         </section>
@@ -182,7 +199,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js?v=20260629-2"></script>
-    <script src="js/i18n.js?v=20260629-1"></script>
+    <script src="js/i18n.js?v=20260630-1"></script>
     <script src="js/core.js?v=20260629-1"></script>
     <script src="js/home.js?v=20260629-1"></script>
     <script src="js/seller-panel.js?v=20260629-2"></script>

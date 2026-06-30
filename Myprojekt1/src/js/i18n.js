@@ -152,27 +152,72 @@ function setInterfaceLanguage(language) {
     currentLanguage = language;
     localStorage.setItem("privozLanguage", language);
     translateInterface();
+    updateLanguageSwitcherLabel();
 
     document.querySelectorAll(".language-option").forEach(button => {
         button.classList.toggle("is-active", button.dataset.language === language);
     });
 }
 
+function getLanguageLabel(language = currentLanguage) {
+    return language === "uk" ? "UA" : language.toUpperCase();
+}
+
+function updateLanguageSwitcherLabel() {
+    const currentButton = document.querySelector(".language-current");
+
+    if (currentButton) {
+        currentButton.textContent = getLanguageLabel();
+        currentButton.setAttribute("aria-label", `Language: ${getLanguageLabel()}`);
+    }
+}
+
 function initLanguageSwitcher() {
     const switcher = document.createElement("div");
     switcher.className = "language-switcher";
     switcher.setAttribute("aria-label", "Language");
-    switcher.innerHTML = ["uk", "ru", "en"].map(language => `
+    switcher.innerHTML = `
         <button
-            class="language-option ${language === currentLanguage ? "is-active" : ""}"
-            data-language="${language}"
+            class="language-current"
             type="button"
-        >${language === "uk" ? "UA" : language.toUpperCase()}</button>
-    `).join("");
+            aria-expanded="false"
+            aria-label="Language: ${getLanguageLabel()}"
+        >${getLanguageLabel()}</button>
+        <div class="language-menu" aria-hidden="true">
+            ${["uk", "ru", "en"].map(language => `
+                <button
+                    class="language-option ${language === currentLanguage ? "is-active" : ""}"
+                    data-language="${language}"
+                    type="button"
+                >${getLanguageLabel(language)}</button>
+            `).join("")}
+        </div>
+    `;
 
     switcher.addEventListener("click", event => {
+        const currentButton = event.target.closest(".language-current");
         const button = event.target.closest(".language-option");
-        if (button) setInterfaceLanguage(button.dataset.language);
+
+        if (currentButton) {
+            const isOpen = switcher.classList.toggle("is-open");
+            currentButton.setAttribute("aria-expanded", String(isOpen));
+            switcher.querySelector(".language-menu")?.setAttribute("aria-hidden", String(!isOpen));
+            return;
+        }
+
+        if (button) {
+            setInterfaceLanguage(button.dataset.language);
+            switcher.classList.remove("is-open");
+            switcher.querySelector(".language-current")?.setAttribute("aria-expanded", "false");
+            switcher.querySelector(".language-menu")?.setAttribute("aria-hidden", "true");
+        }
+    });
+
+    document.addEventListener("click", event => {
+        if (switcher.contains(event.target)) return;
+        switcher.classList.remove("is-open");
+        switcher.querySelector(".language-current")?.setAttribute("aria-expanded", "false");
+        switcher.querySelector(".language-menu")?.setAttribute("aria-hidden", "true");
     });
 
     document.body.appendChild(switcher);
