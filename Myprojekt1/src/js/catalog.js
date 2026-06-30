@@ -453,47 +453,6 @@ function updateProductModalImage() {
     image.textContent = currentImage ? "" : "Фото товара";
 }
 
-function ensurePhotoZoomModal() {
-    let zoomModal = document.getElementById("photoZoomModal");
-
-    if (zoomModal) return zoomModal;
-
-    zoomModal = document.createElement("div");
-    zoomModal.id = "photoZoomModal";
-    zoomModal.className = "photo-zoom-modal";
-    zoomModal.innerHTML = '<div id="photoZoomImage" class="photo-zoom-image"></div>';
-    document.body.appendChild(zoomModal);
-
-    return zoomModal;
-}
-
-function updatePhotoZoomImage() {
-    const zoomImage = document.getElementById("photoZoomImage");
-    const currentImage = modalProductImages[modalProductImageIndex] || "";
-
-    if (!zoomImage || !currentImage) return;
-
-    zoomImage.style.backgroundImage = `url("${currentImage}")`;
-}
-
-function openPhotoZoomModal() {
-    const currentImage = modalProductImages[modalProductImageIndex] || "";
-
-    if (!currentImage) return;
-
-    const zoomModal = ensurePhotoZoomModal();
-    updatePhotoZoomImage();
-    zoomModal.classList.add("is-open");
-}
-
-function closePhotoZoomModal() {
-    const zoomModal = document.getElementById("photoZoomModal");
-
-    if (zoomModal) {
-        zoomModal.classList.remove("is-open");
-    }
-}
-
 function initSellerPage() {
     const sellerPage = document.getElementById("sellerPage");
     const sellerProductsContainer = document.getElementById("sellerProducts");
@@ -637,26 +596,15 @@ function initModal() {
         const modal = document.getElementById("modal");
         const contactModal = document.getElementById("contactModal");
         const productModal = document.getElementById("productModal");
-        const zoomModal = document.getElementById("photoZoomModal");
-
-        if (zoomModal?.classList.contains("is-open")) {
-            if (event.target.closest(".photo-zoom-image") && modalProductImages.length > 1) {
-                modalProductImageIndex = (modalProductImageIndex + 1) % modalProductImages.length;
-                updatePhotoZoomImage();
-                updateProductModalImage();
-                return;
-            }
-
-            closePhotoZoomModal();
-            return;
-        }
 
         if (
             productModal &&
             productModal.style.display === "flex" &&
-            event.target.id === "productModalImage"
+            event.target.id === "productModalImage" &&
+            modalProductImages.length > 1
         ) {
-            openPhotoZoomModal();
+            modalProductImageIndex = (modalProductImageIndex + 1) % modalProductImages.length;
+            updateProductModalImage();
             return;
         }
 

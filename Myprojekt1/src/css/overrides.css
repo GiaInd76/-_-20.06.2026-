@@ -14,50 +14,6 @@
     color-scheme: light dark;
 }
 
-.product-modal-image.has-image {
-    cursor: zoom-in;
-}
-
-.photo-zoom-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 18px;
-    background: rgba(5, 10, 16, 0.82);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-}
-
-.photo-zoom-modal.is-open {
-    display: flex;
-}
-
-.photo-zoom-image {
-    width: min(94vw, 980px);
-    height: min(86vh, 980px);
-    border-radius: 22px;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
-    cursor: zoom-out;
-}
-
-@media (max-width: 700px) {
-    .photo-zoom-modal {
-        padding: 10px;
-    }
-
-    .photo-zoom-image {
-        width: 96vw;
-        height: 82vh;
-        border-radius: 18px;
-    }
-}
-
 body,
 .home-page,
 .glass-page {
