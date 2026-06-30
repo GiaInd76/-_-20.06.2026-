@@ -520,6 +520,20 @@ button:hover,
     color: var(--theme-muted);
 }
 
+.favorites-page .category-results-panel {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.favorites-page .category-page-label {
+    margin-left: 0;
+}
+
 .seller-featured-products {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
