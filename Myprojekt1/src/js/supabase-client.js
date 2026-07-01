@@ -104,6 +104,10 @@ function getSupabaseErrorMessage(error) {
         return "Сначала сохраните профиль лавки в базе.";
     }
 
+    if (error.message === "shop-owner-required") {
+        return "Эта лавка принадлежит другому аккаунту. Изменение заблокировано.";
+    }
+
     if (error.message === "admin-required") {
         return "У этого аккаунта нет прав администратора.";
     }
@@ -113,7 +117,7 @@ function getSupabaseErrorMessage(error) {
     }
 
     if (error.message === "Email not confirmed") {
-        return "Почта ещё не подтверждена. Проверьте письмо или временно отключите подтверждение email в Supabase.";
+        return "Почта ещё не подтверждена. Откройте письмо от Supabase и подтвердите аккаунт.";
     }
 
     if (error.code === "23505") {
@@ -327,6 +331,28 @@ async function saveSellerToSupabase(seller) {
     return toLocalSeller(data);
 }
 
+async function assertCurrentUserOwnsShop(shopId) {
+    if (!supabaseClient || !isUuid(shopId)) {
+        throw new Error("shop-not-synced");
+    }
+
+    const user = await getCurrentSupabaseUser();
+
+    if (!user) throw new Error("auth-required");
+
+    const { data, error } = await supabaseClient
+        .from("shops")
+        .select("id")
+        .eq("id", shopId)
+        .eq("owner_id", user.id)
+        .maybeSingle();
+
+    if (error) throw error;
+    if (!data) throw new Error("shop-owner-required");
+
+    return user;
+}
+
 async function deleteSellerFromSupabase(sellerId) {
     if (!supabaseClient || !isUuid(sellerId)) return;
 
@@ -353,10 +379,8 @@ async function deleteSellerFromSupabase(sellerId) {
 async function saveProductToSupabase(product) {
     if (!supabaseClient) return product;
 
-    const user = await getCurrentSupabaseUser();
-
-    if (!user) throw new Error("auth-required");
     if (!isUuid(product.seller)) throw new Error("shop-not-synced");
+    await assertCurrentUserOwnsShop(product.seller);
 
     const images = await uploadMarketplaceImages(
         getProductImages(product),
@@ -397,6 +421,17 @@ async function saveProductToSupabase(product) {
 
 async function deleteProductFromSupabase(productId) {
     if (!supabaseClient || !isUuid(productId)) return;
+
+    const productResult = await supabaseClient
+        .from("products")
+        .select("shop_id")
+        .eq("id", productId)
+        .maybeSingle();
+
+    if (productResult.error) throw productResult.error;
+    if (!productResult.data?.shop_id) return;
+
+    await assertCurrentUserOwnsShop(productResult.data.shop_id);
 
     const { error } = await supabaseClient
         .from("products")
@@ -653,6 +688,6 @@ function initAuthPage() {
             return;
         }
 
-        message.textContent = "Аккаунт создан, но Supabase всё ещё ждёт подтверждение почты. Для тестов отключите Confirm email или подтвердите пользователя в Supabase.";
+        message.textContent = "Аккаунт создан. Подтвердите почту по ссылке в письме, затем войдите.";
     });
 }
