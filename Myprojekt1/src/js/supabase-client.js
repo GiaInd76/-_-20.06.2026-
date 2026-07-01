@@ -46,11 +46,18 @@ async function getCurrentSupabaseUser() {
     const { data, error } = await supabaseClient.auth.getUser();
 
     if (error) {
-        cachedSupabaseUser = sessionResult.data.session.user || null;
-        return cachedSupabaseUser;
+        console.warn("Supabase user validation failed", error);
+        cachedSupabaseUser = null;
+        await supabaseClient.auth.signOut();
+        return null;
     }
 
     cachedSupabaseUser = data.user || null;
+
+    if (!cachedSupabaseUser) {
+        await supabaseClient.auth.signOut();
+    }
+
     return cachedSupabaseUser;
 }
 
