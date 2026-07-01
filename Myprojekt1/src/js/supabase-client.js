@@ -255,6 +255,196 @@ function toLocalProduct(row) {
     };
 }
 
+function mergeLocalRows(storageKey, rows) {
+    if (!Array.isArray(rows) || !rows.length) return;
+
+    const currentRows = readStorage(storageKey);
+    const rowMap = new Map(currentRows.map(row => [row.id, row]));
+
+    rows.forEach(row => {
+        if (row?.id) rowMap.set(row.id, row);
+    });
+
+    writeStorage(storageKey, Array.from(rowMap.values()));
+}
+
+async function fetchShopsByIdsFromSupabase(shopIds) {
+    if (!supabaseClient) return [];
+
+    const ids = [...new Set((shopIds || []).filter(isUuid))];
+
+    if (!ids.length) return [];
+
+    const { data, error } = await withTimeout(
+        supabaseClient
+            .from("shops")
+            .select("*")
+            .in("id", ids),
+        7000,
+        "fetch-shops"
+    );
+
+    if (error) throw error;
+
+    const sellers = (data || []).map(toLocalSeller);
+    mergeLocalRows("sellers", sellers);
+
+    return sellers;
+}
+
+async function fetchLatestProductsFromSupabase(categoryIds = [], limit = 6) {
+    if (!supabaseClient) return readStorage("products").slice(0, limit);
+
+    let request = supabaseClient
+        .from("products")
+        .select("*")
+        .order("updated_at", { ascending: false })
+        .limit(limit);
+
+    const filters = (categoryIds || []).filter(Boolean);
+
+    if (filters.length) {
+        request = request.in("category", filters);
+    }
+
+    const { data, error } = await withTimeout(request, 7000, "fetch-latest-products");
+
+    if (error) throw error;
+
+    const products = (data || []).map(toLocalProduct);
+    mergeLocalRows("products", products);
+    await fetchShopsByIdsFromSupabase(products.map(product => product.seller));
+
+    return products;
+}
+
+async function fetchProductsByShopFromSupabase(shopId) {
+    if (!supabaseClient || !isUuid(shopId)) {
+        return readStorage("products").filter(product => product.seller === shopId);
+    }
+
+    const { data, error } = await withTimeout(
+        supabaseClient
+            .from("products")
+            .select("*")
+            .eq("shop_id", shopId)
+            .order("updated_at", { ascending: false }),
+        7000,
+        "fetch-shop-products"
+    );
+
+    if (error) throw error;
+
+    const products = (data || []).map(toLocalProduct);
+    const otherProducts = readStorage("products")
+        .filter(product => product.seller !== shopId);
+
+    writeStorage("products", [...otherProducts, ...products]);
+
+    return products;
+}
+
+async function fetchProductsByIdsFromSupabase(productIds) {
+    if (!supabaseClient) {
+        const ids = new Set(productIds || []);
+        return readStorage("products").filter(product => ids.has(product.id));
+    }
+
+    const ids = [...new Set((productIds || []).filter(isUuid))];
+
+    if (!ids.length) return [];
+
+    const { data, error } = await withTimeout(
+        supabaseClient
+            .from("products")
+            .select("*")
+            .in("id", ids),
+        7000,
+        "fetch-products-by-id"
+    );
+
+    if (error) throw error;
+
+    const products = (data || []).map(toLocalProduct);
+    mergeLocalRows("products", products);
+    await fetchShopsByIdsFromSupabase(products.map(product => product.seller));
+
+    return products;
+}
+
+async function fetchCategoryDataFromSupabase(categoryId) {
+    if (!supabaseClient) {
+        return {
+            sellers: readStorage("sellers")
+                .filter(seller => !categoryId || seller.category === categoryId),
+            products: readStorage("products")
+                .filter(product => !categoryId || product.category === categoryId)
+        };
+    }
+
+    const categoryFilter = categoryId || "";
+    const shopRequest = categoryFilter
+        ? supabaseClient.from("shops").select("*").eq("category", categoryFilter)
+        : supabaseClient.from("shops").select("*");
+    const productRequest = categoryFilter
+        ? supabaseClient.from("products").select("*").eq("category", categoryFilter)
+        : supabaseClient.from("products").select("*").limit(60);
+    const [shopsResult, productsResult] = await withTimeout(
+        Promise.all([
+            shopRequest.order("created_at", { ascending: false }),
+            productRequest.order("updated_at", { ascending: false })
+        ]),
+        8000,
+        "fetch-category"
+    );
+
+    if (shopsResult.error) throw shopsResult.error;
+    if (productsResult.error) throw productsResult.error;
+
+    const products = (productsResult.data || []).map(toLocalProduct);
+    const productShopIds = products.map(product => product.seller);
+    const extraSellers = await fetchShopsByIdsFromSupabase(productShopIds);
+    const sellers = [
+        ...(shopsResult.data || []).map(toLocalSeller),
+        ...extraSellers
+    ].filter((seller, index, list) => {
+        return list.findIndex(item => item.id === seller.id) === index;
+    });
+
+    mergeLocalRows("sellers", sellers);
+    mergeLocalRows("products", products);
+
+    return { sellers, products };
+}
+
+async function searchProductsFromSupabase(searchText) {
+    const query = String(searchText || "").trim();
+
+    if (!supabaseClient || !query) {
+        return readStorage("products");
+    }
+
+    const escaped = query.replace(/[%_]/g, "\\$&");
+    const { data, error } = await withTimeout(
+        supabaseClient
+            .from("products")
+            .select("*")
+            .or(`name.ilike.%${escaped}%,description.ilike.%${escaped}%,department.ilike.%${escaped}%`)
+            .order("updated_at", { ascending: false })
+            .limit(60),
+        8000,
+        "search-products"
+    );
+
+    if (error) throw error;
+
+    const products = (data || []).map(toLocalProduct);
+    mergeLocalRows("products", products);
+    await fetchShopsByIdsFromSupabase(products.map(product => product.seller));
+
+    return products;
+}
+
 async function hydrateMarketplaceFromSupabase() {
     if (!supabaseClient) return;
 
@@ -271,7 +461,8 @@ async function hydrateMarketplaceFromSupabase() {
                 supabaseClient
                     .from("products")
                     .select("*")
-                    .order("created_at", { ascending: true })
+                    .order("updated_at", { ascending: false })
+                    .limit(60)
             ]),
             6000,
             "hydrate-marketplace"

@@ -53,7 +53,7 @@ function renderSellersList(containerId, filterCategory = "") {
     });
 }
 
-function initCategoryPage() {
+async function initCategoryPage() {
     const title = document.getElementById("categoryTitle");
     const sellerContainer = document.getElementById("categorySellers");
     const pageLabel = document.getElementById("categoryPageLabel");
@@ -63,14 +63,21 @@ function initCategoryPage() {
     const type = params.get("type");
     const search = (params.get("search") || "").trim().toLowerCase();
     const showFavorites = params.get("favorites") === "1";
-    const sellers = readStorage("sellers");
-    const products = readStorage("products");
+    let sellers = readStorage("sellers");
+    let products = readStorage("products");
 
     document.body.classList.toggle("favorites-page", showFavorites);
 
     if (showFavorites) {
         const favoriteIds = getFavoriteProducts();
-        const favoriteProducts = products.filter(product => favoriteIds.includes(product.id));
+        let favoriteProducts = products.filter(product => favoriteIds.includes(product.id));
+
+        try {
+            favoriteProducts = await fetchProductsByIdsFromSupabase(favoriteIds);
+            sellers = readStorage("sellers");
+        } catch (error) {
+            console.warn("Favorites fallback", error);
+        }
 
         if (pageLabel) {
             pageLabel.textContent = "Избранные товары";
@@ -84,19 +91,27 @@ function initCategoryPage() {
     }
 
     if (search) {
-        const matchingProducts = products.filter(product => {
-            const seller = sellers.find(item => item.id === product.seller);
-            const text = `
-                ${product.name || ""}
-                ${product.description || ""}
-                ${getProductDepartment(product)}
-                ${getCategoryLabel(product.category)}
-                ${seller?.name || ""}
-                ${seller?.description || ""}
-            `.toLowerCase();
+        let matchingProducts = [];
 
-            return text.includes(search);
-        });
+        try {
+            matchingProducts = await searchProductsFromSupabase(search);
+            sellers = readStorage("sellers");
+        } catch (error) {
+            console.warn("Search fallback", error);
+            matchingProducts = products.filter(product => {
+                const seller = sellers.find(item => item.id === product.seller);
+                const text = `
+                    ${product.name || ""}
+                    ${product.description || ""}
+                    ${getProductDepartment(product)}
+                    ${getCategoryLabel(product.category)}
+                    ${seller?.name || ""}
+                    ${seller?.description || ""}
+                `.toLowerCase();
+
+                return text.includes(search);
+            });
+        }
 
         if (pageLabel) {
             pageLabel.textContent = `Найденные товары: «${params.get("search")}»`;
@@ -119,6 +134,14 @@ function initCategoryPage() {
 
     if (type) {
         setBrandCategory(type);
+    }
+
+    try {
+        const categoryData = await fetchCategoryDataFromSupabase(type);
+        sellers = categoryData.sellers;
+        products = categoryData.products;
+    } catch (error) {
+        console.warn("Category fallback", error);
     }
 
     const filteredSellers = sellers.filter(seller => {
@@ -453,7 +476,7 @@ function updateProductModalImage() {
     image.textContent = currentImage ? "" : "Фото товара";
 }
 
-function initSellerPage() {
+async function initSellerPage() {
     const sellerPage = document.getElementById("sellerPage");
     const sellerProductsContainer = document.getElementById("sellerProducts");
     const departmentsContainer = document.getElementById("sellerDepartments");
@@ -548,8 +571,14 @@ function initSellerPage() {
         }
     });
 
-    const products = readStorage("products")
+    let products = readStorage("products")
         .filter(product => product.seller === currentSeller);
+
+    try {
+        products = await fetchProductsByShopFromSupabase(currentSeller);
+    } catch (error) {
+        console.warn("Seller products fallback", error);
+    }
 
     if (departmentsContainer && products.length) {
         const departments = [...new Set(products.map(getProductDepartment))];

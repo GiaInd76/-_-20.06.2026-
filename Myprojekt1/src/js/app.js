@@ -15,9 +15,16 @@ async function initApp() {
     initBackButtons();
     initCategoryCards();
     initSellerCreation();
+    if (currentSeller) {
+        try {
+            await fetchProductsByShopFromSupabase(currentSeller);
+        } catch (error) {
+            console.warn("Seller scoped sync skipped", error);
+        }
+    }
     initSellerPanel();
-    initCategoryPage();
-    initSellerPage();
+    await initCategoryPage();
+    await initSellerPage();
     initOwnerProductEditor();
     initModal();
 }

@@ -75,33 +75,40 @@ function initMainPage() {
         updateOffersFilterButton(activeFilters);
     };
 
-    const renderHomeOffers = () => {
+    const renderHomeOffers = async () => {
         if (!homeOffersGrid) return;
 
         const activeFilters = getOfferCategoryFilters();
-        const products = readStorage("products")
-            .filter(product => {
-                return !activeFilters.length || activeFilters.includes(product.category);
-            })
-            .map((product, index) => ({ product, index }))
-            .sort((first, second) => {
-                const firstDate = Date.parse(
-                    first.product.priceChangedAt ||
-                    first.product.updatedAt ||
-                    first.product.createdAt ||
-                    ""
-                );
-                const secondDate = Date.parse(
-                    second.product.priceChangedAt ||
-                    second.product.updatedAt ||
-                    second.product.createdAt ||
-                    ""
-                );
+        let products = [];
 
-                return (secondDate || second.index) - (firstDate || first.index);
-            })
-            .slice(0, 6)
-            .map(item => item.product);
+        try {
+            products = await fetchLatestProductsFromSupabase(activeFilters, 6);
+        } catch (error) {
+            console.warn("Home offers fallback", error);
+            products = readStorage("products")
+                .filter(product => {
+                    return !activeFilters.length || activeFilters.includes(product.category);
+                })
+                .map((product, index) => ({ product, index }))
+                .sort((first, second) => {
+                    const firstDate = Date.parse(
+                        first.product.priceChangedAt ||
+                        first.product.updatedAt ||
+                        first.product.createdAt ||
+                        ""
+                    );
+                    const secondDate = Date.parse(
+                        second.product.priceChangedAt ||
+                        second.product.updatedAt ||
+                        second.product.createdAt ||
+                        ""
+                    );
+
+                    return (secondDate || second.index) - (firstDate || first.index);
+                })
+                .slice(0, 6)
+                .map(item => item.product);
+        }
 
         if (!products.length) {
             homeOffersGrid.innerHTML = `
