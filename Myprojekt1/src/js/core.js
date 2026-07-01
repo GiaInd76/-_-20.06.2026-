@@ -165,23 +165,14 @@ function getSellerById(sellerId) {
 }
 
 function getSellerForUser(user = getCachedSupabaseUser()) {
+    if (!user) return null;
+
     const sellers = readStorage("sellers");
-
-    if (user) {
-        const ownedSeller = sellers.find(seller => seller.ownerId === user.id);
-
-        if (ownedSeller) return ownedSeller;
-    }
-
-    if (isSupabaseReady()) return null;
-
-    return sellers.length === 1 ? sellers[0] : null;
+    return sellers.find(seller => seller.ownerId === user.id) || null;
 }
 
 function isSellerOwnedByCurrentUser(seller, user = getCachedSupabaseUser()) {
     if (!seller) return false;
-
-    if (!isSupabaseReady()) return true;
     if (!user) return false;
 
     return seller.ownerId === user.id;

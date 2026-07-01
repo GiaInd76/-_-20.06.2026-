@@ -388,9 +388,20 @@ function initSellerCreation() {
     const prepareSellerCreationPage = async () => {
         if (!createSellerBtn && !sellerCreateBlock) return;
 
-        const user = isSupabaseReady()
-            ? await getCurrentSupabaseUser()
-            : getCachedSupabaseUser();
+        if (!isSupabaseReady()) {
+            sellerCreateBlock?.classList.add("hidden");
+            if (cabinetSubtitle) {
+                cabinetSubtitle.textContent = "База не подключилась. Создание лавки временно недоступно.";
+            }
+            showMessage(
+                createSellerMessage,
+                "Обновите страницу или проверьте интернет. Без Supabase лавка не создаётся."
+            );
+            renderSellerCabinets();
+            return;
+        }
+
+        const user = await getCurrentSupabaseUser();
         const existingSeller = getSellerForUser(user);
 
         if (!existingSeller) {
@@ -448,16 +459,16 @@ function initSellerCreation() {
         showMessage(createSellerMessage, "Проверяем вход и сохраняем лавку...");
 
         try {
-            let currentUser = null;
+            if (!isSupabaseReady()) {
+                throw new Error("supabase-unavailable");
+            }
 
-            if (isSupabaseReady()) {
-                currentUser = await getCurrentSupabaseUser();
+            const currentUser = await getCurrentSupabaseUser();
 
-                if (!currentUser) {
-                    showMessage(createSellerMessage, "Нужно войти в аккаунт продавца.");
-                    await requireSellerSession("create_seller.html");
-                    return;
-                }
+            if (!currentUser) {
+                showMessage(createSellerMessage, "Нужно войти в аккаунт продавца.");
+                await requireSellerSession("create_seller.html");
+                return;
             }
 
             const existingSeller = getSellerForUser(currentUser);
@@ -471,9 +482,7 @@ function initSellerCreation() {
                 return;
             }
 
-            const savedSeller = isSupabaseReady()
-                ? await saveSellerToSupabase(draftSeller)
-                : draftSeller;
+            const savedSeller = await saveSellerToSupabase(draftSeller);
 
             sellers.push(savedSeller);
             writeStorage("sellers", sellers);

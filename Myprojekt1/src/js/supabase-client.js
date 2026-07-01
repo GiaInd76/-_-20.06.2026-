@@ -100,6 +100,10 @@ function getSupabaseErrorMessage(error) {
         return "Сначала войдите в аккаунт продавца.";
     }
 
+    if (error.message === "supabase-unavailable") {
+        return "База не подключилась. Обновите страницу или проверьте интернет.";
+    }
+
     if (error.message === "shop-not-synced") {
         return "Сначала сохраните профиль лавки в базе.";
     }
@@ -287,7 +291,7 @@ async function hydrateMarketplaceFromSupabase() {
 }
 
 async function saveSellerToSupabase(seller) {
-    if (!supabaseClient) return seller;
+    if (!supabaseClient) throw new Error("supabase-unavailable");
 
     const user = await getCurrentSupabaseUser();
 
@@ -354,7 +358,8 @@ async function assertCurrentUserOwnsShop(shopId) {
 }
 
 async function deleteSellerFromSupabase(sellerId) {
-    if (!supabaseClient || !isUuid(sellerId)) return;
+    if (!supabaseClient) throw new Error("supabase-unavailable");
+    if (!isUuid(sellerId)) return;
 
     const user = await getCurrentSupabaseUser();
 
@@ -377,7 +382,7 @@ async function deleteSellerFromSupabase(sellerId) {
 }
 
 async function saveProductToSupabase(product) {
-    if (!supabaseClient) return product;
+    if (!supabaseClient) throw new Error("supabase-unavailable");
 
     if (!isUuid(product.seller)) throw new Error("shop-not-synced");
     await assertCurrentUserOwnsShop(product.seller);
@@ -420,7 +425,8 @@ async function saveProductToSupabase(product) {
 }
 
 async function deleteProductFromSupabase(productId) {
-    if (!supabaseClient || !isUuid(productId)) return;
+    if (!supabaseClient) throw new Error("supabase-unavailable");
+    if (!isUuid(productId)) return;
 
     const productResult = await supabaseClient
         .from("products")
@@ -463,12 +469,7 @@ async function isCurrentUserAdmin() {
 }
 
 async function fetchAdminDashboardData() {
-    if (!supabaseClient) {
-        return {
-            shops: readStorage("sellers"),
-            products: readStorage("products")
-        };
-    }
+    if (!supabaseClient) throw new Error("supabase-unavailable");
 
     const isAdmin = await isCurrentUserAdmin();
 
@@ -499,7 +500,8 @@ async function fetchAdminDashboardData() {
 }
 
 async function adminDeleteProduct(productId) {
-    if (!supabaseClient || !isUuid(productId)) return;
+    if (!supabaseClient) throw new Error("supabase-unavailable");
+    if (!isUuid(productId)) return;
 
     const isAdmin = await isCurrentUserAdmin();
 
@@ -514,7 +516,8 @@ async function adminDeleteProduct(productId) {
 }
 
 async function adminDeleteShop(shopId) {
-    if (!supabaseClient || !isUuid(shopId)) return;
+    if (!supabaseClient) throw new Error("supabase-unavailable");
+    if (!isUuid(shopId)) return;
 
     const isAdmin = await isCurrentUserAdmin();
 
@@ -540,6 +543,19 @@ async function initProtectedSellerPage() {
     const ownerView = new URLSearchParams(window.location.search).get("owner") === "1";
 
     if (!requiresAuth && !ownerView) return true;
+
+    if (!isSupabaseReady()) {
+        document.body.innerHTML = `
+            <main class="container">
+                <section class="glass-card auth-card">
+                    <h1>База не подключилась</h1>
+                    <p>Обновите страницу или проверьте интернет. Кабинет продавца без Supabase недоступен.</p>
+                    <a class="nav-pill" href="index.html">На главную</a>
+                </section>
+            </main>
+        `;
+        return false;
+    }
 
     const user = await requireSellerSession(window.location.href);
 
