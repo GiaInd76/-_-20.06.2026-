@@ -218,6 +218,29 @@ async function uploadMarketplaceImages(images, folder) {
     return uploaded;
 }
 
+function getStoragePathFromPublicUrl(url) {
+    const value = String(url || "");
+    const marker = "/storage/v1/object/public/product-images/";
+
+    if (!value.includes(marker)) return "";
+
+    return decodeURIComponent(value.split(marker)[1] || "").split("?")[0];
+}
+
+async function removeMarketplaceImages(urls) {
+    if (!supabaseClient) throw new Error("supabase-unavailable");
+
+    const paths = [...new Set((urls || []).map(getStoragePathFromPublicUrl).filter(Boolean))];
+
+    if (!paths.length) return;
+
+    const { error } = await supabaseClient.storage
+        .from("product-images")
+        .remove(paths);
+
+    if (error) throw error;
+}
+
 function toLocalSeller(row) {
     return {
         id: row.id,
@@ -562,6 +585,33 @@ async function deleteSellerFromSupabase(sellerId) {
     const user = await getCurrentSupabaseUser();
 
     if (!user) throw new Error("auth-required");
+
+    const { data: shopData, error: shopFetchError } = await supabaseClient
+        .from("shops")
+        .select("cover_url")
+        .eq("id", sellerId)
+        .eq("owner_id", user.id)
+        .maybeSingle();
+
+    if (shopFetchError) throw shopFetchError;
+    if (!shopData) throw new Error("shop-owner-required");
+
+    const { data: productRows, error: productFetchError } = await supabaseClient
+        .from("products")
+        .select("image_url,image_urls")
+        .eq("shop_id", sellerId);
+
+    if (productFetchError) throw productFetchError;
+
+    const imageUrls = [
+        shopData.cover_url,
+        ...(productRows || []).flatMap(product => [
+            product.image_url,
+            ...(Array.isArray(product.image_urls) ? product.image_urls : [])
+        ])
+    ];
+
+    await removeMarketplaceImages(imageUrls);
 
     const productsResult = await supabaseClient
         .from("products")

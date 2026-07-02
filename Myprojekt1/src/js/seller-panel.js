@@ -157,13 +157,17 @@ function initSellerPanel() {
         if (!seller || seller.id !== currentSeller) return;
 
         confirmDeleteSellerBtn.disabled = true;
+        showMessage(profileMessage, "Удаляем лавку, товары и фотографии...");
 
         try {
             await deleteSellerFromSupabase(seller.id);
         } catch (error) {
             console.warn("Seller deletion failed", error);
             confirmDeleteSellerBtn.disabled = false;
-            showMessage(profileMessage, "Не удалось удалить лавку из базы.");
+            showMessage(
+                profileMessage,
+                `Не удалось удалить лавку полностью: ${getSupabaseErrorMessage(error)}`
+            );
             closeDeleteSellerModal();
             return;
         }

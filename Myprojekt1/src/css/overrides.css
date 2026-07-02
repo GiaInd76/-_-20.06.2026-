@@ -790,6 +790,7 @@ button:hover,
     .subtitle,
     .home-page .subtitle,
     .glass-page .subtitle,
+    .form-message,
     .product-card p,
     .product-description,
     .home-offer-card small,
@@ -807,6 +808,16 @@ button:hover,
     .home-section-note,
     .home-kicker {
         color: var(--theme-muted);
+    }
+
+    .glass-page .form-message,
+    .auth-page .form-message,
+    .seller-panel-page .form-message {
+        color: #dcecff;
+    }
+
+    .glass-page .empty-card {
+        color: #d7e7f6;
     }
 
     .home-page .home-benefit-icon {

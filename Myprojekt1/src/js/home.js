@@ -522,7 +522,7 @@ function renderSellerCabinets() {
     if (!sellers.length) {
         cabinetList.innerHTML = `
             <div class="empty-card">
-                У этого аккаунта пока нет лавки. Создайте первую выше.
+                У этого аккаунта нет активной лавки. Можно создать новую выше.
             </div>
         `;
         return;

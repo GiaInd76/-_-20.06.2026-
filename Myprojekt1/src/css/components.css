@@ -217,7 +217,7 @@
 
     min-height: 16px;
 
-    color: #202020;
+    color: var(--theme-ink, #202020);
 
     font-size: 12px;
 
@@ -1010,4 +1010,3 @@
     }
 
 }
-
