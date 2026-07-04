@@ -217,7 +217,7 @@ function initSellerPanel() {
                     value="${escapeHtml(product.id)}"
                     ${selectedIds.has(product.id) ? "checked" : ""}
                 >
-                <span>${escapeHtml(product.name)}</span>
+                <span>${escapeHtml(getLocalizedProductName(product))}</span>
             </label>
         `).join("");
 
@@ -673,6 +673,15 @@ function initSellerPanel() {
     renderLiveProductPreview();
     renderDepartmentSuggestions();
     renderPanelProducts();
+
+    if (!window.sellerPanelLanguageListenerAdded) {
+        window.sellerPanelLanguageListenerAdded = true;
+        window.addEventListener("privoz-language-change", () => {
+            renderFeaturedProductsPicker();
+            renderPanelProducts();
+            renderLiveProductPreview();
+        });
+    }
 }
 
 function renderPanelProducts() {
@@ -726,9 +735,9 @@ function renderPanelProducts() {
 
             div.innerHTML = `
                 <span class="product-department-label">${escapeHtml(getProductDepartment(product))}</span>
-                <h3>${escapeHtml(product.name)}</h3>
+                <h3>${escapeHtml(getLocalizedProductName(product))}</h3>
                 <p class="product-description">
-                    ${escapeHtml(product.description || "Описание пока не заполнено.")}
+                    ${escapeHtml(getLocalizedProductDescription(product) || "Описание пока не заполнено.")}
                 </p>
                 <div class="product-info">
                     <span>${escapeHtml(getProductPriceText(product))}</span>

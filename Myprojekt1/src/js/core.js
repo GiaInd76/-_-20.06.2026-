@@ -132,7 +132,11 @@ function makeId(value) {
 
 function getCategoryLabel(categoryId) {
     const category = categories.find(item => item.id === categoryId);
-    return category ? category.label : "Другое";
+    const fallback = category ? category.label : "Другое";
+
+    return typeof getLocalizedCategoryLabel === "function"
+        ? getLocalizedCategoryLabel(categoryId, fallback)
+        : fallback;
 }
 
 function getCategoryClass(categoryId) {
@@ -140,7 +144,11 @@ function getCategoryClass(categoryId) {
 }
 
 function getUnitLabel(unitId) {
-    return units[unitId] || unitId || "";
+    const fallback = units[unitId] || unitId || "";
+
+    return typeof getLocalizedUnitLabel === "function"
+        ? getLocalizedUnitLabel(unitId, fallback)
+        : fallback;
 }
 
 function fillCategorySelect(select, selectedValue = "") {
@@ -180,7 +188,12 @@ function isSellerOwnedByCurrentUser(seller, user = getCachedSupabaseUser()) {
 
 function getSellerName(sellerId) {
     const seller = getSellerById(sellerId);
-    return seller ? seller.name : "Продавец";
+
+    if (!seller) return "Продавец";
+
+    return typeof getLocalizedSellerName === "function"
+        ? getLocalizedSellerName(seller)
+        : seller.name;
 }
 
 function showMessage(element, text) {
@@ -206,6 +219,10 @@ function getProductPriceText(product) {
 }
 
 function getProductDepartment(product) {
+    if (typeof getLocalizedProductDepartment === "function") {
+        return getLocalizedProductDepartment(product);
+    }
+
     return String(product?.department || "").trim() || "Другое";
 }
 

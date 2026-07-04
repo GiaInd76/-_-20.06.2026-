@@ -454,21 +454,32 @@ async function searchProductsFromSupabase(searchText) {
         return readStorage("products");
     }
 
-    const escaped = query.replace(/[%_]/g, "\\$&");
     const { data, error } = await withTimeout(
         supabaseClient
             .from("products")
             .select("*")
-            .or(`name.ilike.%${escaped}%,description.ilike.%${escaped}%,department.ilike.%${escaped}%`)
             .order("updated_at", { ascending: false })
-            .limit(60),
+            .limit(200),
         8000,
         "search-products"
     );
 
     if (error) throw error;
 
-    const products = (data || []).map(toLocalProduct);
+    const queryLower = query.toLowerCase();
+    const products = (data || [])
+        .map(toLocalProduct)
+        .filter(product => {
+            const texts = [
+                product.name,
+                product.description,
+                product.department,
+                getCategoryLabel(product.category)
+            ].join(" ").toLowerCase();
+
+            return texts.includes(queryLower);
+        });
+
     mergeLocalRows("products", products);
     await fetchShopsByIdsFromSupabase(products.map(product => product.seller));
 

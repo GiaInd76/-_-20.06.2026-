@@ -67,7 +67,7 @@ function initMainPage() {
                         value="${escapeHtml(category.id)}"
                         ${activeFilters.includes(category.id) ? "checked" : ""}
                     >
-                    <span>${escapeHtml(category.label)}</span>
+                    <span>${escapeHtml(getCategoryLabel(category.id))}</span>
                 </label>
             `).join("")}
         `;
@@ -135,7 +135,7 @@ function initMainPage() {
                     <button
                         class="home-offer-photo"
                         type="button"
-                        aria-label="Посмотреть фото товара ${escapeHtml(product.name)}"
+                        aria-label="Посмотреть фото товара ${escapeHtml(getLocalizedProductName(product))}"
                     >
                         <span class="home-offer-image"></span>
                     </button>
@@ -145,9 +145,9 @@ function initMainPage() {
                         aria-label="Добавить товар в избранное"
                     >${isFavorite ? "★" : "☆"}</button>
                     <span class="home-offer-badge">${hasNewPrice ? "Цена обновлена" : "Новинка"}</span>
-                    <strong>${escapeHtml(product.name)}</strong>
+                    <strong>${escapeHtml(getLocalizedProductName(product))}</strong>
                     <small>${escapeHtml(getProductPriceText(product))}</small>
-                    <button class="home-offer-shop" type="button">В лавку</button>
+                    <button class="home-offer-shop" type="button">${escapeHtml(translateInterfaceValue("goShop"))}</button>
                 </article>
             `;
         }).join("");
@@ -174,7 +174,7 @@ function initMainPage() {
                     type="button"
                 >
                     <span>${escapeHtml(category.icon)}</span>
-                    <strong>${escapeHtml(category.title)}</strong>
+                    <strong>${escapeHtml(getCategoryLabel(category.id))}</strong>
                 </button>
             `)
             .join("");
@@ -335,6 +335,15 @@ function initMainPage() {
             sellerChoiceModal.style.display = "none";
         }
     });
+
+    if (!window.homeLanguageListenerAdded) {
+        window.homeLanguageListenerAdded = true;
+        window.addEventListener("privoz-language-change", () => {
+            renderAllHomeCategories();
+            renderOffersFilterPanel();
+            renderHomeOffers();
+        });
+    }
 }
 
 function initFavoritesNavigation() {
@@ -533,8 +542,8 @@ function renderSellerCabinets() {
         card.className = "seller-card";
 
         card.innerHTML = `
-            <h3>${escapeHtml(seller.name)}</h3>
-            <p>${escapeHtml(seller.description || "Описание пока не заполнено.")}</p>
+            <h3>${escapeHtml(getLocalizedSellerName(seller))}</h3>
+            <p>${escapeHtml(getLocalizedSellerDescription(seller))}</p>
             <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
                 ${escapeHtml(getCategoryLabel(seller.category))}
             </span>

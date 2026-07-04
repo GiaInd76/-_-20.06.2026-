@@ -37,8 +37,8 @@ function renderSellersList(containerId, filterCategory = "") {
         card.dataset.seller = seller.id;
 
         card.innerHTML = `
-            <h3>${escapeHtml(seller.name)}</h3>
-            <p>${escapeHtml(seller.description || "Описание пока не заполнено.")}</p>
+            <h3>${escapeHtml(getLocalizedSellerName(seller))}</h3>
+            <p>${escapeHtml(getLocalizedSellerDescription(seller))}</p>
             <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
                 ${escapeHtml(getCategoryLabel(seller.category))}
             </span>
@@ -101,12 +101,12 @@ async function initCategoryPage() {
             matchingProducts = products.filter(product => {
                 const seller = sellers.find(item => item.id === product.seller);
                 const text = `
-                    ${product.name || ""}
-                    ${product.description || ""}
+                    ${getLocalizedProductName(product) || ""}
+                    ${getLocalizedProductDescription(product) || ""}
                     ${getProductDepartment(product)}
                     ${getCategoryLabel(product.category)}
-                    ${seller?.name || ""}
-                    ${seller?.description || ""}
+                    ${seller ? getLocalizedSellerName(seller) : ""}
+                    ${seller ? getLocalizedSellerDescription(seller) : ""}
                 `.toLowerCase();
 
                 return text.includes(search);
@@ -155,6 +155,11 @@ async function initCategoryPage() {
     });
 
     renderCategorySellers(sellerContainer, filteredSellers);
+
+    if (!window.categoryLanguageListenerAdded) {
+        window.categoryLanguageListenerAdded = true;
+        window.addEventListener("privoz-language-change", initCategoryPage);
+    }
 }
 
 function renderCategorySellers(container, sellers) {
@@ -202,7 +207,7 @@ function renderCategorySellers(container, sellers) {
                                     class="seller-featured-image ${image ? "has-image" : ""}"
                                     ${image ? `style="background-image: url('${escapeHtml(image)}')"` : ""}
                                 ></div>
-                                <strong>${escapeHtml(product.name)}</strong>
+                                <strong>${escapeHtml(getLocalizedProductName(product))}</strong>
                                 <small>${escapeHtml(getProductPriceText(product))}</small>
                             </div>
                         `;
@@ -213,8 +218,8 @@ function renderCategorySellers(container, sellers) {
 
         card.innerHTML = `
             <div class="seller-card-summary">
-                <h3>${escapeHtml(seller.name)}</h3>
-                <p>${escapeHtml(seller.description || "Описание пока не заполнено.")}</p>
+                <h3>${escapeHtml(getLocalizedSellerName(seller))}</h3>
+                <p>${escapeHtml(getLocalizedSellerDescription(seller))}</p>
                 <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
                     ${escapeHtml(getCategoryLabel(seller.category))}
                 </span>
@@ -266,9 +271,9 @@ function renderCategoryProducts(container, products, options = {}) {
                 ${isFavorite ? "★" : "☆"}
             </button>
             <span class="product-department-label">${escapeHtml(getProductDepartment(product))}</span>
-            <h3>${escapeHtml(product.name)}</h3>
+            <h3>${escapeHtml(getLocalizedProductName(product))}</h3>
             <p class="product-description">
-                ${escapeHtml(product.description || "Описание пока не заполнено.")}
+                ${escapeHtml(getLocalizedProductDescription(product))}
             </p>
             <div class="product-info">
                 <span>${escapeHtml(getProductPriceText(product))}</span>
@@ -459,7 +464,7 @@ function openProductModal(product) {
     modalProductImages = getProductImages(product);
     modalProductImageIndex = 0;
     updateProductModalImage();
-    title.textContent = product.name || "Товар";
+    title.textContent = getLocalizedProductName(product);
     price.textContent = getProductPriceText(product);
     modal.style.display = "flex";
 }
@@ -515,8 +520,8 @@ async function initSellerPage() {
     }
 
     sellerPage.innerHTML = `
-        <h1 class="shop-title">${escapeHtml(seller.name)}</h1>
-        <p class="subtitle">${escapeHtml(seller.description || "Описание пока не заполнено.")}</p>
+        <h1 class="shop-title">${escapeHtml(getLocalizedSellerName(seller))}</h1>
+        <p class="subtitle">${escapeHtml(getLocalizedSellerDescription(seller))}</p>
         <p class="work-time">
             <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
                 ${escapeHtml(getCategoryLabel(seller.category))}
@@ -532,8 +537,7 @@ async function initSellerPage() {
     const findModalText = document.getElementById("findModalText");
 
     if (findModalText) {
-        findModalText.textContent =
-            seller.findInfo || "Информация о месте пока не заполнена.";
+        findModalText.textContent = getLocalizedSellerFindInfo(seller);
     }
 
     const phoneLink = document.getElementById("sellerPhoneLink");
@@ -617,6 +621,11 @@ async function initSellerPage() {
         );
     } else {
         renderCategoryProducts(sellerProductsContainer, products, { ownerMode });
+    }
+
+    if (!window.sellerPageLanguageListenerAdded) {
+        window.sellerPageLanguageListenerAdded = true;
+        window.addEventListener("privoz-language-change", initSellerPage);
     }
 }
 

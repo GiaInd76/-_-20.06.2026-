@@ -1,4 +1,4 @@
-/* Переводы интерфейса. Тексты продавцов и названия товаров не изменяются. */
+/* Переводы интерфейса сайта. Контент продавцов показываем как есть. */
 
 const interfaceTranslations = {
     back: { ru: "Назад", uk: "Назад", en: "Back" },
@@ -89,8 +89,78 @@ const translatedTextNodes = new WeakMap();
 const translatedAttributes = new WeakMap();
 let currentLanguage = localStorage.getItem("privozLanguage") || "uk";
 
+if (!["uk", "en"].includes(currentLanguage)) {
+    currentLanguage = "uk";
+    localStorage.setItem("privozLanguage", currentLanguage);
+}
+
 function translateInterfaceValue(key) {
-    return interfaceTranslations[key]?.[currentLanguage] || interfaceTranslations[key]?.ru || key;
+    return interfaceTranslations[key]?.[currentLanguage] || interfaceTranslations[key]?.uk || key;
+}
+
+function getCurrentLanguage() {
+    return currentLanguage;
+}
+
+function getLocalizedSellerName(seller) {
+    return String(seller?.name || "").trim() || "Продавец";
+}
+
+function getLocalizedSellerDescription(seller) {
+    return String(seller?.description || "").trim() || "Описание пока не заполнено.";
+}
+
+function getLocalizedSellerFindInfo(seller) {
+    return String(seller?.findInfo || "").trim() || "Информация о месте пока не заполнена.";
+}
+
+function getLocalizedProductName(product) {
+    return String(product?.name || "").trim() || "Товар";
+}
+
+function getLocalizedProductDescription(product) {
+    return String(product?.description || "").trim() || "Описание пока не заполнено.";
+}
+
+function getLocalizedProductDepartment(product) {
+    return String(product?.department || "").trim() || "Другое";
+}
+
+function getLocalizedCategoryLabel(categoryId, fallback = "Другое") {
+    const keys = {
+        meat: "meat",
+        fish: "seafood",
+        vegetables: "vegetables",
+        fruits: "fruits",
+        milk: "dairy",
+        bakery: "bakery",
+        spices: "spices",
+        sweets: "sweets",
+        clothing: "clothing",
+        shoes: "shoes",
+        electronics: "electronics",
+        discount: "discount",
+        pets: "pets",
+        other: "other"
+    };
+
+    return keys[categoryId]
+        ? translateInterfaceValue(keys[categoryId])
+        : fallback;
+}
+
+function getLocalizedUnitLabel(unitId, fallback = "") {
+    const keys = {
+        kg: "kilograms",
+        gram: "grams",
+        liter: "liters",
+        piece: "pieces",
+        pack: "package"
+    };
+
+    return keys[unitId]
+        ? translateInterfaceValue(keys[unitId])
+        : fallback;
 }
 
 function translateTextNode(node) {
@@ -157,6 +227,10 @@ function setInterfaceLanguage(language) {
     document.querySelectorAll(".language-option").forEach(button => {
         button.classList.toggle("is-active", button.dataset.language === language);
     });
+
+    window.dispatchEvent(new CustomEvent("privoz-language-change", {
+        detail: { language }
+    }));
 }
 
 function getLanguageLabel(language = currentLanguage) {
@@ -184,7 +258,7 @@ function initLanguageSwitcher() {
             aria-label="Language: ${getLanguageLabel()}"
         >${getLanguageLabel()}</button>
         <div class="language-menu" aria-hidden="true">
-            ${["uk", "ru", "en"].map(language => `
+            ${["uk", "en"].map(language => `
                 <button
                     class="language-option ${language === currentLanguage ? "is-active" : ""}"
                     data-language="${language}"
