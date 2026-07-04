@@ -52,6 +52,52 @@ const units = {
     pack: "упаковка"
 };
 
+const defaultMarket = {
+    id: "",
+    name: "Ринок Привоз",
+    slug: "privoz",
+    cityId: "",
+    cityName: "Одеса",
+    citySlug: "odesa"
+};
+
+function getCurrentMarket() {
+    const savedMarket = readStorage("selectedMarket", defaultMarket);
+
+    return {
+        ...defaultMarket,
+        ...savedMarket
+    };
+}
+
+function setCurrentMarket(market) {
+    if (!market) return;
+
+    writeStorage("selectedMarket", {
+        ...defaultMarket,
+        ...market
+    });
+
+    updateMarketLabels();
+}
+
+function getCurrentMarketId() {
+    return getCurrentMarket().id || "";
+}
+
+function getMarketDisplayName(market = getCurrentMarket()) {
+    const cityName = market.cityName || defaultMarket.cityName;
+    const marketName = market.name || defaultMarket.name;
+
+    return `${cityName} • ${marketName}`;
+}
+
+function updateMarketLabels(root = document) {
+    root.querySelectorAll("[data-market-label]").forEach(element => {
+        element.textContent = getMarketDisplayName();
+    });
+}
+
 const homeCategorySuggestions = [
     { id: "meat", icon: "🥩", title: "Мясо" },
     { id: "fish", icon: "🐟", title: "Рыба" },

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Моя лавка</title>
+    <title>Торгова точка</title>
 
     <link rel="stylesheet" href="css/base.css?v=20260622-1">
     <link rel="stylesheet" href="css/home.css?v=20260623-3">
@@ -23,8 +23,8 @@
                 Назад
             </button>
 
-            <a class="brand-title site-brand" href="index.html">
-                Привоз
+            <a class="brand-title site-brand" href="index.html" data-market-label>
+                Одеса • Ринок Привоз
             </a>
 
             <button class="favorites-nav-btn" type="button">
@@ -32,22 +32,26 @@
             </button>
         </nav>
 
-        <h1 class="page-title">Моя лавка</h1>
+        <h1 class="page-title">Торгова точка</h1>
 
         <p class="subtitle cabinet-subtitle">
-            Создайте новую лавку или выберите уже созданную для редактирования
+            Выберите город, рынок и создайте торговую точку
         </p>
 
         <section class="form-block seller-create-block">
             <h2 class="section-title">
-                Создать новую лавку
+                Создать торговую точку
             </h2>
+
+            <!-- ГОРОД И РЫНОК -->
+            <select id="sellerCity" class="input"></select>
+            <select id="sellerMarket" class="input"></select>
 
             <!-- НАЗВАНИЕ -->
             <input
                 type="text"
                 id="sellerName"
-                placeholder="Название лавки"
+                placeholder="Название торговой точки"
                 class="input"
             >
 
@@ -80,7 +84,7 @@
 
             <!-- КНОПКА -->
             <button id="createSellerBtn" class="btn-primary" type="button">
-                Создать лавку
+                Создать торговую точку
             </button>
 
             <p
@@ -92,7 +96,7 @@
 
         <section class="category-section">
             <h2 class="section-title">
-                Выберите лавку для редактирования
+                Выберите торговую точку для редактирования
             </h2>
 
             <div
@@ -104,13 +108,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260704-2"></script>
-    <script src="js/i18n.js?v=20260704-2"></script>
-    <script src="js/core.js?v=20260704-2"></script>
-    <script src="js/home.js?v=20260704-2"></script>
-    <script src="js/seller-panel.js?v=20260704-2"></script>
-    <script src="js/catalog.js?v=20260704-2"></script>
-    <script src="js/app.js?v=20260701-2"></script>
+    <script src="js/supabase-client.js?v=20260704-4"></script>
+    <script src="js/i18n.js?v=20260704-4"></script>
+    <script src="js/core.js?v=20260704-4"></script>
+    <script src="js/home.js?v=20260704-4"></script>
+    <script src="js/seller-panel.js?v=20260704-4"></script>
+    <script src="js/catalog.js?v=20260704-4"></script>
+    <script src="js/app.js?v=20260704-4"></script>
 
 </body>
 </html>

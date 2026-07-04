@@ -249,6 +249,7 @@ function toLocalSeller(row) {
     return {
         id: row.id,
         ownerId: row.owner_id || "",
+        marketId: row.market_id || "",
         name: row.name || "",
         description: row.description || "",
         category: row.category || "other",
@@ -302,6 +303,96 @@ function mergeLocalRows(storageKey, rows) {
     writeStorage(storageKey, Array.from(rowMap.values()));
 }
 
+async function fetchMarketsFromSupabase() {
+    if (!supabaseClient) return [];
+
+    const [citiesResult, marketsResult] = await withTimeout(
+        Promise.all([
+            supabaseClient
+                .from("cities")
+                .select("id,name,slug,country_code,is_active")
+                .eq("is_active", true),
+            supabaseClient
+                .from("markets")
+                .select("id,city_id,name,slug,address,description,is_active")
+                .eq("is_active", true)
+        ]),
+        7000,
+        "fetch-markets"
+    );
+
+    if (citiesResult.error) throw citiesResult.error;
+    if (marketsResult.error) throw marketsResult.error;
+
+    const cityMap = new Map((citiesResult.data || []).map(city => [city.id, city]));
+    const markets = (marketsResult.data || []).map(market => {
+        const city = cityMap.get(market.city_id) || {};
+
+        return {
+            id: market.id,
+            name: market.name || "",
+            slug: market.slug || "",
+            cityId: market.city_id || "",
+            cityName: city.name || "Одеса",
+            citySlug: city.slug || "odesa",
+            address: market.address || "",
+            description: market.description || ""
+        };
+    });
+
+    writeStorage("markets", markets);
+
+    return markets;
+}
+
+async function ensureSelectedMarketFromSupabase() {
+    const currentMarket = getCurrentMarket();
+
+    if (currentMarket.id) return currentMarket;
+
+    try {
+        const markets = await fetchMarketsFromSupabase();
+        const privozMarket = markets.find(market => market.slug === "privoz") || markets[0];
+
+        if (privozMarket) {
+            setCurrentMarket(privozMarket);
+            return privozMarket;
+        }
+    } catch (error) {
+        console.warn("Market sync skipped", error);
+    }
+
+    return currentMarket;
+}
+
+function applyCurrentMarketToShopRequest(request) {
+    const marketId = getCurrentMarketId();
+
+    return marketId ? request.eq("market_id", marketId) : request;
+}
+
+async function fetchCurrentMarketShopIdsFromSupabase(categoryId = "") {
+    if (!supabaseClient) return [];
+
+    await ensureSelectedMarketFromSupabase();
+
+    let request = supabaseClient
+        .from("shops")
+        .select("id");
+
+    request = applyCurrentMarketToShopRequest(request);
+
+    if (categoryId) {
+        request = request.eq("category", categoryId);
+    }
+
+    const { data, error } = await withTimeout(request, 7000, "fetch-market-shops");
+
+    if (error) throw error;
+
+    return (data || []).map(row => row.id).filter(Boolean);
+}
+
 async function fetchShopsByIdsFromSupabase(shopIds) {
     if (!supabaseClient) return [];
 
@@ -309,11 +400,14 @@ async function fetchShopsByIdsFromSupabase(shopIds) {
 
     if (!ids.length) return [];
 
-    const { data, error } = await withTimeout(
+    const request = applyCurrentMarketToShopRequest(
         supabaseClient
             .from("shops")
             .select("*")
-            .in("id", ids),
+            .in("id", ids)
+    );
+    const { data, error } = await withTimeout(
+        request,
         7000,
         "fetch-shops"
     );
@@ -329,9 +423,14 @@ async function fetchShopsByIdsFromSupabase(shopIds) {
 async function fetchLatestProductsFromSupabase(categoryIds = [], limit = 6) {
     if (!supabaseClient) return readStorage("products").slice(0, limit);
 
+    const marketShopIds = await fetchCurrentMarketShopIdsFromSupabase();
+
+    if (!marketShopIds.length) return [];
+
     let request = supabaseClient
         .from("products")
         .select("*")
+        .in("shop_id", marketShopIds)
         .order("updated_at", { ascending: false })
         .limit(limit);
 
@@ -399,7 +498,11 @@ async function fetchProductsByIdsFromSupabase(productIds) {
 
     if (error) throw error;
 
-    const products = (data || []).map(toLocalProduct);
+    const allowedShopIds = new Set(await fetchCurrentMarketShopIdsFromSupabase());
+    const products = (data || [])
+        .map(toLocalProduct)
+        .filter(product => !allowedShopIds.size || allowedShopIds.has(product.seller));
+
     mergeLocalRows("products", products);
     await fetchShopsByIdsFromSupabase(products.map(product => product.seller));
 
@@ -417,12 +520,29 @@ async function fetchCategoryDataFromSupabase(categoryId) {
     }
 
     const categoryFilter = categoryId || "";
-    const shopRequest = categoryFilter
-        ? supabaseClient.from("shops").select("*").eq("category", categoryFilter)
-        : supabaseClient.from("shops").select("*");
-    const productRequest = categoryFilter
-        ? supabaseClient.from("products").select("*").eq("category", categoryFilter)
-        : supabaseClient.from("products").select("*").limit(60);
+    let shopRequest = supabaseClient.from("shops").select("*");
+
+    shopRequest = applyCurrentMarketToShopRequest(shopRequest);
+
+    if (categoryFilter) {
+        shopRequest = shopRequest.eq("category", categoryFilter);
+    }
+
+    const marketShopIds = await fetchCurrentMarketShopIdsFromSupabase();
+    let productRequest = supabaseClient.from("products").select("*");
+
+    if (marketShopIds.length) {
+        productRequest = productRequest.in("shop_id", marketShopIds);
+    } else {
+        productRequest = productRequest.eq("shop_id", "00000000-0000-0000-0000-000000000000");
+    }
+
+    if (categoryFilter) {
+        productRequest = productRequest.eq("category", categoryFilter);
+    } else {
+        productRequest = productRequest.limit(60);
+    }
+
     const [shopsResult, productsResult] = await withTimeout(
         Promise.all([
             shopRequest.order("created_at", { ascending: false }),
@@ -458,10 +578,15 @@ async function searchProductsFromSupabase(searchText) {
         return readStorage("products");
     }
 
+    const marketShopIds = await fetchCurrentMarketShopIdsFromSupabase();
+
+    if (!marketShopIds.length) return [];
+
     const { data, error } = await withTimeout(
         supabaseClient
             .from("products")
             .select("*")
+            .in("shop_id", marketShopIds)
             .order("updated_at", { ascending: false })
             .limit(200),
         8000,
@@ -493,21 +618,32 @@ async function searchProductsFromSupabase(searchText) {
 async function hydrateMarketplaceFromSupabase() {
     if (!supabaseClient) return;
 
+    await ensureSelectedMarketFromSupabase();
+
     let shopsResult;
     let productsResult;
+    const marketShopIds = await fetchCurrentMarketShopIdsFromSupabase();
+    const productRequest = marketShopIds.length
+        ? supabaseClient
+            .from("products")
+            .select("*")
+            .in("shop_id", marketShopIds)
+            .order("updated_at", { ascending: false })
+            .limit(60)
+        : supabaseClient
+            .from("products")
+            .select("*")
+            .eq("shop_id", "00000000-0000-0000-0000-000000000000");
 
     try {
         [shopsResult, productsResult] = await withTimeout(
             Promise.all([
-                supabaseClient
-                    .from("shops")
-                    .select("*")
-                    .order("created_at", { ascending: true }),
-                supabaseClient
-                    .from("products")
-                    .select("*")
-                    .order("updated_at", { ascending: false })
-                    .limit(60)
+                applyCurrentMarketToShopRequest(
+                    supabaseClient
+                        .from("shops")
+                        .select("*")
+                ).order("created_at", { ascending: true }),
+                productRequest
             ]),
             6000,
             "hydrate-marketplace"
@@ -536,6 +672,7 @@ async function saveSellerToSupabase(seller) {
     const coverUrl = await uploadMarketplaceImage(seller.coverImage, "covers");
     const payload = {
         owner_id: user.id,
+        market_id: seller.marketId || getCurrentMarketId(),
         name: seller.name,
         description: seller.description || "",
         category: seller.category || "other",

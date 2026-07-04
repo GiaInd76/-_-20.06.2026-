@@ -7,6 +7,7 @@ async function initApp() {
 
     await getCurrentSupabaseUser();
     await hydrateMarketplaceFromSupabase();
+    updateMarketLabels();
 
     initBrandHeader();
     initCategoryColors();

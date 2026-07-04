@@ -394,12 +394,86 @@ function initCategoryCards() {
 
 function initSellerCreation() {
     const createSellerBtn = document.getElementById("createSellerBtn");
+    const sellerCitySelect = document.getElementById("sellerCity");
+    const sellerMarketSelect = document.getElementById("sellerMarket");
     const sellerCategorySelect = document.getElementById("sellerCategory");
     const createSellerMessage = document.getElementById("createSellerMessage");
     const sellerCreateBlock = document.querySelector(".seller-create-block");
     const cabinetSubtitle = document.querySelector(".cabinet-subtitle");
 
     fillCategorySelect(sellerCategorySelect);
+
+    const fillMarketControls = async () => {
+        if (!sellerCitySelect || !sellerMarketSelect) return;
+
+        let markets = readStorage("markets", []);
+
+        if (typeof fetchMarketsFromSupabase === "function") {
+            try {
+                markets = await fetchMarketsFromSupabase();
+            } catch (error) {
+                console.warn("Market list sync skipped", error);
+            }
+        }
+
+        if (!markets.length) {
+            markets = [getCurrentMarket()];
+        }
+
+        const cities = [...new Map(markets.map(market => [
+            market.cityId || market.citySlug || market.cityName,
+            {
+                id: market.cityId || "",
+                name: market.cityName || "Одеса",
+                slug: market.citySlug || "odesa"
+            }
+        ])).values()];
+        const currentMarket = getCurrentMarket();
+
+        sellerCitySelect.innerHTML = cities
+            .map(city => `
+                <option value="${escapeHtml(city.id || city.slug)}">
+                    ${escapeHtml(city.name)}
+                </option>
+            `)
+            .join("");
+
+        const renderMarkets = () => {
+            const selectedCity = sellerCitySelect.value;
+            const cityMarkets = markets.filter(market => {
+                const cityValue = market.cityId || market.citySlug || market.cityName;
+
+                return cityValue === selectedCity;
+            });
+
+            sellerMarketSelect.innerHTML = cityMarkets
+                .map(market => `
+                    <option value="${escapeHtml(market.id)}">
+                        ${escapeHtml(market.name)}
+                    </option>
+                `)
+                .join("");
+
+            if (cityMarkets.some(market => market.id === currentMarket.id)) {
+                sellerMarketSelect.value = currentMarket.id;
+            }
+
+            const selectedMarket = cityMarkets.find(market => market.id === sellerMarketSelect.value)
+                || cityMarkets[0];
+
+            if (selectedMarket) setCurrentMarket(selectedMarket);
+        };
+
+        sellerCitySelect.value = currentMarket.cityId || currentMarket.citySlug || cities[0]?.id || "";
+        renderMarkets();
+
+        sellerCitySelect.addEventListener("change", renderMarkets);
+        sellerMarketSelect.addEventListener("change", () => {
+            const selectedMarket = markets.find(market => market.id === sellerMarketSelect.value);
+
+            if (selectedMarket) setCurrentMarket(selectedMarket);
+        });
+    };
 
     const prepareSellerCreationPage = async () => {
         if (!createSellerBtn && !sellerCreateBlock) return;
@@ -416,6 +490,8 @@ function initSellerCreation() {
             renderSellerCabinets();
             return;
         }
+
+        await fillMarketControls();
 
         const user = await getCurrentSupabaseUser();
         const existingSeller = getSellerForUser(user);
@@ -468,6 +544,11 @@ function initSellerCreation() {
             coverImage: "",
             featuredProductIds: []
         };
+        const selectedMarket = readStorage("markets", [])
+            .find(market => market.id === sellerMarketSelect?.value)
+            || getCurrentMarket();
+        draftSeller.marketId = selectedMarket.id || getCurrentMarketId();
+        if (selectedMarket.id) setCurrentMarket(selectedMarket);
         const originalText = createSellerBtn.textContent;
 
         createSellerBtn.disabled = true;
