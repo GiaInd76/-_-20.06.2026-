@@ -973,6 +973,13 @@ function initAuthPage() {
 
     if (!form || !supabaseClient) return;
 
+    const showAuthMessage = text => {
+        if (!message) return;
+
+        message.textContent = text || "";
+        message.classList.toggle("visible", Boolean(text));
+    };
+
     const setBusy = isBusy => {
         loginButton.disabled = isBusy;
         registerButton.disabled = isBusy;
@@ -987,26 +994,26 @@ function initAuthPage() {
         const credentials = getCredentials();
 
         if (!credentials.email || credentials.password.length < 6) {
-            showMessage(message, translateInterfaceValue("enterEmailAndPassword"));
+            showAuthMessage(translateInterfaceValue("enterEmailAndPassword"));
             return;
         }
 
         setBusy(true);
-        showMessage(message, translateInterfaceValue("signingIn"));
+        showAuthMessage(translateInterfaceValue("signingIn"));
 
         const { data, error } = await supabaseClient.auth.signInWithPassword(credentials);
 
         setBusy(false);
 
         if (error) {
-            showMessage(message, getSupabaseErrorMessage(error));
+            showAuthMessage(getSupabaseErrorMessage(error));
             return;
         }
 
         const user = await getActiveAuthUser(data);
 
         if (!user) {
-            showMessage(message, translateInterfaceValue("signInNotPersisted"));
+            showAuthMessage(translateInterfaceValue("signInNotPersisted"));
             return;
         }
 
@@ -1026,7 +1033,7 @@ function initAuthPage() {
         const repeatedPassword = passwordConfirmInput?.value || "";
 
         if (!credentials.email || credentials.password.length < 6) {
-            showMessage(message, translateInterfaceValue("enterEmailAndPassword"));
+            showAuthMessage(translateInterfaceValue("enterEmailAndPassword"));
             return;
         }
 
@@ -1034,18 +1041,18 @@ function initAuthPage() {
             passwordConfirmInput?.classList.remove("hidden");
             passwordInput.setAttribute("autocomplete", "new-password");
             passwordConfirmInput?.focus();
-            showMessage(message, translateInterfaceValue("repeatPasswordAgain"));
+            showAuthMessage(translateInterfaceValue("repeatPasswordAgain"));
             return;
         }
 
         if (credentials.password !== repeatedPassword) {
-            showMessage(message, translateInterfaceValue("passwordsDoNotMatch"));
+            showAuthMessage(translateInterfaceValue("passwordsDoNotMatch"));
             passwordConfirmInput?.focus();
             return;
         }
 
         setBusy(true);
-        showMessage(message, translateInterfaceValue("creatingAccount"));
+        showAuthMessage(translateInterfaceValue("creatingAccount"));
 
         const redirectUrl = new URL(getSafeReturnUrl(), window.location.href).href;
         const { data, error } = await supabaseClient.auth.signUp({
@@ -1059,7 +1066,7 @@ function initAuthPage() {
             const alreadyRegistered = /already|registered|exists/i.test(error.message || "");
 
             if (alreadyRegistered) {
-                showMessage(message, translateInterfaceValue("accountExistsTryingSignIn"));
+                showAuthMessage(translateInterfaceValue("accountExistsTryingSignIn"));
                 const signInResult = await supabaseClient.auth.signInWithPassword(credentials);
 
                 setBusy(false);
@@ -1068,7 +1075,7 @@ function initAuthPage() {
                     const user = await getActiveAuthUser(signInResult.data);
 
                     if (!user) {
-                        showMessage(message, translateInterfaceValue("accountFoundSignInManual"));
+                        showAuthMessage(translateInterfaceValue("accountFoundSignInManual"));
                         return;
                     }
 
@@ -1078,7 +1085,7 @@ function initAuthPage() {
             }
 
             setBusy(false);
-            showMessage(message, getSupabaseErrorMessage(error));
+            showAuthMessage(getSupabaseErrorMessage(error));
             return;
         }
 
@@ -1096,7 +1103,7 @@ function initAuthPage() {
             const user = await getActiveAuthUser(signInResult.data);
 
             if (!user) {
-                showMessage(message, translateInterfaceValue("accountCreatedSignInManual"));
+                showAuthMessage(translateInterfaceValue("accountCreatedSignInManual"));
                 return;
             }
 
@@ -1104,6 +1111,6 @@ function initAuthPage() {
             return;
         }
 
-        showMessage(message, translateInterfaceValue("accountCreatedConfirmEmail"));
+        showAuthMessage(translateInterfaceValue("accountCreatedConfirmEmail"));
     });
 }
