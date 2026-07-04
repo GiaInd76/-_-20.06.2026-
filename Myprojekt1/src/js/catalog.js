@@ -25,7 +25,7 @@ function renderSellersList(containerId, filterCategory = "") {
     if (!sellers.length) {
         container.innerHTML = `
             <div class="empty-card">
-                В этой категории пока нет продавцов.
+                ${escapeHtml(translateInterfaceValue("noCategorySellers"))}
             </div>
         `;
         return;
@@ -80,7 +80,7 @@ async function initCategoryPage() {
         }
 
         if (pageLabel) {
-            pageLabel.textContent = "Избранные товары";
+            pageLabel.textContent = translateInterfaceValue("favoriteProducts");
             pageLabel.classList.remove("hidden");
         }
 
@@ -114,7 +114,7 @@ async function initCategoryPage() {
         }
 
         if (pageLabel) {
-            pageLabel.textContent = `Найденные товары: «${params.get("search")}»`;
+            pageLabel.textContent = `${translateInterfaceValue("updatedPricePrefix")}: «${params.get("search")}»`;
             pageLabel.classList.remove("hidden");
         }
 
@@ -126,9 +126,9 @@ async function initCategoryPage() {
 
     if (title) {
         if (search) {
-            title.textContent = `Поиск: ${params.get("search")}`;
+            title.textContent = `${translateInterfaceValue("searchPrefix")}: ${params.get("search")}`;
         } else {
-            title.textContent = type ? getCategoryLabel(type) : "Все категории";
+            title.textContent = type ? getCategoryLabel(type) : translateInterfaceValue("allCategories");
         }
     }
 
@@ -173,7 +173,7 @@ function renderCategorySellers(container, sellers) {
     if (!sellers.length) {
         container.innerHTML = `
             <div class="empty-card">
-                В этой категории пока никого нет.
+                ${escapeHtml(translateInterfaceValue("noCategoryShops"))}
             </div>
         `;
         return;
@@ -250,7 +250,7 @@ function renderCategoryProducts(container, products, options = {}) {
     if (!products.length) {
         container.innerHTML = `
             <div class="empty-card">
-                Товары пока не найдены.
+                ${escapeHtml(translateInterfaceValue("noProductsFound"))}
             </div>
         `;
         return;
@@ -266,7 +266,7 @@ function renderCategoryProducts(container, products, options = {}) {
                 class="favorite-btn ${isFavorite ? "is-active" : ""}"
                 data-product="${escapeHtml(product.id)}"
                 type="button"
-                aria-label="Добавить в избранное"
+                aria-label="${escapeHtml(translateInterfaceValue("addFavorite"))}"
             >
                 ${isFavorite ? "★" : "☆"}
             </button>
@@ -280,7 +280,7 @@ function renderCategoryProducts(container, products, options = {}) {
             </div>
             ${
                 getProductImages(product).length
-                    ? `<span class="photo-chip">${getProductImages(product).length} фото</span>`
+                    ? `<span class="photo-chip">${escapeHtml(getLocalizedPhotoCount(getProductImages(product).length))}</span>`
                     : ""
             }
             ${
@@ -292,9 +292,9 @@ function renderCategoryProducts(container, products, options = {}) {
                             type="button"
                         >
                             <span class="seller-link-full">
-                                Лавка: ${escapeHtml(getSellerName(product.seller))}
+                                ${escapeHtml(translateInterfaceValue("shopPrefix"))}: ${escapeHtml(getSellerName(product.seller))}
                             </span>
-                            <span class="seller-link-short">В лавку</span>
+                            <span class="seller-link-short">${escapeHtml(translateInterfaceValue("goShop"))}</span>
                         </button>
                     `
                     : ""
@@ -307,7 +307,7 @@ function renderCategoryProducts(container, products, options = {}) {
                             data-product="${escapeHtml(product.id)}"
                             type="button"
                         >
-                            Редактировать
+                            ${escapeHtml(translateInterfaceValue("edit"))}
                         </button>
                     `
                     : ""
@@ -386,7 +386,7 @@ function initOwnerProductEditor() {
         if (!name || !price) {
             showMessage(
                 document.getElementById("ownerProductMessage"),
-                "Введите название и цену."
+                translateInterfaceValue("enterNameAndPrice")
             );
             return;
         }
@@ -394,7 +394,7 @@ function initOwnerProductEditor() {
         if (!isValidProductPrice(price)) {
             showMessage(
                 document.getElementById("ownerProductMessage"),
-                "Цена может быть числом или диапазоном, например 630/650."
+                translateInterfaceValue("invalidPrice")
             );
             return;
         }
@@ -433,7 +433,7 @@ function initOwnerProductEditor() {
             saveButton.disabled = false;
             showMessage(
                 document.getElementById("ownerProductMessage"),
-                `Не удалось сохранить товар: ${getSupabaseErrorMessage(error)}`
+                `${translateInterfaceValue("saveProduct")}: ${getSupabaseErrorMessage(error)}`
             );
         }
     });
@@ -478,7 +478,7 @@ function updateProductModalImage() {
 
     image.classList.toggle("has-image", Boolean(currentImage));
     image.style.backgroundImage = currentImage ? `url("${currentImage}")` : "";
-    image.textContent = currentImage ? "" : "Фото товара";
+    image.textContent = currentImage ? "" : translateInterfaceValue("viewProductPhoto");
 }
 
 async function initSellerPage() {
@@ -493,8 +493,8 @@ async function initSellerPage() {
 
     if (!seller) {
         sellerPage.innerHTML = `
-            <h1 class="shop-title">Продавец не найден</h1>
-            <p class="subtitle">Вернитесь на главную и выберите лавку заново.</p>
+            <h1 class="shop-title">${escapeHtml(translateInterfaceValue("shopNotFound"))}</h1>
+            <p class="subtitle">${escapeHtml(translateInterfaceValue("backHomeChooseShop"))}</p>
         `;
         return;
     }
@@ -529,8 +529,8 @@ async function initSellerPage() {
         </p>
         <p class="work-time">🕒 ${escapeHtml(formatSellerTime(seller.open))} - ${escapeHtml(formatSellerTime(seller.close))}</p>
         <div class="seller-actions">
-            <button id="findBtn" class="btn-outline">Как найти</button>
-            <button id="contactBtn" class="btn-outline">Связаться</button>
+            <button id="findBtn" class="btn-outline">${escapeHtml(translateInterfaceValue("howToFind"))}</button>
+            <button id="contactBtn" class="btn-outline">${escapeHtml(translateInterfaceValue("contact"))}</button>
         </div>
     `;
 
@@ -549,7 +549,7 @@ async function initSellerPage() {
 
     if (phoneLink) {
         const phoneHref = getPhoneHref(seller.phone);
-        phoneLink.textContent = seller.phone || "Номер пока не указан";
+        phoneLink.textContent = seller.phone || translateInterfaceValue("noPhone");
         phoneLink.classList.toggle("is-empty", !phoneHref);
 
         if (phoneHref) {

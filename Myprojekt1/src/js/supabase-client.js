@@ -99,51 +99,55 @@ async function requireSellerSession(returnUrl = window.location.href) {
 }
 
 function getSupabaseErrorMessage(error) {
-    if (!error) return "Неизвестная ошибка.";
+    const text = key => typeof translateInterfaceValue === "function"
+        ? translateInterfaceValue(key)
+        : key;
+
+    if (!error) return text("unknownError");
 
     const missingColumn = getMissingColumnName(error);
 
     if (error.message === "auth-required") {
-        return "Сначала войдите в аккаунт продавца.";
+        return text("sellerSignInFirst");
     }
 
     if (error.message === "supabase-unavailable") {
-        return "База не подключилась. Обновите страницу или проверьте интернет.";
+        return text("databaseNotConnectedShort");
     }
 
     if (error.message === "shop-not-synced") {
-        return "Сначала сохраните профиль лавки в базе.";
+        return text("saveShopProfileFirst");
     }
 
     if (error.message === "shop-owner-required") {
-        return "Эта лавка принадлежит другому аккаунту. Изменение заблокировано.";
+        return text("shopBelongsToAnotherAccount");
     }
 
     if (error.message === "admin-required") {
-        return "У этого аккаунта нет прав администратора.";
+        return text("noAdminRights");
     }
 
     if (error.message.endsWith("-timeout")) {
-        return "Supabase долго не отвечает. Проверьте интернет и попробуйте ещё раз.";
+        return text("supabaseTimeout");
     }
 
     if (error.message === "Email not confirmed") {
-        return "Почта ещё не подтверждена. Откройте письмо от Supabase и подтвердите аккаунт.";
+        return text("emailNotConfirmed");
     }
 
     if (error.code === "23505") {
-        return "У этого аккаунта уже есть лавка.";
+        return text("accountAlreadyHasShop");
     }
 
     if (missingColumn) {
-        return `В базе нет колонки ${missingColumn}. Запустите SQL-файл 006_repair_marketplace_schema.sql в Supabase.`;
+        return `${text("missingColumnPrefix")} ${missingColumn}. ${text("runRepairSql")}`;
     }
 
     if (error.code === "PGRST204") {
-        return "Схема Supabase отстаёт от сайта. Запустите SQL-файл 006_repair_marketplace_schema.sql в Supabase.";
+        return text("schemaOutdated");
     }
 
-    return error.message || "Неизвестная ошибка Supabase.";
+    return error.message || text("supabaseUnknownError");
 }
 
 function getMissingColumnName(error) {
@@ -807,9 +811,9 @@ async function initProtectedSellerPage() {
         document.body.innerHTML = `
             <main class="container">
                 <section class="glass-card auth-card">
-                    <h1>База не подключилась</h1>
-                    <p>Обновите страницу или проверьте интернет. Кабинет продавца без Supabase недоступен.</p>
-                    <a class="nav-pill" href="index.html">На главную</a>
+                    <h1>${escapeHtml(translateInterfaceValue("databaseNotConnectedTitle"))}</h1>
+                    <p>${escapeHtml(translateInterfaceValue("databaseUnavailableCabinet"))}</p>
+                    <a class="nav-pill" href="index.html">${escapeHtml(translateInterfaceValue("home"))}</a>
                 </section>
             </main>
         `;
@@ -846,26 +850,26 @@ function initAuthPage() {
         const credentials = getCredentials();
 
         if (!credentials.email || credentials.password.length < 6) {
-            message.textContent = "Введите почту и пароль не короче 6 символов.";
+            showMessage(message, translateInterfaceValue("enterEmailAndPassword"));
             return;
         }
 
         setBusy(true);
-        message.textContent = "Входим...";
+        showMessage(message, translateInterfaceValue("signingIn"));
 
         const { data, error } = await supabaseClient.auth.signInWithPassword(credentials);
 
         setBusy(false);
 
         if (error) {
-            message.textContent = getSupabaseErrorMessage(error);
+            showMessage(message, getSupabaseErrorMessage(error));
             return;
         }
 
         const user = await getActiveAuthUser(data);
 
         if (!user) {
-            message.textContent = "Вход не закрепился в браузере. Обновите страницу входа и попробуйте ещё раз.";
+            showMessage(message, translateInterfaceValue("signInNotPersisted"));
             return;
         }
 
@@ -885,7 +889,7 @@ function initAuthPage() {
         const repeatedPassword = passwordConfirmInput?.value || "";
 
         if (!credentials.email || credentials.password.length < 6) {
-            message.textContent = "Введите почту и пароль не короче 6 символов.";
+            showMessage(message, translateInterfaceValue("enterEmailAndPassword"));
             return;
         }
 
@@ -893,18 +897,18 @@ function initAuthPage() {
             passwordConfirmInput?.classList.remove("hidden");
             passwordInput.setAttribute("autocomplete", "new-password");
             passwordConfirmInput?.focus();
-            message.textContent = "Повторите пароль и нажмите регистрацию ещё раз.";
+            showMessage(message, translateInterfaceValue("repeatPasswordAgain"));
             return;
         }
 
         if (credentials.password !== repeatedPassword) {
-            message.textContent = "Пароли не совпадают. Повторите пароль ещё раз.";
+            showMessage(message, translateInterfaceValue("passwordsDoNotMatch"));
             passwordConfirmInput?.focus();
             return;
         }
 
         setBusy(true);
-        message.textContent = "Создаём аккаунт...";
+        showMessage(message, translateInterfaceValue("creatingAccount"));
 
         const redirectUrl = new URL(getSafeReturnUrl(), window.location.href).href;
         const { data, error } = await supabaseClient.auth.signUp({
@@ -918,7 +922,7 @@ function initAuthPage() {
             const alreadyRegistered = /already|registered|exists/i.test(error.message || "");
 
             if (alreadyRegistered) {
-                message.textContent = "Аккаунт уже есть, пробуем войти...";
+                showMessage(message, translateInterfaceValue("accountExistsTryingSignIn"));
                 const signInResult = await supabaseClient.auth.signInWithPassword(credentials);
 
                 setBusy(false);
@@ -927,7 +931,7 @@ function initAuthPage() {
                     const user = await getActiveAuthUser(signInResult.data);
 
                     if (!user) {
-                        message.textContent = "Аккаунт найден, но браузер не сохранил вход. Попробуйте войти вручную.";
+                        showMessage(message, translateInterfaceValue("accountFoundSignInManual"));
                         return;
                     }
 
@@ -937,7 +941,7 @@ function initAuthPage() {
             }
 
             setBusy(false);
-            message.textContent = getSupabaseErrorMessage(error);
+            showMessage(message, getSupabaseErrorMessage(error));
             return;
         }
 
@@ -955,7 +959,7 @@ function initAuthPage() {
             const user = await getActiveAuthUser(signInResult.data);
 
             if (!user) {
-                message.textContent = "Аккаунт создан, но браузер не сохранил вход. Попробуйте войти вручную.";
+                showMessage(message, translateInterfaceValue("accountCreatedSignInManual"));
                 return;
             }
 
@@ -963,6 +967,6 @@ function initAuthPage() {
             return;
         }
 
-        message.textContent = "Аккаунт создан. Подтвердите почту по ссылке в письме, затем войдите.";
+        showMessage(message, translateInterfaceValue("accountCreatedConfirmEmail"));
     });
 }

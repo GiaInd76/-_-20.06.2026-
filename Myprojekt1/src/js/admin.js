@@ -9,6 +9,12 @@ let adminDashboardData = {
 
 let selectedAdminCategory = "";
 
+function t(key) {
+    return typeof translateInterfaceValue === "function"
+        ? translateInterfaceValue(key)
+        : key;
+}
+
 async function initAdminPage() {
     const status = document.getElementById("adminStatus");
     const accessCard = document.getElementById("adminAccessCard");
@@ -23,7 +29,7 @@ async function initAdminPage() {
     const user = await getCurrentSupabaseUser();
 
     if (!user) {
-        status.textContent = "Нужно войти в аккаунт администратора.";
+        status.textContent = t("adminLoginRequired");
         accessCard.classList.remove("hidden");
         return;
     }
@@ -31,12 +37,12 @@ async function initAdminPage() {
     const isAdmin = await isCurrentUserAdmin();
 
     if (!isAdmin) {
-        status.textContent = `Аккаунт ${user.email || ""} не добавлен в админы.`;
+        status.textContent = `${user.email || ""} ${t("adminNotAllowed")}`;
         accessCard.classList.remove("hidden");
         return;
     }
 
-    status.textContent = `Админ: ${user.email || "аккаунт Supabase"}`;
+    status.textContent = `${t("adminAccount")}: ${user.email || t("supabaseAccount")}`;
     dashboard.classList.remove("hidden");
 
     refreshButton?.addEventListener("click", loadAdminDashboard);
@@ -53,7 +59,7 @@ async function initAdminPage() {
     }
 
     clearNotesButton?.addEventListener("click", () => {
-        if (!confirm("Очистить заметки теста?")) return;
+        if (!confirm(t("clearTestNotesQuestion"))) return;
         localStorage.removeItem(adminNotesKey);
         if (notes) notes.value = "";
     });
@@ -65,7 +71,7 @@ async function loadAdminDashboard() {
     const status = document.getElementById("adminStatus");
 
     try {
-        status.textContent = "Обновляем данные...";
+        status.textContent = t("loadingData");
         const data = await fetchAdminDashboardData();
 
         adminDashboardData = data;
@@ -76,7 +82,7 @@ async function loadAdminDashboard() {
         renderAdminIssues(data);
         renderAdminCategories(data);
         renderAdminCategoryDetails(selectedAdminCategory);
-        status.textContent = `Данные обновлены: ${formatAdminDate(new Date())}.`;
+        status.textContent = `${t("dataUpdated")}: ${formatAdminDate(new Date())}.`;
     } catch (error) {
         status.textContent = getSupabaseErrorMessage(error);
     }
@@ -103,36 +109,36 @@ function renderAdminChecklist({ shops, products }) {
 
     const checks = [
         {
-            title: "Supabase отвечает",
-            text: "Лавки и товары загружены из базы.",
+            title: t("supabaseWorks"),
+            text: t("loadedFromDatabase"),
             level: "ok"
         },
         {
-            title: "Лавки с контактами",
+            title: t("shopsWithContacts"),
             text: noContactShops.length
-                ? `Без контактов: ${noContactShops.length}. Продавца нельзя быстро найти.`
-                : "У всех лавок есть хотя бы один контакт.",
+                ? `${t("noContacts")}: ${noContactShops.length}. ${t("noContactsProblem")}`
+                : t("allShopsHaveContact"),
             level: noContactShops.length ? "warning" : "ok"
         },
         {
-            title: "Лавки с товаром",
+            title: t("shopsWithProducts"),
             text: emptyShops.length
-                ? `Пустых лавок: ${emptyShops.length}. Для теста допустимо, для запуска плохо.`
-                : "Все лавки уже имеют товары.",
+                ? `${t("emptyShops")}: ${emptyShops.length}. ${t("emptyShopsProblem")}`
+                : t("allShopsHaveProducts"),
             level: emptyShops.length ? "warning" : "ok"
         },
         {
-            title: "Фото товаров",
+            title: t("productPhotos"),
             text: productsWithoutPhoto.length
-                ? `Товаров без фото: ${productsWithoutPhoto.length}. На рынке фото почти обязательны.`
-                : "У всех товаров есть фото.",
+                ? `${t("productsWithoutPhoto")}: ${productsWithoutPhoto.length}. ${t("photoRequired")}`
+                : t("allProductsHavePhotos"),
             level: productsWithoutPhoto.length ? "warning" : "ok"
         },
         {
-            title: "Цены товаров",
+            title: t("productPrices"),
             text: productsWithoutPrice.length
-                ? `Товаров без цены: ${productsWithoutPrice.length}. Это нужно исправить.`
-                : "У всех товаров есть цена.",
+                ? `${t("productsWithoutPrice")}: ${productsWithoutPrice.length}. ${t("mustFix")}`
+                : t("allProductsHavePrices"),
             level: productsWithoutPrice.length ? "danger" : "ok"
         }
     ];
@@ -160,23 +166,23 @@ function renderAdminIssues({ shops, products }) {
 
     const blocks = [
         {
-            title: "Без контактов",
-            empty: "Таких лавок нет.",
+            title: t("noContacts"),
+            empty: t("noneSuchShops"),
             items: noContactShops.map(shop => makeShopIssue(shop))
         },
         {
-            title: "Пустые лавки",
-            empty: "Пустых лавок нет.",
+            title: t("emptyShops"),
+            empty: t("noEmptyShops"),
             items: emptyShops.map(shop => makeShopIssue(shop))
         },
         {
-            title: "Товары без фото",
-            empty: "Все товары с фото.",
+            title: t("productsWithoutPhoto"),
+            empty: t("allProductsWithPhotos"),
             items: productsWithoutPhoto.map(product => makeProductIssue(product))
         },
         {
-            title: "Товары без цены",
-            empty: "Все товары с ценой.",
+            title: t("productsWithoutPrice"),
+            empty: t("allProductsWithPrices"),
             items: productsWithoutPrice.map(product => makeProductIssue(product))
         }
     ];
@@ -218,9 +224,9 @@ function renderAdminCategories({ shops, products }) {
                 type="button"
                 data-admin-category="${escapeHtml(category.id)}"
             >
-                <span>${escapeHtml(category.label)}</span>
+                <span>${escapeHtml(getCategoryLabel(category.id))}</span>
                 <strong>${categoryShops.length}</strong>
-                <small>лавок · товаров: ${categoryProducts.length}</small>
+                <small>${t("shopsCountShort")} · ${t("productsCountShort")}: ${categoryProducts.length}</small>
             </button>
         `;
     }).join("");
@@ -249,11 +255,11 @@ function renderAdminCategoryDetails(categoryId) {
 
     details.classList.remove("hidden");
     title.textContent = getCategoryLabel(categoryId);
-    meta.textContent = `Лавок: ${categoryShops.length}. Товаров: ${categoryProducts.length}.`;
+    meta.textContent = `${t("shops")}: ${categoryShops.length}. ${t("products")}: ${categoryProducts.length}.`;
     openLink.href = `category.html?type=${encodeURIComponent(categoryId)}`;
 
     if (!categoryShops.length) {
-        shopsList.innerHTML = '<article class="admin-row">В этой категории лавок пока нет.</article>';
+        shopsList.innerHTML = `<article class="admin-row">${escapeHtml(t("noShopsInCategory"))}</article>`;
         return;
     }
 
@@ -266,18 +272,18 @@ function renderAdminCategoryDetails(categoryId) {
             <article class="admin-row">
                 <div class="admin-row-main">
                     <div class="admin-row-title">
-                        <strong>${escapeHtml(shop.name || "Лавка без названия")}</strong>
+                        <strong>${escapeHtml(shop.name || t("shopWithoutName"))}</strong>
                         <small>
                             ${escapeHtml(getCategoryLabel(shop.category))}
-                            · товаров: ${shopProducts.length}
-                            · контактов: ${contactCount}
+                            · ${t("productsCountShort")}: ${shopProducts.length}
+                            · ${t("contactsCountShort")}: ${contactCount}
                         </small>
-                        <span class="admin-row-meta">${escapeHtml(shop.description || "Описание пока не заполнено.")}</span>
+                        <span class="admin-row-meta">${escapeHtml(shop.description || t("noDescription"))}</span>
                     </div>
                     <div class="admin-row-actions">
-                        <a class="btn-outline" href="seller.html?seller=${encodeURIComponent(shop.id)}">Лавка</a>
-                        <a class="btn-outline" href="seller_panel.html?seller=${encodeURIComponent(shop.id)}">Редактировать</a>
-                        <button class="admin-danger-btn" type="button" data-delete-shop="${escapeHtml(shop.id)}">Удалить</button>
+                        <a class="btn-outline" href="seller.html?seller=${encodeURIComponent(shop.id)}">${t("shop")}</a>
+                        <a class="btn-outline" href="seller_panel.html?seller=${encodeURIComponent(shop.id)}">${t("edit")}</a>
+                        <button class="admin-danger-btn" type="button" data-delete-shop="${escapeHtml(shop.id)}">${t("delete")}</button>
                     </div>
                 </div>
                 ${renderAdminProductMiniList(shopProducts)}
@@ -290,16 +296,16 @@ function renderAdminCategoryDetails(categoryId) {
 
 function renderAdminProductMiniList(products) {
     if (!products.length) {
-        return '<div class="admin-product-mini-list"><span class="admin-muted">Товаров пока нет.</span></div>';
+        return `<div class="admin-product-mini-list"><span class="admin-muted">${escapeHtml(t("noProductsYet"))}</span></div>`;
     }
 
     return `
         <div class="admin-product-mini-list">
             ${products.slice(0, 6).map(product => `
                 <div class="admin-product-mini">
-                    <span>${escapeHtml(product.name || "Товар")}</span>
+                    <span>${escapeHtml(product.name || t("productFallback"))}</span>
                     <small>${escapeHtml(getAdminProductPrice(product))}</small>
-                    <button class="admin-danger-btn" type="button" data-delete-product="${escapeHtml(product.id)}">Удалить</button>
+                    <button class="admin-danger-btn" type="button" data-delete-product="${escapeHtml(product.id)}">${t("delete")}</button>
                 </div>
             `).join("")}
         </div>
@@ -309,8 +315,8 @@ function renderAdminProductMiniList(products) {
 function makeShopIssue(shop) {
     return `
         <div class="admin-issue-row">
-            <span>${escapeHtml(shop.name || "Лавка без названия")}</span>
-            <a href="seller.html?seller=${encodeURIComponent(shop.id)}">Открыть</a>
+            <span>${escapeHtml(shop.name || t("shopWithoutName"))}</span>
+            <a href="seller.html?seller=${encodeURIComponent(shop.id)}">${t("open")}</a>
         </div>
     `;
 }
@@ -320,8 +326,8 @@ function makeProductIssue(product) {
 
     return `
         <div class="admin-issue-row">
-            <span>${escapeHtml(product.name || "Товар")} · ${escapeHtml(seller?.name || "Лавка")}</span>
-            <button type="button" data-show-category="${escapeHtml(product.category || "other")}">Категория</button>
+            <span>${escapeHtml(product.name || t("productFallback"))} · ${escapeHtml(seller?.name || t("shop"))}</span>
+            <button type="button" data-show-category="${escapeHtml(product.category || "other")}">${t("categoryTitle")}</button>
         </div>
     `;
 }
@@ -332,7 +338,7 @@ function bindAdminActions(root) {
             const shopId = button.dataset.deleteShop;
             const shop = getAdminShop(shopId);
 
-            if (!shopId || !confirm(`Удалить лавку "${shop?.name || "без названия"}" и ее товары?`)) return;
+            if (!shopId || !confirm(`${t("deleteShopConfirmPrefix")} "${shop?.name || t("shopWithoutName")}" ${t("deleteShopConfirmSuffix")}`)) return;
 
             await adminDeleteShop(shopId);
             await loadAdminDashboard();
@@ -344,7 +350,7 @@ function bindAdminActions(root) {
             const productId = button.dataset.deleteProduct;
             const product = adminDashboardData.products.find(item => item.id === productId);
 
-            if (!productId || !confirm(`Удалить товар "${product?.name || "без названия"}"?`)) return;
+            if (!productId || !confirm(`${t("deleteProductConfirmPrefix")} "${product?.name || t("productWithoutName")}"?`)) return;
 
             await adminDeleteProduct(productId);
             await loadAdminDashboard();
@@ -378,7 +384,7 @@ function getAdminShop(shopId) {
 }
 
 function getAdminProductPrice(product) {
-    if (!product.priceLabel && !product.price) return "без цены";
+    if (!product.priceLabel && !product.price) return t("noPrice");
     return getProductPriceText(product);
 }
 

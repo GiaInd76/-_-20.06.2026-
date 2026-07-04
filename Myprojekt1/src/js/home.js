@@ -46,8 +46,8 @@ function initMainPage() {
         if (!offersFilterBtn) return;
 
         offersFilterBtn.textContent = filters.length
-            ? `Предложения · ${filters.length}`
-            : "Предложения";
+            ? `${translateInterfaceValue("offers")} · ${filters.length}`
+            : translateInterfaceValue("offers");
     };
 
     const renderOffersFilterPanel = () => {
@@ -115,8 +115,8 @@ function initMainPage() {
                 <div class="home-offers-empty">
                     <span>✦</span>
                     <p>${activeFilters.length
-                        ? "В выбранных категориях пока нет свежих предложений."
-                        : "Здесь появятся новые товары и обновлённые цены."}</p>
+                        ? translateInterfaceValue("noFreshOffersInSelectedCategories")
+                        : translateInterfaceValue("emptyOffers")}</p>
                 </div>
             `;
             return;
@@ -135,16 +135,16 @@ function initMainPage() {
                     <button
                         class="home-offer-photo"
                         type="button"
-                        aria-label="Посмотреть фото товара ${escapeHtml(getLocalizedProductName(product))}"
+                        aria-label="${escapeHtml(translateInterfaceValue("viewProductPhoto"))}: ${escapeHtml(getLocalizedProductName(product))}"
                     >
                         <span class="home-offer-image"></span>
                     </button>
                     <button
                         class="home-offer-favorite ${isFavorite ? "is-active" : ""}"
                         type="button"
-                        aria-label="Добавить товар в избранное"
+                        aria-label="${escapeHtml(translateInterfaceValue("addProductFavorite"))}"
                     >${isFavorite ? "★" : "☆"}</button>
-                    <span class="home-offer-badge">${hasNewPrice ? "Цена обновлена" : "Новинка"}</span>
+                    <span class="home-offer-badge">${hasNewPrice ? translateInterfaceValue("priceUpdated") : translateInterfaceValue("newBadge")}</span>
                     <strong>${escapeHtml(getLocalizedProductName(product))}</strong>
                     <small>${escapeHtml(getProductPriceText(product))}</small>
                     <button class="home-offer-shop" type="button">${escapeHtml(translateInterfaceValue("goShop"))}</button>
@@ -295,7 +295,7 @@ function initMainPage() {
         const seller = getSellerForUser(user);
 
         if (!seller) {
-            showSellerChoiceMessage("Лавка для этого аккаунта пока не найдена. Нажмите «+ Новая лавка», если хотите создать её.");
+            showSellerChoiceMessage(translateInterfaceValue("shopNotFoundCreateHint"));
             return;
         }
 
@@ -309,7 +309,7 @@ function initMainPage() {
         const seller = getSellerForUser(user);
 
         if (!seller) {
-            showSellerChoiceMessage("Лавка для этого аккаунта пока не найдена. Нажмите «+ Новая лавка», если хотите создать её.");
+            showSellerChoiceMessage(translateInterfaceValue("shopNotFoundCreateHint"));
             return;
         }
 
@@ -407,11 +407,11 @@ function initSellerCreation() {
         if (!isSupabaseReady()) {
             sellerCreateBlock?.classList.add("hidden");
             if (cabinetSubtitle) {
-                cabinetSubtitle.textContent = "База не подключилась. Создание лавки временно недоступно.";
+                cabinetSubtitle.textContent = translateInterfaceValue("databaseUnavailableTitle");
             }
             showMessage(
                 createSellerMessage,
-                "Обновите страницу или проверьте интернет. Без Supabase лавка не создаётся."
+                translateInterfaceValue("databaseUnavailableMessage")
             );
             renderSellerCabinets();
             return;
@@ -428,12 +428,12 @@ function initSellerCreation() {
         sellerCreateBlock?.classList.add("hidden");
 
         if (cabinetSubtitle) {
-            cabinetSubtitle.textContent = "У этого аккаунта уже есть лавка. Откройте её для управления.";
+            cabinetSubtitle.textContent = translateInterfaceValue("accountAlreadyHasShop");
         }
 
         showMessage(
             createSellerMessage,
-            "Новая лавка недоступна: один аккаунт управляет одной лавкой."
+            translateInterfaceValue("newShopUnavailable")
         );
         renderSellerCabinets();
     };
@@ -448,7 +448,7 @@ function initSellerCreation() {
         const close = document.getElementById("closeTime").value;
 
         if (!name) {
-            showMessage(createSellerMessage, "Введите название лавки.");
+            showMessage(createSellerMessage, translateInterfaceValue("enterShopName"));
             return;
         }
 
@@ -460,7 +460,7 @@ function initSellerCreation() {
             category,
             open,
             close,
-            findInfo: "Информация о месте пока не заполнена.",
+            findInfo: translateInterfaceValue("noFindInfo"),
             phone: "",
             telegram: "",
             instagram: "",
@@ -471,8 +471,8 @@ function initSellerCreation() {
         const originalText = createSellerBtn.textContent;
 
         createSellerBtn.disabled = true;
-        createSellerBtn.textContent = "Сохраняем...";
-        showMessage(createSellerMessage, "Проверяем вход и сохраняем лавку...");
+        createSellerBtn.textContent = translateInterfaceValue("saving");
+        showMessage(createSellerMessage, translateInterfaceValue("checkingAuthAndSavingShop"));
 
         try {
             if (!isSupabaseReady()) {
@@ -482,7 +482,7 @@ function initSellerCreation() {
             const currentUser = await getCurrentSupabaseUser();
 
             if (!currentUser) {
-                showMessage(createSellerMessage, "Нужно войти в аккаунт продавца.");
+                showMessage(createSellerMessage, translateInterfaceValue("sellerLoginRequired"));
                 await requireSellerSession("create_seller.html");
                 return;
             }
@@ -492,7 +492,7 @@ function initSellerCreation() {
             if (existingSeller) {
                 showMessage(
                     createSellerMessage,
-                    "У этого аккаунта уже есть лавка. Открываю редактирование."
+                    translateInterfaceValue("accountAlreadyHasShopOpening")
                 );
                 openPage(`seller_panel.html?seller=${encodeURIComponent(existingSeller.id)}`);
                 return;
@@ -502,7 +502,7 @@ function initSellerCreation() {
 
             sellers.push(savedSeller);
             writeStorage("sellers", sellers);
-            showMessage(createSellerMessage, "Лавка создана.");
+            showMessage(createSellerMessage, translateInterfaceValue("shopCreated"));
             openPage(`seller_panel.html?seller=${encodeURIComponent(savedSeller.id)}`);
         } catch (error) {
             console.warn("Seller creation failed", error);
@@ -510,9 +510,9 @@ function initSellerCreation() {
             createSellerBtn.textContent = originalText;
             showMessage(
                 createSellerMessage,
-                `Не удалось создать лавку: ${getSupabaseErrorMessage(error)}`
+                `${translateInterfaceValue("createShopFailed")}: ${getSupabaseErrorMessage(error)}`
             );
-            alert(`Не удалось создать лавку: ${getSupabaseErrorMessage(error)}`);
+            alert(`${translateInterfaceValue("createShopFailed")}: ${getSupabaseErrorMessage(error)}`);
         }
     });
 }
@@ -531,7 +531,7 @@ function renderSellerCabinets() {
     if (!sellers.length) {
         cabinetList.innerHTML = `
             <div class="empty-card">
-                У этого аккаунта нет активной лавки. Можно создать новую выше.
+                ${escapeHtml(translateInterfaceValue("noActiveShopCreateAbove"))}
             </div>
         `;
         return;
@@ -554,7 +554,7 @@ function renderSellerCabinets() {
                     data-seller="${escapeHtml(seller.id)}"
                     type="button"
                 >
-                    Редактировать лавку
+                    ${escapeHtml(translateInterfaceValue("editShop"))}
                 </button>
 
                 <button
@@ -562,7 +562,7 @@ function renderSellerCabinets() {
                     data-seller="${escapeHtml(seller.id)}"
                     type="button"
                 >
-                    Открыть витрину
+                    ${escapeHtml(translateInterfaceValue("openStorefront"))}
                 </button>
             </div>
         `;

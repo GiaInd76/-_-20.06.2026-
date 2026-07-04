@@ -53,26 +53,26 @@ function initSellerPanel() {
         if (container) {
             container.innerHTML = `
                 <section class="panel-section auth-card">
-                    <h2>Лавка не найдена</h2>
+                    <h2>${escapeHtml(translateInterfaceValue("shopNotFoundPanelTitle"))}</h2>
                     <p class="subtitle">
-                        Аккаунт вошёл, но эта страница не связана с твоей лавкой.
+                        ${escapeHtml(translateInterfaceValue("shopNotLinkedToAccount"))}
                     </p>
                     <div class="seller-actions">
                         ${
                             ownSeller
                                 ? `
                                     <button id="openOwnSellerPanelBtn" class="btn-primary" type="button">
-                                        Открыть мою лавку
+                                        ${escapeHtml(translateInterfaceValue("openMyShop"))}
                                     </button>
                                 `
                                 : `
                                     <button id="createOwnSellerBtn" class="btn-primary" type="button">
-                                        Создать лавку
+                                        ${escapeHtml(translateInterfaceValue("createShopButton"))}
                                     </button>
                                 `
                         }
                         <button id="sellerPanelHomeBtn" class="btn-outline" type="button">
-                            На главную
+                            ${escapeHtml(translateInterfaceValue("home"))}
                         </button>
                     </div>
                 </section>
@@ -121,7 +121,7 @@ function initSellerPanel() {
 
     sellerLogoutBtn?.addEventListener("click", async () => {
         sellerLogoutBtn.disabled = true;
-        showMessage(profileMessage, "Выходим из аккаунта...");
+        showMessage(profileMessage, translateInterfaceValue("logoutProgress"));
 
         try {
             await signOutSeller();
@@ -129,7 +129,7 @@ function initSellerPanel() {
         } catch (error) {
             console.warn("Seller logout failed", error);
             sellerLogoutBtn.disabled = false;
-            showMessage(profileMessage, `Не удалось выйти: ${getSupabaseErrorMessage(error)}`);
+            showMessage(profileMessage, `${translateInterfaceValue("logoutFailed")}: ${getSupabaseErrorMessage(error)}`);
         }
     });
 
@@ -141,7 +141,7 @@ function initSellerPanel() {
         if (!seller || !deleteSellerModal) return;
 
         if (deleteSellerText) {
-            deleteSellerText.textContent = `Лавка «${seller.name}» и все её товары будут удалены.`;
+            deleteSellerText.textContent = `${translateInterfaceValue("shopPrefix")} «${seller.name}». ${translateInterfaceValue("deleteShopBody")}`;
         }
 
         deleteSellerModal.style.display = "flex";
@@ -157,7 +157,7 @@ function initSellerPanel() {
         if (!seller || seller.id !== currentSeller) return;
 
         confirmDeleteSellerBtn.disabled = true;
-        showMessage(profileMessage, "Удаляем лавку, товары и фотографии...");
+        showMessage(profileMessage, translateInterfaceValue("deletingShop"));
 
         try {
             await deleteSellerFromSupabase(seller.id);
@@ -166,7 +166,7 @@ function initSellerPanel() {
             confirmDeleteSellerBtn.disabled = false;
             showMessage(
                 profileMessage,
-                `Не удалось удалить лавку полностью: ${getSupabaseErrorMessage(error)}`
+                `${translateInterfaceValue("deleteShopFailed")}: ${getSupabaseErrorMessage(error)}`
             );
             closeDeleteSellerModal();
             return;
@@ -205,7 +205,7 @@ function initSellerPanel() {
 
         if (!sellerProducts.length) {
             featuredProductsPicker.innerHTML = `
-                <p class="field-note">Сначала добавьте товары, затем выберите лучшие.</p>
+                <p class="field-note">${escapeHtml(translateInterfaceValue("addFirstProductAbove"))}</p>
             `;
             return;
         }
@@ -226,7 +226,7 @@ function initSellerPanel() {
 
             if (checked.length > 3) {
                 event.target.checked = false;
-                showMessage(profileMessage, "Можно выбрать не больше трёх товаров.");
+                showMessage(profileMessage, translateInterfaceValue("maxThreeProducts"));
             }
         });
     };
@@ -252,11 +252,11 @@ function initSellerPanel() {
         if (!liveProductPreview) return;
 
         const previewProduct = {
-            name: productNameInput?.value.trim() || "Название товара",
-            department: productDepartmentInput?.value.trim() || "Отдел",
+            name: productNameInput?.value.trim() || translateInterfaceValue("productNamePlaceholder"),
+            department: productDepartmentInput?.value.trim() || translateInterfaceValue("departmentPlaceholder"),
             price: productPriceInput?.value.trim() || "0",
             unit: productUnitSelect?.value || "kg",
-            description: productDescriptionInput?.value.trim() || "Описание появится здесь.",
+            description: productDescriptionInput?.value.trim() || translateInterfaceValue("previewDescription"),
             image: selectedProductImages[0] || ""
         };
 
@@ -298,7 +298,7 @@ function initSellerPanel() {
             productImageStatus?.classList.add("hidden");
             if (productImageLabel) {
                 productImageLabel.classList.remove("hidden");
-                productImageLabel.textContent = "Добавить фото";
+                productImageLabel.textContent = translateInterfaceValue("addPhoto");
             }
             renderLiveProductPreview();
             return;
@@ -311,7 +311,7 @@ function initSellerPanel() {
                     <button
                         class="remove-photo-btn"
                         type="button"
-                        aria-label="Удалить фотографию ${index + 1}"
+                        aria-label="${escapeHtml(translateInterfaceValue("removePhoto"))} ${index + 1}"
                     >×</button>
                 </div>
             `)
@@ -334,17 +334,17 @@ function initSellerPanel() {
                     selectedProductImages.splice(photoIndex, 1);
                     if (productImageInput) productImageInput.value = "";
                     updateProductImagePreview();
-                    showMessage(productMessage, "Фотография удалена.");
+                    showMessage(productMessage, translateInterfaceValue("photoRemoved"));
                 });
             });
 
         if (productImageLabel) {
-            productImageLabel.textContent = "Добавить фото";
+            productImageLabel.textContent = translateInterfaceValue("addPhoto");
             productImageLabel.classList.toggle("hidden", selectedProductImages.length >= 2);
         }
 
         if (productImageStatus) {
-            productImageStatus.textContent = `✓ Выбрано фото: ${selectedProductImages.length} из 2`;
+            productImageStatus.textContent = `${translateInterfaceValue("selectedPhotoCount")}: ${selectedProductImages.length} ${translateInterfaceValue("fromTwo")}`;
             productImageStatus.classList.remove("hidden");
         }
 
@@ -361,8 +361,8 @@ function initSellerPanel() {
         sellerProfilePanel.classList.toggle("is-collapsed", !isOpen);
         toggleProfileBtn.setAttribute("aria-expanded", String(isOpen));
         toggleProfileBtn.textContent = isOpen
-            ? "Закрыть профиль"
-            : "Редактировать лавку";
+            ? translateInterfaceValue("closeProfile")
+            : translateInterfaceValue("editShop");
     };
 
     toggleProfileBtn?.addEventListener("click", () => {
@@ -376,7 +376,7 @@ function initSellerPanel() {
         if (!file) return;
 
         if (!file.type.startsWith("image/")) {
-            showMessage(profileMessage, "Выберите изображение для фона.");
+            showMessage(profileMessage, translateInterfaceValue("chooseCoverImage"));
             sellerCoverInput.value = "";
             return;
         }
@@ -387,7 +387,7 @@ function initSellerPanel() {
                 updateSellerCoverPreview();
                 showMessage(
                     profileMessage,
-                    `Фон сжат: ${getReadableFileSize(result.originalBytes)} → ${getReadableFileSize(result.compressedBytes)}. Сохраните профиль.`
+                    `${translateInterfaceValue("addCover")}: ${getReadableFileSize(result.originalBytes)} → ${getReadableFileSize(result.compressedBytes)}. ${translateInterfaceValue("saveProfileAfterCover")}`
                 );
             })
             .catch(error => {
@@ -398,8 +398,8 @@ function initSellerPanel() {
                 showMessage(
                     profileMessage,
                     error.message === "too-large"
-                        ? `Фон слишком тяжёлый. Максимум: ${getReadableFileSize(imageLimits.cover.maxOriginalBytes)}.`
-                        : "Не удалось загрузить фон лавки. Попробуйте JPG или PNG."
+                        ? `${translateInterfaceValue("coverTooLarge")}: ${getReadableFileSize(imageLimits.cover.maxOriginalBytes)}.`
+                        : translateInterfaceValue("coverUploadFailed")
                 );
             });
     });
@@ -410,14 +410,14 @@ function initSellerPanel() {
             sellerCoverInput.value = "";
         }
         updateSellerCoverPreview();
-        showMessage(profileMessage, "Фон убран. Сохраните профиль.");
+        showMessage(profileMessage, translateInterfaceValue("coverRemoved"));
     });
 
     const resetProductForm = () => {
         editingProductIndex = null;
         selectedProductImages = [];
-        productFormTitle.textContent = "Добавить товар";
-        addProductBtn.textContent = "Добавить товар";
+        productFormTitle.textContent = translateInterfaceValue("addProduct");
+        addProductBtn.textContent = translateInterfaceValue("addProduct");
         cancelEditProductBtn.classList.add("hidden");
         document.getElementById("productName").value = "";
         productDepartmentInput.value = "";
@@ -440,7 +440,7 @@ function initSellerPanel() {
         }
 
         if (files.some(file => !file.type.startsWith("image/"))) {
-            showMessage(productMessage, "Выберите только изображения.");
+            showMessage(productMessage, translateInterfaceValue("chooseOnlyImages"));
             productImageInput.value = "";
             return;
         }
@@ -448,7 +448,7 @@ function initSellerPanel() {
         if (files.some(file => file.size > imageLimits.product.maxOriginalBytes)) {
             showMessage(
                 productMessage,
-                `Фото слишком тяжёлое. Максимум: ${getReadableFileSize(imageLimits.product.maxOriginalBytes)}.`
+                `${translateInterfaceValue("photoTooLarge")}: ${getReadableFileSize(imageLimits.product.maxOriginalBytes)}.`
             );
             productImageInput.value = "";
             return;
@@ -467,11 +467,11 @@ function initSellerPanel() {
 
                 showMessage(
                     productMessage,
-                    `Фото сжато: ${getReadableFileSize(originalBytes)} → ${getReadableFileSize(compressedBytes)}. Выбрано: ${selectedProductImages.length} из 2.`
+                    `${translateInterfaceValue("addPhoto")}: ${getReadableFileSize(originalBytes)} → ${getReadableFileSize(compressedBytes)}. ${translateInterfaceValue("selectedPhotoCount")}: ${selectedProductImages.length} ${translateInterfaceValue("fromTwo")}.`
                 );
             })
             .catch(() => {
-                showMessage(productMessage, "Не удалось загрузить фотографии. Попробуйте JPG или PNG.");
+                showMessage(productMessage, translateInterfaceValue("photoUploadFailed"));
                 productImageInput.value = "";
                 updateProductImagePreview();
             });
@@ -479,7 +479,7 @@ function initSellerPanel() {
 
     cancelEditProductBtn?.addEventListener("click", () => {
         resetProductForm();
-        showMessage(productMessage, "Редактирование отменено.");
+        showMessage(productMessage, translateInterfaceValue("editingCancelled"));
     });
 
     saveProfileBtn?.addEventListener("click", async () => {
@@ -500,7 +500,7 @@ function initSellerPanel() {
             : (seller?.featuredProductIds || []);
 
         if (!name) {
-            showMessage(profileMessage, "Введите название лавки.");
+            showMessage(profileMessage, translateInterfaceValue("enterShopName"));
             return;
         }
 
@@ -531,7 +531,7 @@ function initSellerPanel() {
         };
 
         saveProfileBtn.disabled = true;
-        showMessage(profileMessage, "Сохраняем профиль...");
+        showMessage(profileMessage, translateInterfaceValue("savingProfile"));
 
         try {
             const savedSeller = isSupabaseReady()
@@ -547,12 +547,12 @@ function initSellerPanel() {
             selectedSellerCover = savedSeller.coverImage || "";
             writeStorage("sellers", sellers);
             window.history.replaceState(null, "", `seller_panel.html?seller=${encodeURIComponent(currentSeller)}`);
-            showMessage(profileMessage, "Профиль лавки сохранён.");
+            showMessage(profileMessage, translateInterfaceValue("profileSaved"));
             renderPanelProducts();
             setProfilePanelOpen(false);
         } catch (error) {
             console.warn("Seller save failed", error);
-            showMessage(profileMessage, `Не удалось сохранить профиль: ${getSupabaseErrorMessage(error)}`);
+            showMessage(profileMessage, `${translateInterfaceValue("saveProfileFailed")}: ${getSupabaseErrorMessage(error)}`);
         } finally {
             saveProfileBtn.disabled = false;
         }
@@ -560,7 +560,7 @@ function initSellerPanel() {
 
     addProductBtn?.addEventListener("click", async () => {
         if (!currentSeller) {
-            showMessage(productMessage, "Сначала сохраните профиль лавки.");
+            showMessage(productMessage, translateInterfaceValue("saveProfileFirst"));
             return;
         }
 
@@ -572,12 +572,12 @@ function initSellerPanel() {
         const description = document.getElementById("productDescription").value.trim();
 
         if (!name || !price) {
-            showMessage(productMessage, "Введите название товара и цену.");
+            showMessage(productMessage, translateInterfaceValue("enterProductNameAndPrice"));
             return;
         }
 
         if (!isValidProductPrice(price)) {
-            showMessage(productMessage, "Цена может быть числом или диапазоном, например 630/650.");
+            showMessage(productMessage, translateInterfaceValue("invalidPrice"));
             return;
         }
 
@@ -589,7 +589,7 @@ function initSellerPanel() {
             const oldProduct = products[editingProductIndex];
 
             if (!oldProduct || oldProduct.seller !== currentSeller) {
-                showMessage(productMessage, "Не удалось найти товар для редактирования.");
+                showMessage(productMessage, translateInterfaceValue("productNotFoundForEdit"));
                 resetProductForm();
                 return;
             }
@@ -637,7 +637,7 @@ function initSellerPanel() {
         }
 
         addProductBtn.disabled = true;
-        showMessage(productMessage, editingProductIndex !== null ? "Сохраняем товар..." : "Добавляем товар...");
+        showMessage(productMessage, editingProductIndex !== null ? translateInterfaceValue("savingProduct") : translateInterfaceValue("addingProduct"));
 
         try {
             const savedProduct = isSupabaseReady()
@@ -653,7 +653,7 @@ function initSellerPanel() {
             savedProductId = savedProduct.id;
         } catch (error) {
             console.warn("Product save failed", error);
-            showMessage(productMessage, `Не удалось сохранить товар: ${getSupabaseErrorMessage(error)}`);
+            showMessage(productMessage, `${translateInterfaceValue("saveProductFailed")}: ${getSupabaseErrorMessage(error)}`);
             addProductBtn.disabled = false;
             return;
         }
@@ -661,7 +661,7 @@ function initSellerPanel() {
         writeStorage("products", products);
         showMessage(
             productMessage,
-            editingProductIndex !== null ? "Товар сохранён." : "Товар добавлен."
+            editingProductIndex !== null ? translateInterfaceValue("productSaved") : translateInterfaceValue("productAdded")
         );
         resetProductForm();
         renderPanelProducts();
@@ -701,7 +701,7 @@ function renderPanelProducts() {
     if (!sellerProducts.length) {
         productList.innerHTML = `
             <div class="empty-card">
-                Пока товаров нет. Добавьте первый товар выше.
+                ${escapeHtml(translateInterfaceValue("noProductsInPanel"))}
             </div>
         `;
         return;
@@ -744,16 +744,16 @@ function renderPanelProducts() {
                 </div>
                 ${
                     getProductImages(product).length
-                        ? `<span class="photo-chip">${getProductImages(product).length} фото</span>`
+                        ? `<span class="photo-chip">${escapeHtml(getLocalizedPhotoCount(getProductImages(product).length))}</span>`
                         : ""
                 }
                 <div class="product-actions">
                     <button class="edit-btn" type="button" data-index="${product.storageIndex}">
-                        Редактировать
+                        ${escapeHtml(translateInterfaceValue("edit"))}
                     </button>
 
                     <button class="delete-btn" type="button" data-index="${product.storageIndex}">
-                        Удалить
+                        ${escapeHtml(translateInterfaceValue("delete"))}
                     </button>
                 </div>
             `;
@@ -784,10 +784,10 @@ function renderPanelProducts() {
                 selectedProductImages = getProductImages(product);
                 refreshProductImagePreview();
                 refreshLiveProductPreview();
-                document.getElementById("productFormTitle").textContent = "Редактировать товар";
-                document.getElementById("addProductBtn").textContent = "Сохранить товар";
+                document.getElementById("productFormTitle").textContent = translateInterfaceValue("editProduct");
+                document.getElementById("addProductBtn").textContent = translateInterfaceValue("saveProduct");
                 document.getElementById("cancelEditProductBtn").classList.remove("hidden");
-                showMessage(document.getElementById("productMessage"), "Редактируете товар.");
+                showMessage(document.getElementById("productMessage"), translateInterfaceValue("editProductActive"));
                 document.getElementById("productName").focus();
             });
         });

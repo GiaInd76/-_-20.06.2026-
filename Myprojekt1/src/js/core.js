@@ -160,7 +160,7 @@ function fillCategorySelect(select, selectedValue = "") {
 
             return `
                 <option value="${category.id}" ${selected}>
-                    ${category.label}
+                    ${getCategoryLabel(category.id)}
                 </option>
             `;
         })
@@ -189,7 +189,11 @@ function isSellerOwnedByCurrentUser(seller, user = getCachedSupabaseUser()) {
 function getSellerName(sellerId) {
     const seller = getSellerById(sellerId);
 
-    if (!seller) return "Продавец";
+    if (!seller) {
+        return typeof translateInterfaceValue === "function"
+            ? translateInterfaceValue("sellerFallback")
+            : "Продавец";
+    }
 
     return typeof getLocalizedSellerName === "function"
         ? getLocalizedSellerName(seller)
@@ -198,7 +202,9 @@ function getSellerName(sellerId) {
 
 function showMessage(element, text) {
     if (!element) return;
-    element.textContent = text;
+    element.textContent = typeof translateInterfaceText === "function"
+        ? translateInterfaceText(text)
+        : text;
 }
 
 function normalizeProductPrice(value) {
@@ -215,7 +221,11 @@ function isValidProductPrice(value) {
 
 function getProductPriceText(product) {
     const price = product.priceLabel || product.price;
-    return `${price} грн / ${getUnitLabel(product.unit)}`;
+    const currency = typeof getLocalizedCurrencyLabel === "function"
+        ? getLocalizedCurrencyLabel()
+        : "грн";
+
+    return `${price} ${currency} / ${getUnitLabel(product.unit)}`;
 }
 
 function getProductDepartment(product) {
