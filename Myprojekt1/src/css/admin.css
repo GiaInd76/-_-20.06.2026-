@@ -15,7 +15,7 @@
 
 .admin-stats {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 12px;
 }
 
@@ -71,6 +71,83 @@
 
 .admin-quick-actions {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.admin-period-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    justify-content: flex-end;
+}
+
+.admin-period-filter button {
+    min-height: 34px;
+    padding: 8px 12px;
+    border: 1px solid rgba(28, 35, 42, 0.10);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.54);
+    color: var(--theme-ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-period-filter button.is-active {
+    border-color: rgba(53, 104, 145, 0.38);
+    background: rgba(214, 236, 255, 0.86);
+    color: #183447;
+}
+
+.admin-visits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.admin-visit-card,
+.admin-visit-row {
+    border: 1px solid rgba(28, 35, 42, 0.08);
+    background: rgba(255, 255, 255, 0.46);
+}
+
+.admin-visit-card {
+    display: grid;
+    gap: 5px;
+    padding: 14px;
+    border-radius: 18px;
+}
+
+.admin-visit-card span {
+    color: var(--theme-muted);
+    font-size: 12px;
+}
+
+.admin-visit-card strong {
+    color: var(--theme-ink);
+    font-size: 28px;
+}
+
+.admin-visit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 15px;
+}
+
+.admin-visit-row span {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--theme-ink);
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-visit-row strong {
+    color: var(--theme-blue);
 }
 
 .admin-quick-actions a {
@@ -348,7 +425,8 @@
     }
 
     .admin-quick-actions,
-    .admin-issues-grid {
+    .admin-issues-grid,
+    .admin-visits-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -360,6 +438,10 @@
     .admin-row-actions {
         justify-content: flex-start;
     }
+
+    .admin-period-filter {
+        justify-content: flex-start;
+    }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -367,7 +449,10 @@
     .admin-row,
     .admin-category-card,
     .admin-issue-card,
-    .admin-notes {
+    .admin-notes,
+    .admin-visit-card,
+    .admin-visit-row,
+    .admin-period-filter button {
         border-color: rgba(150, 210, 255, 0.18);
         background: rgba(22, 28, 36, 0.58);
     }
@@ -378,9 +463,11 @@
     }
 
     .admin-category-card.is-active,
-    .admin-product-mini {
+    .admin-product-mini,
+    .admin-period-filter button.is-active {
         border-color: rgba(145, 202, 245, 0.36);
         background: rgba(47, 76, 104, 0.72);
+        color: #edf8ff;
     }
 
     .admin-issue-row {

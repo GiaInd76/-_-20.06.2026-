@@ -290,6 +290,19 @@ function toLocalProduct(row) {
     };
 }
 
+function toLocalVisit(row) {
+    return {
+        id: row.id,
+        marketId: row.market_id || "",
+        path: row.path || "",
+        pageType: row.page_type || "",
+        sellerId: row.seller_id || "",
+        category: row.category || "",
+        sessionId: row.session_id || "",
+        createdAt: row.created_at || ""
+    };
+}
+
 function mergeLocalRows(storageKey, rows) {
     if (!Array.isArray(rows) || !rows.length) return;
 
@@ -893,10 +906,103 @@ async function fetchAdminDashboardData() {
     if (shopsResult.error) throw shopsResult.error;
     if (productsResult.error) throw productsResult.error;
 
+    const visits = await fetchAdminVisitsSafely();
+
     return {
         shops: (shopsResult.data || []).map(toLocalSeller),
-        products: (productsResult.data || []).map(toLocalProduct)
+        products: (productsResult.data || []).map(toLocalProduct),
+        visits
     };
+}
+
+async function fetchAdminVisitsSafely() {
+    const yearAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+
+    try {
+        const { data, error } = await withTimeout(
+            supabaseClient
+                .from("visit_events")
+                .select("id,market_id,path,page_type,seller_id,category,session_id,created_at")
+                .gte("created_at", yearAgo)
+                .order("created_at", { ascending: false })
+                .limit(5000),
+            7000,
+            "admin-visits"
+        );
+
+        if (error) {
+            console.warn("Visit analytics unavailable", error);
+            return [];
+        }
+
+        return (data || []).map(toLocalVisit);
+    } catch (error) {
+        console.warn("Visit analytics unavailable", error);
+        return [];
+    }
+}
+
+function getVisitSessionId() {
+    const key = "rynokOnlineVisitSessionId";
+    let sessionId = localStorage.getItem(key);
+
+    if (!sessionId) {
+        sessionId = crypto.randomUUID
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        localStorage.setItem(key, sessionId);
+    }
+
+    return sessionId;
+}
+
+function getVisitPageType() {
+    const path = window.location.pathname.split("/").pop() || "index.html";
+
+    if (path === "index.html" && window.location.search.includes("favorites=1")) return "favorites";
+    if (path === "index.html" || path === "") return "home";
+    if (path === "category.html") return "category";
+    if (path === "seller.html") return "seller";
+    if (path === "seller_panel.html") return "sellerPanel";
+    if (path === "create_seller.html") return "createSeller";
+    if (path === "auth.html") return "auth";
+    if (path === "admin.html") return "admin";
+
+    return path.replace(".html", "");
+}
+
+async function trackVisitEvent() {
+    const visitKey = `visitTracked:${window.location.href}`;
+
+    if (!supabaseClient || sessionStorage.getItem(visitKey)) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const sellerId = params.get("seller") || "";
+    const payload = {
+        market_id: getCurrentMarketId() || null,
+        path: `${window.location.pathname.split("/").pop() || "index.html"}${window.location.search}`,
+        page_type: getVisitPageType(),
+        seller_id: isUuid(sellerId) ? sellerId : null,
+        category: params.get("type") || "",
+        session_id: getVisitSessionId(),
+        user_agent: navigator.userAgent.slice(0, 300)
+    };
+
+    sessionStorage.setItem(visitKey, "1");
+
+    try {
+        const { error } = await supabaseClient
+            .from("visit_events")
+            .insert(payload);
+
+        if (error) {
+            console.warn("Visit tracking skipped", error);
+            sessionStorage.removeItem(visitKey);
+        }
+    } catch (error) {
+        console.warn("Visit tracking skipped", error);
+        sessionStorage.removeItem(visitKey);
+    }
 }
 
 async function adminDeleteProduct(productId) {
@@ -972,6 +1078,8 @@ function initAuthPage() {
     const message = document.getElementById("authMessage");
 
     if (!form || !supabaseClient) return;
+
+    trackVisitEvent();
 
     const showAuthMessage = text => {
         if (!message) return;

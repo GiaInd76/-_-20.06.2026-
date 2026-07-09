@@ -4,10 +4,12 @@ const adminNotesKey = "adminTestNotes";
 
 let adminDashboardData = {
     shops: [],
-    products: []
+    products: [],
+    visits: []
 };
 
 let selectedAdminCategory = "";
+let selectedVisitPeriod = "day";
 
 function t(key) {
     return typeof translateInterfaceValue === "function"
@@ -44,6 +46,7 @@ async function initAdminPage() {
 
     status.textContent = `${t("adminAccount")}: ${user.email || t("supabaseAccount")}`;
     dashboard.classList.remove("hidden");
+    trackVisitEvent();
 
     refreshButton?.addEventListener("click", loadAdminDashboard);
     logoutButton?.addEventListener("click", async () => {
@@ -78,6 +81,7 @@ async function loadAdminDashboard() {
         writeStorage("sellers", data.shops);
         writeStorage("products", data.products);
         renderAdminStats(data);
+        renderAdminVisits(data.visits || []);
         renderAdminChecklist(data);
         renderAdminIssues(data);
         renderAdminCategories(data);
@@ -88,13 +92,104 @@ async function loadAdminDashboard() {
     }
 }
 
-function renderAdminStats({ shops, products }) {
+function renderAdminStats({ shops, products, visits = [] }) {
     const emptyShops = getEmptyShops(shops, products);
+    const periodVisits = getVisitsForPeriod(visits, selectedVisitPeriod);
 
     setText("adminShopsCount", shops.length);
     setText("adminProductsCount", products.length);
     setText("adminEmptyShopsCount", emptyShops.length);
     setText("adminNotificationsCount", 0);
+    setText("adminVisitsCount", periodVisits.length);
+}
+
+function renderAdminVisits(visits) {
+    const periodVisits = getVisitsForPeriod(visits, selectedVisitPeriod);
+    const uniqueSessions = new Set(periodVisits.map(visit => visit.sessionId).filter(Boolean));
+    const pageCounts = periodVisits.reduce((map, visit) => {
+        const key = getAdminVisitLabel(visit);
+        map.set(key, (map.get(key) || 0) + 1);
+        return map;
+    }, new Map());
+    const rows = [...pageCounts.entries()]
+        .sort((first, second) => second[1] - first[1])
+        .slice(0, 8);
+    const breakdown = document.getElementById("adminVisitBreakdown");
+
+    setText("adminVisitsTotal", periodVisits.length);
+    setText("adminVisitsUnique", uniqueSessions.size);
+    setText("adminVisitsPages", pageCounts.size);
+
+    document.querySelectorAll("[data-visit-period]").forEach(button => {
+        button.classList.toggle("is-active", button.dataset.visitPeriod === selectedVisitPeriod);
+    });
+
+    if (!breakdown) return;
+
+    if (!visits.length) {
+        breakdown.innerHTML = `<p class="admin-muted">Статистика появится после применения SQL 012 и первых посещений.</p>`;
+        bindAdminVisitFilter();
+        return;
+    }
+
+    if (!rows.length) {
+        breakdown.innerHTML = `<p class="admin-muted">За выбранный период посещений нет.</p>`;
+        bindAdminVisitFilter();
+        return;
+    }
+
+    breakdown.innerHTML = rows.map(([label, count]) => `
+        <div class="admin-visit-row">
+            <span>${escapeHtml(label)}</span>
+            <strong>${count}</strong>
+        </div>
+    `).join("");
+
+    bindAdminVisitFilter();
+}
+
+function bindAdminVisitFilter() {
+    document.querySelectorAll("[data-visit-period]").forEach(button => {
+        if (button.dataset.boundVisitFilter) return;
+
+        button.dataset.boundVisitFilter = "1";
+        button.addEventListener("click", () => {
+            selectedVisitPeriod = button.dataset.visitPeriod || "day";
+            renderAdminStats(adminDashboardData);
+            renderAdminVisits(adminDashboardData.visits || []);
+        });
+    });
+}
+
+function getVisitsForPeriod(visits, period) {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const ranges = {
+        day: dayMs,
+        week: dayMs * 7,
+        month: dayMs * 30,
+        year: dayMs * 365
+    };
+    const fromTime = Date.now() - (ranges[period] || ranges.day);
+
+    return (visits || []).filter(visit => {
+        const time = new Date(visit.createdAt || 0).getTime();
+        return Number.isFinite(time) && time >= fromTime;
+    });
+}
+
+function getAdminVisitLabel(visit) {
+    const pageTypeLabels = {
+        home: "Главная",
+        category: "Категория",
+        seller: "Страница торговой точки",
+        sellerPanel: "Кабинет продавца",
+        createSeller: "Создание торговой точки",
+        auth: "Вход",
+        admin: "Админка",
+        favorites: "Избранное"
+    };
+
+    return pageTypeLabels[visit.pageType] || visit.path || "Страница";
 }
 
 function renderAdminChecklist({ shops, products }) {

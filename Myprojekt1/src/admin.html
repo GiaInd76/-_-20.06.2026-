@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ — Привоз Онлайн</title>
+    <title>Админ — Ринок Онлайн</title>
 
     <link rel="stylesheet" href="css/base.css?v=20260622-1">
     <link rel="stylesheet" href="css/home.css?v=20260623-3">
@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
     <link rel="stylesheet" href="css/overrides.css?v=20260702-1">
-    <link rel="stylesheet" href="css/admin.css?v=20260630-1">
+    <link rel="stylesheet" href="css/admin.css?v=20260709-1">
 </head>
 <body class="glass-page admin-page">
     <main class="container admin-container">
@@ -40,7 +40,7 @@
         <section id="adminDashboard" class="admin-dashboard hidden">
             <div class="admin-stats">
                 <article class="panel-section admin-stat-card">
-                    <span>Лавки</span>
+                    <span>Точки</span>
                     <strong id="adminShopsCount">0</strong>
                 </article>
                 <article class="panel-section admin-stat-card">
@@ -55,6 +55,10 @@
                     <span>Уведомления</span>
                     <strong id="adminNotificationsCount">0</strong>
                 </article>
+                <article class="panel-section admin-stat-card">
+                    <span>Посещения</span>
+                    <strong id="adminVisitsCount">0</strong>
+                </article>
             </div>
 
             <section class="panel-section admin-section">
@@ -67,10 +71,42 @@
                 <div class="admin-quick-actions">
                     <a class="btn-outline" href="index.html">Главная</a>
                     <a class="btn-outline" href="auth.html">Вход</a>
-                    <a class="btn-outline" href="create_seller.html">Моя лавка</a>
+                    <a class="btn-outline" href="create_seller.html">Торгова точка</a>
                     <a class="btn-outline" href="category.html?favorites=1">Избранное</a>
                     <a class="btn-outline" href="https://supabase.com/dashboard/project/sdsmnahyobzmrafkexud/editor" target="_blank" rel="noopener noreferrer">Supabase</a>
                 </div>
+            </section>
+
+            <section class="panel-section admin-section">
+                <div class="admin-section-head">
+                    <div>
+                        <h2>Посещения</h2>
+                        <p>Показывает просмотры сайта за выбранный период.</p>
+                    </div>
+                    <div class="admin-period-filter" id="adminVisitPeriodFilter">
+                        <button class="is-active" type="button" data-visit-period="day">Сутки</button>
+                        <button type="button" data-visit-period="week">Неделя</button>
+                        <button type="button" data-visit-period="month">Месяц</button>
+                        <button type="button" data-visit-period="year">Год</button>
+                    </div>
+                </div>
+
+                <div class="admin-visits-grid">
+                    <article class="admin-visit-card">
+                        <span>Всего просмотров</span>
+                        <strong id="adminVisitsTotal">0</strong>
+                    </article>
+                    <article class="admin-visit-card">
+                        <span>Уникальных сессий</span>
+                        <strong id="adminVisitsUnique">0</strong>
+                    </article>
+                    <article class="admin-visit-card">
+                        <span>Страниц в периоде</span>
+                        <strong id="adminVisitsPages">0</strong>
+                    </article>
+                </div>
+
+                <div class="admin-list" id="adminVisitBreakdown"></div>
             </section>
 
             <section class="panel-section admin-section">
@@ -98,7 +134,7 @@
                 <div class="admin-section-head">
                     <div>
                         <h2>Категории</h2>
-                        <p>На кнопках видно количество лавок. Нажмите категорию, чтобы посмотреть лавки внутри админки.</p>
+                        <p>На кнопках видно количество торговых точек. Нажмите категорию, чтобы посмотреть их внутри админки.</p>
                     </div>
                 </div>
                 <div id="adminCategoriesList" class="admin-category-grid"></div>
@@ -108,7 +144,7 @@
                 <div class="admin-section-head">
                     <div>
                         <h2 id="adminCategoryTitle">Категория</h2>
-                        <p id="adminCategoryMeta">Лавки и товары выбранной категории.</p>
+                        <p id="adminCategoryMeta">Торговые точки и товары выбранной категории.</p>
                     </div>
                     <a id="adminOpenCategoryLink" class="btn-outline" href="category.html">Открыть страницу</a>
                 </div>
@@ -133,8 +169,8 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260704-1"></script>
+    <script src="js/supabase-client.js?v=20260709-1"></script>
     <script src="js/core.js?v=20260704-1"></script>
-    <script src="js/admin.js?v=20260630-1"></script>
+    <script src="js/admin.js?v=20260709-1"></script>
 </body>
 </html>
