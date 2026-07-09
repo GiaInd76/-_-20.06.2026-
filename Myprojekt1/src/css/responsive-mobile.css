@@ -1,0 +1,48 @@
+/*
+    Mobile layer.
+    Use this file only for phone/tablet layout rules.
+    Base screen target: up to 719px.
+
+    Rule:
+    - shared visual style stays in base/components/page CSS;
+    - phone-specific spacing, grids, sticky panels, and touch sizes go here;
+    - do not put desktop rules in this file.
+*/
+
+@media (max-width: 719px) {
+    :root {
+        --mobile-page-gap: 18px;
+        --mobile-card-radius: 24px;
+    }
+
+    .seller-panel-page .profile-block:not(.is-collapsed) {
+        padding-bottom: max(28px, env(safe-area-inset-bottom));
+    }
+
+    .seller-panel-page .featured-products-picker {
+        max-height: 156px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+    .seller-panel-page #saveSellerProfileBtn {
+        position: relative;
+        z-index: 6;
+        margin-top: 16px;
+        margin-bottom: 16px;
+    }
+
+    .seller-panel-page .product-workbench {
+        margin-top: 18px;
+    }
+
+    .favorites-page .category-results-panel {
+        padding: 0 !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+}

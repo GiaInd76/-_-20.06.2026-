@@ -75,6 +75,16 @@ async function signOutSeller() {
     if (error) throw error;
 }
 
+async function updateCurrentUserPassword(newPassword) {
+    if (!supabaseClient) throw new Error("supabase-unavailable");
+
+    const { error } = await supabaseClient.auth.updateUser({
+        password: newPassword
+    });
+
+    if (error) throw error;
+}
+
 async function getActiveAuthUser(authData = null) {
     const sessionUser = authData?.session?.user || authData?.user || null;
 
@@ -1075,6 +1085,11 @@ function initAuthPage() {
     const passwordConfirmInput = document.getElementById("authPasswordConfirm");
     const loginButton = document.getElementById("loginBtn");
     const registerButton = document.getElementById("registerBtn");
+    const forgotPasswordButton = document.getElementById("forgotPasswordBtn");
+    const passwordResetPanel = document.getElementById("passwordResetPanel");
+    const newPasswordInput = document.getElementById("newPassword");
+    const newPasswordConfirmInput = document.getElementById("newPasswordConfirm");
+    const saveNewPasswordButton = document.getElementById("saveNewPasswordBtn");
     const message = document.getElementById("authMessage");
 
     if (!form || !supabaseClient) return;
@@ -1091,12 +1106,19 @@ function initAuthPage() {
     const setBusy = isBusy => {
         loginButton.disabled = isBusy;
         registerButton.disabled = isBusy;
+        if (forgotPasswordButton) forgotPasswordButton.disabled = isBusy;
+        if (saveNewPasswordButton) saveNewPasswordButton.disabled = isBusy;
     };
 
     const getCredentials = () => ({
         email: emailInput.value.trim(),
         password: passwordInput.value
     });
+
+    if (new URLSearchParams(window.location.search).get("mode") === "password-reset") {
+        passwordResetPanel?.classList.remove("hidden");
+        newPasswordInput?.focus();
+    }
 
     const signIn = async () => {
         const credentials = getCredentials();
@@ -1127,6 +1149,64 @@ function initAuthPage() {
 
         window.location.replace(getSafeReturnUrl());
     };
+
+    forgotPasswordButton?.addEventListener("click", async () => {
+        const email = emailInput.value.trim();
+
+        if (!email) {
+            showAuthMessage(translateInterfaceValue("enterEmailForPasswordReset"));
+            emailInput.focus();
+            return;
+        }
+
+        setBusy(true);
+        showAuthMessage(translateInterfaceValue("sendingPasswordReset"));
+
+        const redirectTo = new URL("auth.html?mode=password-reset", window.location.href).href;
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo
+        });
+
+        setBusy(false);
+
+        if (error) {
+            showAuthMessage(getSupabaseErrorMessage(error));
+            return;
+        }
+
+        showAuthMessage(translateInterfaceValue("passwordResetEmailSent"));
+    });
+
+    saveNewPasswordButton?.addEventListener("click", async () => {
+        const newPassword = newPasswordInput?.value || "";
+        const repeatedPassword = newPasswordConfirmInput?.value || "";
+
+        if (newPassword.length < 6) {
+            showAuthMessage(translateInterfaceValue("enterNewPassword"));
+            newPasswordInput?.focus();
+            return;
+        }
+
+        if (newPassword !== repeatedPassword) {
+            showAuthMessage(translateInterfaceValue("passwordsDoNotMatch"));
+            newPasswordConfirmInput?.focus();
+            return;
+        }
+
+        setBusy(true);
+        showAuthMessage(translateInterfaceValue("savingNewPassword"));
+
+        try {
+            await updateCurrentUserPassword(newPassword);
+            showAuthMessage(translateInterfaceValue("passwordChanged"));
+            newPasswordInput.value = "";
+            newPasswordConfirmInput.value = "";
+        } catch (error) {
+            showAuthMessage(getSupabaseErrorMessage(error));
+        } finally {
+            setBusy(false);
+        }
+    });
 
     form.addEventListener("submit", event => {
         event.preventDefault();

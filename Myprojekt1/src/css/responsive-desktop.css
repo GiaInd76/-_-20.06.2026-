@@ -1,0 +1,17 @@
+/*
+    Desktop layer.
+    Use this file only for notebook/desktop layout rules.
+    Base screen target: 720px and wider.
+
+    Rule:
+    - shared visual style stays in base/components/page CSS;
+    - desktop-specific columns, wide grids, and admin/table layouts go here;
+    - do not put phone rules in this file.
+*/
+
+@media (min-width: 720px) {
+    :root {
+        --desktop-page-gap: 28px;
+        --desktop-content-width: 980px;
+    }
+}

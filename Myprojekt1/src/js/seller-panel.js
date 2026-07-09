@@ -39,6 +39,10 @@ function initSellerPanel() {
     const featuredProductsPicker = document.getElementById("featuredProductsPicker");
     const sellerLogoutBtn = document.getElementById("sellerLogoutBtn");
     const deleteSellerBtn = document.getElementById("deleteSellerBtn");
+    const accountNewPasswordInput = document.getElementById("accountNewPassword");
+    const accountNewPasswordConfirmInput = document.getElementById("accountNewPasswordConfirm");
+    const changeAccountPasswordBtn = document.getElementById("changeAccountPasswordBtn");
+    const accountPasswordMessage = document.getElementById("accountPasswordMessage");
     const deleteSellerModal = document.getElementById("deleteSellerModal");
     const deleteSellerText = document.getElementById("deleteSellerText");
     const cancelDeleteSellerBtn = document.getElementById("cancelDeleteSellerBtn");
@@ -130,6 +134,37 @@ function initSellerPanel() {
             console.warn("Seller logout failed", error);
             sellerLogoutBtn.disabled = false;
             showMessage(profileMessage, `${translateInterfaceValue("logoutFailed")}: ${getSupabaseErrorMessage(error)}`);
+        }
+    });
+
+    changeAccountPasswordBtn?.addEventListener("click", async () => {
+        const newPassword = accountNewPasswordInput?.value || "";
+        const repeatedPassword = accountNewPasswordConfirmInput?.value || "";
+
+        if (newPassword.length < 6) {
+            showMessage(accountPasswordMessage, translateInterfaceValue("enterNewPassword"));
+            accountNewPasswordInput?.focus();
+            return;
+        }
+
+        if (newPassword !== repeatedPassword) {
+            showMessage(accountPasswordMessage, translateInterfaceValue("passwordsDoNotMatch"));
+            accountNewPasswordConfirmInput?.focus();
+            return;
+        }
+
+        changeAccountPasswordBtn.disabled = true;
+        showMessage(accountPasswordMessage, translateInterfaceValue("savingNewPassword"));
+
+        try {
+            await updateCurrentUserPassword(newPassword);
+            accountNewPasswordInput.value = "";
+            accountNewPasswordConfirmInput.value = "";
+            showMessage(accountPasswordMessage, translateInterfaceValue("passwordChanged"));
+        } catch (error) {
+            showMessage(accountPasswordMessage, getSupabaseErrorMessage(error));
+        } finally {
+            changeAccountPasswordBtn.disabled = false;
         }
     });
 

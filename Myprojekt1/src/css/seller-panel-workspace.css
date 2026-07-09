@@ -11,6 +11,29 @@
     width: 100%;
 }
 
+.seller-panel-page .account-security-block {
+    display: grid;
+    max-width: 420px;
+    gap: 10px;
+    margin: 18px auto;
+}
+
+.seller-panel-page .account-security-block h2,
+.seller-panel-page .account-security-block p {
+    margin: 0;
+}
+
+.seller-panel-page .account-security-block input {
+    width: 100%;
+    min-height: 43px;
+    padding: 9px 12px;
+    border: 1px solid rgba(40, 49, 57, 0.13);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, 0.70);
+    color: #252b30;
+    font: inherit;
+}
+
 .seller-panel-page .photo-preview {
     display: grid;
     min-height: 0;

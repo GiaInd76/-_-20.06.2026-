@@ -1,4 +1,9 @@
-/* Последние уточнения темы и новые компоненты проекта. */
+/*
+    Legacy override layer.
+    Здесь остались точечные правки, накопленные во время быстрых итераций.
+    Новые телефонные правила добавляем в responsive-mobile.css.
+    Новые компьютерные правила добавляем в responsive-desktop.css.
+*/
 
 /* Холодная бело-синяя тема */
 
@@ -555,8 +560,22 @@ button:hover,
     backdrop-filter: none;
 }
 
+body.favorites-page .category-results-panel,
+.glass-page.favorites-page .category-results-panel {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
+
 .favorites-page .category-page-label {
     margin-left: 0;
+}
+
+body.favorites-page .category-page-label {
+    margin-left: 0 !important;
 }
 
 .seller-featured-products {

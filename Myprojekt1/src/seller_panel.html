@@ -14,7 +14,9 @@
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
     <link rel="stylesheet" href="css/overrides.css?v=20260702-1">
-    <link rel="stylesheet" href="css/seller-panel-workspace.css?v=20260704-1">
+    <link rel="stylesheet" href="css/seller-panel-workspace.css?v=20260709-2">
+    <link rel="stylesheet" href="css/responsive-mobile.css?v=20260709-1">
+    <link rel="stylesheet" href="css/responsive-desktop.css?v=20260709-1">
 </head>
 
 <body class="glass-page seller-panel-page" data-seller-auth="required">
@@ -173,6 +175,29 @@
             </div>
         </section>
 
+        <section class="panel-section account-security-block">
+            <h2>Безопасность аккаунта</h2>
+            <p class="field-note">Здесь можно поменять пароль для текущего аккаунта.</p>
+            <input
+                id="accountNewPassword"
+                type="password"
+                placeholder="Новый пароль"
+                autocomplete="new-password"
+                minlength="6"
+            >
+            <input
+                id="accountNewPasswordConfirm"
+                type="password"
+                placeholder="Повторите новый пароль"
+                autocomplete="new-password"
+                minlength="6"
+            >
+            <button id="changeAccountPasswordBtn" class="btn-outline" type="button">
+                Изменить пароль
+            </button>
+            <p id="accountPasswordMessage" class="form-message"></p>
+        </section>
+
         <div class="product-workbench">
         <section class="panel-section form-block product-editor">
             <h2 id="productFormTitle">
@@ -305,11 +330,11 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260709-1"></script>
-    <script src="js/i18n.js?v=20260704-5"></script>
+    <script src="js/supabase-client.js?v=20260709-2"></script>
+    <script src="js/i18n.js?v=20260709-2"></script>
     <script src="js/core.js?v=20260704-5"></script>
     <script src="js/home.js?v=20260704-5"></script>
-    <script src="js/seller-panel.js?v=20260704-5"></script>
+    <script src="js/seller-panel.js?v=20260709-2"></script>
     <script src="js/catalog.js?v=20260704-5"></script>
     <script src="js/app.js?v=20260709-1"></script>
 </body>
