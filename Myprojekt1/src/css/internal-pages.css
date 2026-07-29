@@ -10,43 +10,9 @@
 
     overflow-x: hidden;
 
-    background: #f5f1e9;
+    background: transparent;
 
     color: #17191c;
-
-}
-
-
-.glass-page::before {
-
-    content: "";
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: -2;
-
-    background:
-        url("../images/privoz-arch-bg.png")
-        center 48% / cover no-repeat;
-
-}
-
-
-.glass-page::after {
-
-    content: "";
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: -1;
-
-    background: rgba(250, 248, 243, 0.22);
-
-    pointer-events: none;
 
 }
 

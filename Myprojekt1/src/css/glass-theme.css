@@ -10,50 +10,9 @@
 
     overflow-x: hidden;
 
-    background: #f5f1e9;
+    background: transparent;
 
     color: #17191c;
-
-}
-
-
-/* Неподвижный рисунок под прокручиваемым содержимым */
-
-.home-page::before {
-
-    content: "";
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: -2;
-
-    background:
-        url("../images/privoz-arch-bg.png")
-        center 48% / cover no-repeat;
-
-}
-
-
-.home-page::after {
-
-    content: "";
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: -1;
-
-    background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.26) 0%,
-        rgba(250,247,240,0.08) 48%,
-        rgba(255,255,255,0.34) 100%
-    );
-
-    pointer-events: none;
 
 }
 
@@ -581,13 +540,6 @@
     .home-page {
 
         padding: 14px 12px 30px;
-
-    }
-
-
-    .home-page::before {
-
-        background-position: center 48%;
 
     }
 
@@ -1449,4 +1401,3 @@
     }
 
 }
-
