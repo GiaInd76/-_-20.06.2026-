@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 
 <head>
 
@@ -12,7 +12,7 @@
 
     <title>
 
-        Продавец — Ринок Онлайн
+        Продавець — Ринок Онлайн
 
     </title>
 
@@ -39,7 +39,7 @@
 
         <!-- Общая навигация внутренних страниц -->
 
-        <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
+        <nav class="top-bar page-navigation" aria-label="Навігація сайтом">
             <button class="back-home-btn" type="button">
                 Назад
             </button>
@@ -49,34 +49,34 @@
             </a>
 
             <button id="sellerEditNavBtn" class="seller-edit-nav-btn hidden" type="button">
-                Редактировать точку
+                Редагувати точку
             </button>
         </nav>
 
 
-        <!-- Данные продавца -->
+        <!-- Дані продавця -->
 
         <div id="sellerPage"></div>
 
 
-        <!-- Список товаров -->
+        <!-- Список товарів -->
 
         <section class="seller-menu">
 
             <h2 class="section-title">
 
-                Товары
+                Товари
 
             </h2>
 
             <div
                 id="sellerDepartments"
                 class="seller-departments hidden"
-                aria-label="Отделы лавки"
+                aria-label="Відділи торгової точки"
             ></div>
 
 
-            <!-- JS вставит товары -->
+            <!-- JavaScript додасть товари -->
 
             <div
                 class="product-list"
@@ -93,16 +93,16 @@
 
     <div id="ownerProductModal" class="modal">
         <div class="modal-content owner-product-editor">
-            <h2>Редактировать товар</h2>
+            <h2>Редагувати товар</h2>
 
-            <input id="ownerProductName" type="text" placeholder="Название товара">
-            <input id="ownerProductDepartment" type="text" placeholder="Отдел">
+            <input id="ownerProductName" type="text" placeholder="Назва товару">
+            <input id="ownerProductDepartment" type="text" placeholder="Відділ">
             <input
                 id="ownerProductPrice"
                 type="text"
                 inputmode="decimal"
                 maxlength="24"
-                placeholder="Цена, например 630 или 630/650"
+                placeholder="Ціна, наприклад 630 або 630/650"
             >
 
             <select id="ownerProductUnit">
@@ -113,14 +113,14 @@
                 <option value="pack">упаковка</option>
             </select>
 
-            <textarea id="ownerProductDescription" placeholder="Описание товара"></textarea>
+            <textarea id="ownerProductDescription" placeholder="Опис товару"></textarea>
 
             <button id="saveOwnerProductBtn" class="add-btn" type="button">
-                Сохранить
+                Зберегти
             </button>
 
             <button id="cancelOwnerProductBtn" class="btn-outline" type="button">
-                Отмена
+                Скасувати
             </button>
 
             <p id="ownerProductMessage" class="form-message"></p>
@@ -165,7 +165,7 @@
 
             <p id="findModalText">
 
-                Информация о месте пока не заполнена.
+                Інформація про місце поки не заповнена.
 
             </p>
 
@@ -174,7 +174,7 @@
     </div>
 
 
-    <!-- Контакты продавца -->
+    <!-- Контакти продавця -->
 
     <div
         id="contactModal"
@@ -185,10 +185,10 @@
             <p class="contact-modal-label">Телефон</p>
 
             <a id="sellerPhoneLink" class="seller-phone-link">
-                Номер пока не указан
+                Номер поки не вказано
             </a>
 
-            <div class="contact-socials" aria-label="Ссылки продавца">
+            <div class="contact-socials" aria-label="Посилання продавця">
                 <a id="sellerTelegramLink" class="contact-icon contact-telegram" aria-label="Telegram">T</a>
                 <a id="sellerInstagramLink" class="contact-icon contact-instagram" aria-label="Instagram">I</a>
                 <a id="sellerViberLink" class="contact-icon contact-viber" aria-label="Viber">V</a>
@@ -199,14 +199,14 @@
     </div>
 
 
-    <!-- Подключение JS -->
+    <!-- Підключення JavaScript -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260709-1"></script>
-    <script src="js/i18n.js?v=20260704-5"></script>
-    <script src="js/core.js?v=20260704-5"></script>
+    <script src="js/supabase-client.js?v=20260729-3"></script>
+    <script src="js/i18n.js?v=20260729-3"></script>
+    <script src="js/core.js?v=20260729-3"></script>
     <script src="js/home.js?v=20260704-5"></script>
-    <script src="js/seller-panel.js?v=20260704-5"></script>
+    <script src="js/seller-panel.js?v=20260729-3"></script>
     <script src="js/catalog.js?v=20260704-5"></script>
     <script src="js/app.js?v=20260709-1"></script>
 

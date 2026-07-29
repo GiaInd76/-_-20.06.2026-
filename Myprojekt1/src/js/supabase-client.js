@@ -989,7 +989,9 @@ async function trackVisitEvent() {
     const params = new URLSearchParams(window.location.search);
     const sellerId = params.get("seller") || "";
     const payload = {
-        market_id: getCurrentMarketId() || null,
+        market_id: typeof getCurrentMarketId === "function"
+            ? getCurrentMarketId() || null
+            : null,
         path: `${window.location.pathname.split("/").pop() || "index.html"}${window.location.search}`,
         page_type: getVisitPageType(),
         seller_id: isUuid(sellerId) ? sellerId : null,

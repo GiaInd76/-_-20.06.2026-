@@ -1,4 +1,4 @@
-/* Запуск функций после загрузки всех частей сайта. */
+/* Запуск функцій після завантаження всіх частин сайту. */
 
 async function initApp() {
     const canContinue = await initProtectedSellerPage();

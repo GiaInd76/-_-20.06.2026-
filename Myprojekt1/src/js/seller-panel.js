@@ -1,4 +1,4 @@
-/* Кабинет продавца: профиль лавки, фотографии и добавление товаров. */
+/* Кабінет продавця: профіль торгової точки, фотографії та додавання товарів. */
 
 function initSellerPanel() {
     const saveProfileBtn = document.getElementById("saveSellerProfileBtn");
@@ -772,7 +772,7 @@ function renderPanelProducts() {
                 <span class="product-department-label">${escapeHtml(getProductDepartment(product))}</span>
                 <h3>${escapeHtml(getLocalizedProductName(product))}</h3>
                 <p class="product-description">
-                    ${escapeHtml(getLocalizedProductDescription(product) || "Описание пока не заполнено.")}
+                    ${escapeHtml(getLocalizedProductDescription(product) || translateInterfaceValue("noDescription"))}
                 </p>
                 <div class="product-info">
                     <span>${escapeHtml(getProductPriceText(product))}</span>

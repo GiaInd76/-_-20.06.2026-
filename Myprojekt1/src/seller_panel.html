@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Панель продавца — Ринок Онлайн</title>
+    <title>Панель продавця — Ринок Онлайн</title>
 
     <link rel="stylesheet" href="css/base.css?v=20260723-1">
     <link rel="stylesheet" href="css/home.css?v=20260623-3">
@@ -22,7 +22,7 @@
 
 <body class="glass-page seller-panel-page" data-seller-auth="required">
     <div class="container">
-        <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
+        <nav class="top-bar page-navigation" aria-label="Навігація сайтом">
             <button class="back-home-btn" type="button">
                 Назад
             </button>
@@ -32,70 +32,70 @@
             </a>
 
             <button id="allCabinetsBtn" class="seller-cabinet-nav-btn" type="button">
-                Моя точка
+                Моя торгова точка
             </button>
         </nav>
 
         <header class="header">
             <h1 class="logo">
-                Управление торговой точкой
+                Керування торговою точкою
             </h1>
 
             <p class="subtitle">
-                Заполните профиль продавца и добавляйте товары
+                Заповніть профіль продавця та додавайте товари
             </p>
         </header>
 
-        <div class="cabinet-menu" aria-label="Меню кабинета">
+        <div class="cabinet-menu" aria-label="Меню кабінету">
             <button id="toggleProfileBtn" class="btn-outline" type="button" aria-expanded="false">
-                Редактировать точку
+                Редагувати точку
             </button>
         </div>
 
         <section id="sellerProfilePanel" class="panel-section profile-block is-collapsed">
             <h2>
-                Профиль торговой точки
+                Профіль торгової точки
             </h2>
 
             <input
                 type="text"
                 id="profileSellerName"
-                placeholder="Название торговой точки"
+                placeholder="Назва торгової точки"
             >
 
             <textarea
                 id="profileSellerDescription"
-                placeholder="Описание торговой точки"
+                placeholder="Опис торгової точки"
             ></textarea>
 
             <textarea
                 id="profileFindInfo"
-                placeholder="Описание для кнопки Как найти"
+                placeholder="Опис для кнопки Як знайти"
             ></textarea>
 
             <div class="contact-fields">
                 <input
                     type="tel"
                     id="profilePhone"
-                    placeholder="Номер телефона"
+                    placeholder="Номер телефону"
                 >
 
                 <input
                     type="text"
                     id="profileTelegram"
-                    placeholder="Ссылка или имя Telegram"
+                    placeholder="Посилання або ім'я Telegram"
                 >
 
                 <input
                     type="text"
                     id="profileInstagram"
-                    placeholder="Ссылка или имя Instagram"
+                    placeholder="Посилання або ім'я Instagram"
                 >
 
                 <input
                     type="text"
                     id="profileViber"
-                    placeholder="Ссылка или номер Viber"
+                    placeholder="Посилання або номер Viber"
                 >
             </div>
 
@@ -105,7 +105,7 @@
                     for="sellerCoverImage"
                     class="photo-upload-btn"
                 >
-                    Добавить фон точки
+                    Додати фон торгової точки
                 </label>
 
                 <input
@@ -124,11 +124,11 @@
                     class="btn-outline hidden"
                     type="button"
                 >
-                    Убрать фон точки
+                    Прибрати фон торгової точки
                 </button>
 
                 <p class="field-note">
-                    Фон появится за названием, временем работы и кнопками торговой точки.
+                    Фон з'явиться за назвою, часом роботи та кнопками торгової точки.
                 </p>
             </div>
 
@@ -148,8 +148,8 @@
 
             <!-- Три товара, которые покупатель увидит на карточке торговой точки -->
             <div class="featured-products-field">
-                <h3>Товары на карточке точки</h3>
-                <p class="field-note">Выберите до трёх товаров.</p>
+                <h3>Товари на картці торгової точки</h3>
+                <p class="field-note">Виберіть до трьох товарів.</p>
                 <div id="featuredProductsPicker" class="featured-products-picker"></div>
             </div>
 
@@ -158,7 +158,7 @@
                 class="add-btn"
                 type="button"
             >
-                Сохранить профиль
+                Зберегти профіль
             </button>
 
             <p
@@ -168,33 +168,33 @@
 
             <div class="shop-danger-zone">
                 <button id="sellerLogoutBtn" class="logout-shop-btn" type="button">
-                    Выйти
+                    Вийти
                 </button>
                 <button id="deleteSellerBtn" class="delete-shop-btn" type="button">
-                    Удалить точку
+                    Видалити торгову точку
                 </button>
             </div>
         </section>
 
         <section class="panel-section account-security-block">
-            <h2>Безопасность аккаунта</h2>
-            <p class="field-note">Здесь можно поменять пароль для текущего аккаунта.</p>
+            <h2>Безпека акаунта</h2>
+            <p class="field-note">Тут можна змінити пароль для поточного акаунта.</p>
             <input
                 id="accountNewPassword"
                 type="password"
-                placeholder="Новый пароль"
+                placeholder="Новий пароль"
                 autocomplete="new-password"
                 minlength="6"
             >
             <input
                 id="accountNewPasswordConfirm"
                 type="password"
-                placeholder="Повторите новый пароль"
+                placeholder="Повторіть новий пароль"
                 autocomplete="new-password"
                 minlength="6"
             >
             <button id="changeAccountPasswordBtn" class="btn-outline" type="button">
-                Изменить пароль
+                Змінити пароль
             </button>
             <p id="accountPasswordMessage" class="form-message"></p>
         </section>
@@ -202,19 +202,19 @@
         <div class="product-workbench">
         <section class="panel-section form-block product-editor">
             <h2 id="productFormTitle">
-                Добавить товар
+                Додати товар
             </h2>
 
             <input
                 type="text"
                 id="productName"
-                placeholder="Название товара"
+                placeholder="Назва товару"
             >
 
             <input
                 type="text"
                 id="productDepartment"
-                placeholder="Отдел, например Сыры"
+                placeholder="Відділ, наприклад Сири"
                 list="departmentSuggestions"
                 autocomplete="off"
             >
@@ -226,7 +226,7 @@
             <input
                 type="text"
                 id="price"
-                placeholder="Цена, например 630 или 630/650"
+                placeholder="Ціна, наприклад 630 або 630/650"
                 inputmode="decimal"
                 maxlength="24"
             >
@@ -255,7 +255,7 @@
 
             <textarea
                 id="productDescription"
-                placeholder="Описание товара"
+                placeholder="Опис товару"
             ></textarea>
 
             <div class="photo-upload">
@@ -264,7 +264,7 @@
                     class="photo-upload-btn"
                     id="productImageLabel"
                 >
-                    Добавить фото
+                    Додати фото
                 </label>
 
                 <input
@@ -291,7 +291,7 @@
                 class="add-btn"
                 type="button"
             >
-                Добавить товар
+                Додати товар
             </button>
 
             <button
@@ -299,7 +299,7 @@
                 class="btn-outline hidden"
                 type="button"
             >
-                Отменить редактирование
+                Скасувати редагування
             </button>
 
             <p
@@ -315,27 +315,27 @@
     <!-- Подтверждение защищает торговую точку от случайного удаления -->
     <div id="deleteSellerModal" class="modal delete-shop-modal" role="dialog" aria-modal="true">
         <div class="modal-content delete-shop-content">
-            <p class="home-kicker">Необратимое действие</p>
-            <h2>Удалить торговую точку?</h2>
-            <p id="deleteSellerText">Торговая точка и все её товары будут удалены.</p>
+            <p class="home-kicker">Незворотна дія</p>
+            <h2>Видалити торгову точку?</h2>
+            <p id="deleteSellerText">Торгову точку і всі її товари буде видалено.</p>
 
             <div class="delete-shop-actions">
                 <button id="cancelDeleteSellerBtn" class="btn-outline" type="button">
-                    Отмена
+                    Скасувати
                 </button>
                 <button id="confirmDeleteSellerBtn" class="delete-shop-confirm" type="button">
-                    Удалить
+                    Видалити
                 </button>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260709-2"></script>
-    <script src="js/i18n.js?v=20260709-2"></script>
-    <script src="js/core.js?v=20260704-5"></script>
+    <script src="js/supabase-client.js?v=20260729-3"></script>
+    <script src="js/i18n.js?v=20260729-3"></script>
+    <script src="js/core.js?v=20260729-3"></script>
     <script src="js/home.js?v=20260704-5"></script>
-    <script src="js/seller-panel.js?v=20260709-2"></script>
+    <script src="js/seller-panel.js?v=20260729-3"></script>
     <script src="js/catalog.js?v=20260704-5"></script>
     <script src="js/app.js?v=20260709-1"></script>
 </body>

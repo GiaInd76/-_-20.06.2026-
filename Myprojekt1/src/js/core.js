@@ -1,4 +1,4 @@
-/* Общие данные, localStorage, ссылки, категории и работа с изображениями. */
+/* Спільні дані, localStorage, посилання, категорії та робота із зображеннями. */
 
 const params = new URLSearchParams(window.location.search);
 let currentSeller = params.get("seller");
@@ -28,20 +28,20 @@ const imageLimits = {
 };
 
 const categories = [
-    { id: "meat", label: "Мясо" },
-    { id: "fish", label: "Рыба и морепродукты" },
-    { id: "vegetables", label: "Овощи" },
-    { id: "fruits", label: "Фрукты" },
-    { id: "milk", label: "Молочная продукция" },
-    { id: "bakery", label: "Выпечка" },
-    { id: "spices", label: "Специи" },
-    { id: "sweets", label: "Сладости" },
-    { id: "clothing", label: "Одежда" },
-    { id: "shoes", label: "Обувь" },
-    { id: "electronics", label: "Техника" },
-    { id: "discount", label: "Всё по 3" },
-    { id: "pets", label: "Зоотовары" },
-    { id: "other", label: "Другое" }
+    { id: "meat", label: "М'ясо" },
+    { id: "fish", label: "Риба та морепродукти" },
+    { id: "vegetables", label: "Овочі" },
+    { id: "fruits", label: "Фрукти" },
+    { id: "milk", label: "Молочна продукція" },
+    { id: "bakery", label: "Випічка" },
+    { id: "spices", label: "Спеції" },
+    { id: "sweets", label: "Солодощі" },
+    { id: "clothing", label: "Одяг" },
+    { id: "shoes", label: "Взуття" },
+    { id: "electronics", label: "Техніка" },
+    { id: "discount", label: "Усе по 3" },
+    { id: "pets", label: "Зоотовари" },
+    { id: "other", label: "Інше" }
 ];
 
 const units = {
@@ -99,20 +99,20 @@ function updateMarketLabels(root = document) {
 }
 
 const homeCategorySuggestions = [
-    { id: "meat", icon: "🥩", title: "Мясо" },
-    { id: "fish", icon: "🐟", title: "Рыба" },
-    { id: "vegetables", icon: "🥬", title: "Овощи" },
-    { id: "fruits", icon: "🍎", title: "Фрукты" },
-    { id: "milk", icon: "🥛", title: "Молочка" },
-    { id: "bakery", icon: "🥐", title: "Выпечка" },
-    { id: "spices", icon: "🧂", title: "Специи" },
-    { id: "sweets", icon: "🍬", title: "Сладости" },
-    { id: "clothing", icon: "👕", title: "Одежда" },
-    { id: "shoes", icon: "👟", title: "Обувь" },
-    { id: "electronics", icon: "📱", title: "Техника" },
-    { id: "discount", icon: "🏷️", title: "Всё по 3" },
-    { id: "pets", icon: "🐾", title: "Зоотовары" },
-    { id: "other", icon: "🛍️", title: "Другое" }
+    { id: "meat", icon: "🥩", title: "М'ясо" },
+    { id: "fish", icon: "🐟", title: "Риба" },
+    { id: "vegetables", icon: "🥬", title: "Овочі" },
+    { id: "fruits", icon: "🍎", title: "Фрукти" },
+    { id: "milk", icon: "🥛", title: "Молочне" },
+    { id: "bakery", icon: "🥐", title: "Випічка" },
+    { id: "spices", icon: "🧂", title: "Спеції" },
+    { id: "sweets", icon: "🍬", title: "Солодощі" },
+    { id: "clothing", icon: "👕", title: "Одяг" },
+    { id: "shoes", icon: "👟", title: "Взуття" },
+    { id: "electronics", icon: "📱", title: "Техніка" },
+    { id: "discount", icon: "🏷️", title: "Усе по 3" },
+    { id: "pets", icon: "🐾", title: "Зоотовари" },
+    { id: "other", icon: "🛍️", title: "Інше" }
 ];
 
 function readStorage(key, fallback = []) {
@@ -178,7 +178,7 @@ function makeId(value) {
 
 function getCategoryLabel(categoryId) {
     const category = categories.find(item => item.id === categoryId);
-    const fallback = category ? category.label : "Другое";
+    const fallback = category ? category.label : "Інше";
 
     return typeof getLocalizedCategoryLabel === "function"
         ? getLocalizedCategoryLabel(categoryId, fallback)
@@ -238,7 +238,7 @@ function getSellerName(sellerId) {
     if (!seller) {
         return typeof translateInterfaceValue === "function"
             ? translateInterfaceValue("sellerFallback")
-            : "Продавец";
+            : "Продавець";
     }
 
     return typeof getLocalizedSellerName === "function"
@@ -279,7 +279,7 @@ function getProductDepartment(product) {
         return getLocalizedProductDepartment(product);
     }
 
-    return String(product?.department || "").trim() || "Другое";
+    return String(product?.department || "").trim() || "Інше";
 }
 
 function getProductImages(product) {
