@@ -489,6 +489,11 @@ async function initSellerPage() {
 
     if (!sellerPage && !sellerProductsContainer) return;
 
+    if (!window.sellerPageLanguageListenerAdded) {
+        window.sellerPageLanguageListenerAdded = true;
+        window.addEventListener("privoz-language-change", initSellerPage);
+    }
+
     const seller = getSellerById(currentSeller);
 
     if (!seller) {
@@ -623,10 +628,6 @@ async function initSellerPage() {
         renderCategoryProducts(sellerProductsContainer, products, { ownerMode });
     }
 
-    if (!window.sellerPageLanguageListenerAdded) {
-        window.sellerPageLanguageListenerAdded = true;
-        window.addEventListener("privoz-language-change", initSellerPage);
-    }
 }
 
 function initModal() {
