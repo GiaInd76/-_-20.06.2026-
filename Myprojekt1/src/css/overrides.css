@@ -158,6 +158,20 @@ button:hover,
     color: var(--theme-ink);
 }
 
+[data-market-label].has-market-address::after {
+    content: attr(data-market-address);
+    display: block;
+    margin-top: 3px;
+    color: currentColor;
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: var(--weight-regular);
+    line-height: 1.15;
+    letter-spacing: 0.02em;
+    opacity: 0.62;
+    text-transform: none;
+}
+
 
 /* Белая стеклянная тема без фонового рисунка */
 

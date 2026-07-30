@@ -39,6 +39,9 @@ function initSellerPanel() {
     const featuredProductsPicker = document.getElementById("featuredProductsPicker");
     const sellerLogoutBtn = document.getElementById("sellerLogoutBtn");
     const deleteSellerBtn = document.getElementById("deleteSellerBtn");
+    const openPasswordModalBtn = document.getElementById("openPasswordModalBtn");
+    const passwordModal = document.getElementById("passwordModal");
+    const closePasswordModalBtn = document.getElementById("closePasswordModalBtn");
     const accountNewPasswordInput = document.getElementById("accountNewPassword");
     const accountNewPasswordConfirmInput = document.getElementById("accountNewPasswordConfirm");
     const changeAccountPasswordBtn = document.getElementById("changeAccountPasswordBtn");
@@ -137,6 +140,34 @@ function initSellerPanel() {
         }
     });
 
+    const closePasswordModal = () => {
+        if (!passwordModal) return;
+
+        passwordModal.style.display = "none";
+        accountNewPasswordInput.value = "";
+        accountNewPasswordConfirmInput.value = "";
+        showMessage(accountPasswordMessage, "");
+    };
+
+    openPasswordModalBtn?.addEventListener("click", () => {
+        if (!passwordModal) return;
+
+        passwordModal.style.display = "flex";
+        accountNewPasswordInput?.focus();
+    });
+
+    closePasswordModalBtn?.addEventListener("click", closePasswordModal);
+
+    passwordModal?.addEventListener("click", event => {
+        if (event.target === passwordModal) closePasswordModal();
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && passwordModal?.style.display === "flex") {
+            closePasswordModal();
+        }
+    });
+
     changeAccountPasswordBtn?.addEventListener("click", async () => {
         const newPassword = accountNewPasswordInput?.value || "";
         const repeatedPassword = accountNewPasswordConfirmInput?.value || "";
@@ -161,6 +192,7 @@ function initSellerPanel() {
             accountNewPasswordInput.value = "";
             accountNewPasswordConfirmInput.value = "";
             showMessage(accountPasswordMessage, translateInterfaceValue("passwordChanged"));
+            window.setTimeout(closePasswordModal, 700);
         } catch (error) {
             showMessage(accountPasswordMessage, getSupabaseErrorMessage(error));
         } finally {

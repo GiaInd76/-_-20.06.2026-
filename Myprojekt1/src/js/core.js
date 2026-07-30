@@ -58,7 +58,8 @@ const defaultMarket = {
     slug: "privoz",
     cityId: "",
     cityName: "Одеса",
-    citySlug: "odesa"
+    citySlug: "odesa",
+    address: "вул. Привозна, 14"
 };
 
 function getCurrentMarket() {
@@ -93,8 +94,12 @@ function getMarketDisplayName(market = getCurrentMarket()) {
 }
 
 function updateMarketLabels(root = document) {
+    const market = getCurrentMarket();
+
     root.querySelectorAll("[data-market-label]").forEach(element => {
-        element.textContent = getMarketDisplayName();
+        element.textContent = getMarketDisplayName(market);
+        element.dataset.marketAddress = market.address || "";
+        element.classList.toggle("has-market-address", Boolean(market.address));
     });
 }
 

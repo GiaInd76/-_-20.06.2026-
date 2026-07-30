@@ -394,7 +394,6 @@ function initCategoryCards() {
 
 function initSellerCreation() {
     const createSellerBtn = document.getElementById("createSellerBtn");
-    const sellerCitySelect = document.getElementById("sellerCity");
     const sellerMarketSelect = document.getElementById("sellerMarket");
     const sellerCategorySelect = document.getElementById("sellerCategory");
     const createSellerMessage = document.getElementById("createSellerMessage");
@@ -404,7 +403,7 @@ function initSellerCreation() {
     fillCategorySelect(sellerCategorySelect);
 
     const fillMarketControls = async () => {
-        if (!sellerCitySelect || !sellerMarketSelect) return;
+        if (!sellerMarketSelect) return;
 
         let markets = readStorage("markets", []);
 
@@ -416,63 +415,50 @@ function initSellerCreation() {
             }
         }
 
-        if (!markets.length) {
-            markets = [getCurrentMarket()];
-        }
-
-        const cities = [...new Map(markets.map(market => [
-            market.cityId || market.citySlug || market.cityName,
-            {
-                id: market.cityId || "",
-                name: market.cityName || "Одеса",
-                slug: market.citySlug || "odesa"
-            }
-        ])).values()];
+        const cityMarkets = markets.filter(market => (
+            market.id && (market.citySlug || "odesa") === "odesa"
+        ));
         const currentMarket = getCurrentMarket();
 
-        sellerCitySelect.innerHTML = cities
-            .map(city => `
-                <option value="${escapeHtml(city.id || city.slug)}">
-                    ${escapeHtml(city.name)}
+        if (!cityMarkets.length) {
+            sellerMarketSelect.innerHTML = "";
+            sellerMarketSelect.disabled = true;
+            createSellerBtn.disabled = true;
+            showMessage(
+                createSellerMessage,
+                translateInterfaceValue("marketListUnavailable")
+            );
+            return false;
+        }
+
+        sellerMarketSelect.disabled = false;
+        createSellerBtn.disabled = false;
+        sellerMarketSelect.innerHTML = cityMarkets
+            .map(market => `
+                <option value="${escapeHtml(market.id)}">
+                    ${escapeHtml(market.address
+                        ? `${market.name} — ${market.address}`
+                        : market.name)}
                 </option>
             `)
             .join("");
 
-        const renderMarkets = () => {
-            const selectedCity = sellerCitySelect.value;
-            const cityMarkets = markets.filter(market => {
-                const cityValue = market.cityId || market.citySlug || market.cityName;
+        if (cityMarkets.some(market => market.id === currentMarket.id)) {
+            sellerMarketSelect.value = currentMarket.id;
+        }
 
-                return cityValue === selectedCity;
-            });
+        const initialMarket = cityMarkets.find(market => market.id === sellerMarketSelect.value)
+            || cityMarkets[0];
 
-            sellerMarketSelect.innerHTML = cityMarkets
-                .map(market => `
-                    <option value="${escapeHtml(market.id)}">
-                        ${escapeHtml(market.name)}
-                    </option>
-                `)
-                .join("");
+        if (initialMarket) setCurrentMarket(initialMarket);
 
-            if (cityMarkets.some(market => market.id === currentMarket.id)) {
-                sellerMarketSelect.value = currentMarket.id;
-            }
-
-            const selectedMarket = cityMarkets.find(market => market.id === sellerMarketSelect.value)
-                || cityMarkets[0];
-
-            if (selectedMarket) setCurrentMarket(selectedMarket);
-        };
-
-        sellerCitySelect.value = currentMarket.cityId || currentMarket.citySlug || cities[0]?.id || "";
-        renderMarkets();
-
-        sellerCitySelect.addEventListener("change", renderMarkets);
         sellerMarketSelect.addEventListener("change", () => {
-            const selectedMarket = markets.find(market => market.id === sellerMarketSelect.value);
+            const selectedMarket = cityMarkets.find(market => market.id === sellerMarketSelect.value);
 
             if (selectedMarket) setCurrentMarket(selectedMarket);
         });
+
+        return true;
     };
 
     const prepareSellerCreationPage = async () => {
@@ -491,7 +477,9 @@ function initSellerCreation() {
             return;
         }
 
-        await fillMarketControls();
+        const marketsReady = await fillMarketControls();
+
+        if (!marketsReady) return;
 
         const user = await getCurrentSupabaseUser();
         const existingSeller = getSellerForUser(user);
@@ -528,6 +516,15 @@ function initSellerCreation() {
             return;
         }
 
+        const selectedMarket = readStorage("markets", [])
+            .find(market => market.id === sellerMarketSelect?.value);
+
+        if (!selectedMarket?.id) {
+            showMessage(createSellerMessage, translateInterfaceValue("chooseMarketRequired"));
+            sellerMarketSelect?.focus();
+            return;
+        }
+
         const sellers = readStorage("sellers");
         const draftSeller = {
             id: makeId(name) || `seller_${Date.now()}`,
@@ -544,11 +541,8 @@ function initSellerCreation() {
             coverImage: "",
             featuredProductIds: []
         };
-        const selectedMarket = readStorage("markets", [])
-            .find(market => market.id === sellerMarketSelect?.value)
-            || getCurrentMarket();
-        draftSeller.marketId = selectedMarket.id || getCurrentMarketId();
-        if (selectedMarket.id) setCurrentMarket(selectedMarket);
+        draftSeller.marketId = selectedMarket.id;
+        setCurrentMarket(selectedMarket);
         const originalText = createSellerBtn.textContent;
 
         createSellerBtn.disabled = true;

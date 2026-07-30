@@ -11,29 +11,6 @@
     width: 100%;
 }
 
-.seller-panel-page .account-security-block {
-    display: grid;
-    max-width: 420px;
-    gap: 10px;
-    margin: 18px auto;
-}
-
-.seller-panel-page .account-security-block h2,
-.seller-panel-page .account-security-block p {
-    margin: 0;
-}
-
-.seller-panel-page .account-security-block input {
-    width: 100%;
-    min-height: 43px;
-    padding: 9px 12px;
-    border: 1px solid rgba(40, 49, 57, 0.13);
-    border-radius: 13px;
-    background: rgba(255, 255, 255, 0.70);
-    color: #252b30;
-    font: inherit;
-}
-
 .seller-panel-page .photo-preview {
     display: grid;
     min-height: 0;
@@ -163,7 +140,8 @@
     border-top: 1px solid rgba(142, 47, 47, 0.10);
 }
 
-.seller-panel-page .logout-shop-btn {
+.seller-panel-page .logout-shop-btn,
+.seller-panel-page .account-password-btn {
     padding: 7px 11px;
     border: 1px solid rgba(64, 84, 104, 0.20);
     border-radius: 11px;
@@ -174,8 +152,45 @@
     cursor: pointer;
 }
 
-.seller-panel-page .logout-shop-btn:hover {
+.seller-panel-page .logout-shop-btn:hover,
+.seller-panel-page .account-password-btn:hover {
     background: rgba(64, 84, 104, 0.06);
+}
+
+.seller-panel-page .account-password-content {
+    position: relative;
+    display: grid;
+    width: min(420px, calc(100% - 28px));
+    gap: 10px;
+    padding: 24px;
+    text-align: left;
+}
+
+.seller-panel-page .account-password-content .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid rgba(64, 84, 104, 0.16);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.56);
+    color: inherit;
+    font: inherit;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.seller-panel-page .account-password-content h2,
+.seller-panel-page .account-password-content p {
+    margin-top: 0;
+}
+
+.seller-panel-page .account-password-content input {
+    width: 100%;
+    min-height: 43px;
 }
 
 .seller-panel-page .delete-shop-btn {
@@ -261,8 +276,14 @@
         background-image: linear-gradient(135deg, rgba(36, 47, 60, 0.88), rgba(17, 24, 32, 0.90));
     }
 
-    .seller-panel-page .logout-shop-btn {
+    .seller-panel-page .logout-shop-btn,
+    .seller-panel-page .account-password-btn {
         color: #c7d7e8;
+    }
+
+    .seller-panel-page .account-password-content {
+        background: rgba(17, 24, 32, 0.92);
+        color: var(--theme-ink);
     }
 
     .seller-panel-page .delete-shop-btn {
