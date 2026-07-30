@@ -1012,8 +1012,8 @@
     background-image:
         linear-gradient(
             180deg,
-            rgba(255,255,255,0.72),
-            rgba(255,255,255,0.58)
+            rgba(255,255,255,0.58),
+            rgba(255,255,255,0.43)
         ),
         var(--seller-cover-image);
 

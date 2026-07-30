@@ -528,9 +528,12 @@ async function initSellerPage() {
         <h1 class="shop-title">${escapeHtml(getLocalizedSellerName(seller))}</h1>
         <p class="subtitle">${escapeHtml(getLocalizedSellerDescription(seller))}</p>
         <p class="work-time">
-            <span class="category-badge seller-category-badge ${escapeHtml(getCategoryClass(seller.category))}">
+            <a
+                class="category-badge seller-category-badge seller-category-link ${escapeHtml(getCategoryClass(seller.category))}"
+                href="category.html?type=${encodeURIComponent(seller.category || "other")}"
+            >
                 ${escapeHtml(getCategoryLabel(seller.category))}
-            </span>
+            </a>
         </p>
         <p class="work-time">🕒 ${escapeHtml(formatSellerTime(seller.open))} - ${escapeHtml(formatSellerTime(seller.close))}</p>
         <div class="seller-actions">

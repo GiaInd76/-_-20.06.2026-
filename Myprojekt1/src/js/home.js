@@ -9,28 +9,10 @@ function initMainPage() {
     const favoritesBtn = document.getElementById("favoritesBtn");
     const sellerStartBtn = document.getElementById("sellerStartBtn");
     const sellerCabinetsBtn = document.getElementById("sellerCabinetsBtn");
-    const sellerChoiceModal = document.getElementById("sellerChoiceModal");
-    const sellerCabinetChoice = document.getElementById("sellerCabinetChoice");
-    const sellerEditChoice = document.getElementById("sellerEditChoice");
-    const sellerNewChoice = document.getElementById("sellerNewChoice");
     const homeOffersGrid = document.getElementById("homeOffersGrid");
     const offersFilterBtn = document.getElementById("offersFilterBtn");
     const offersFilterPanel = document.getElementById("offersFilterPanel");
     const offersFilterKey = "homeOfferCategories";
-
-    const showSellerChoiceMessage = text => {
-        if (!sellerChoiceModal) return;
-
-        let message = sellerChoiceModal.querySelector(".seller-choice-message");
-
-        if (!message) {
-            message = document.createElement("p");
-            message.className = "seller-choice-message form-message";
-            sellerChoiceModal.querySelector(".seller-choice-content")?.appendChild(message);
-        }
-
-        message.textContent = text;
-    };
 
     const getOfferCategoryFilters = () => {
         const savedFilters = readStorage(offersFilterKey, []);
@@ -284,56 +266,18 @@ function initMainPage() {
         openPage("create_seller.html");
     });
 
-    sellerCabinetsBtn?.addEventListener("click", () => {
-        if (sellerChoiceModal) sellerChoiceModal.style.display = "flex";
-    });
-
-    sellerCabinetChoice?.addEventListener("click", async () => {
+    sellerCabinetsBtn?.addEventListener("click", async () => {
         const user = await requireSellerSession("index.html");
         if (!user) return;
 
         const seller = getSellerForUser(user);
 
         if (!seller) {
-            showSellerChoiceMessage(translateInterfaceValue("shopNotFoundCreateHint"));
+            openPage("create_seller.html");
             return;
         }
 
         openPage(`seller.html?seller=${encodeURIComponent(seller.id)}`);
-    });
-
-    sellerEditChoice?.addEventListener("click", async () => {
-        const user = await requireSellerSession("index.html");
-        if (!user) return;
-
-        const seller = getSellerForUser(user);
-
-        if (!seller) {
-            showSellerChoiceMessage(translateInterfaceValue("shopNotFoundCreateHint"));
-            return;
-        }
-
-        openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
-    });
-
-    sellerNewChoice?.addEventListener("click", async () => {
-        const user = await requireSellerSession("create_seller.html");
-        if (!user) return;
-
-        const seller = getSellerForUser(user);
-
-        if (seller) {
-            openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
-            return;
-        }
-
-        openPage("create_seller.html");
-    });
-
-    sellerChoiceModal?.addEventListener("click", event => {
-        if (event.target === sellerChoiceModal) {
-            sellerChoiceModal.style.display = "none";
-        }
     });
 
     if (!window.homeLanguageListenerAdded) {
@@ -372,9 +316,20 @@ function initBackButtons() {
             });
         });
 
-    allCabinetsBtn?.addEventListener("click", event => {
+    allCabinetsBtn?.addEventListener("click", async event => {
         event.stopPropagation();
-        openPage("create_seller.html");
+
+        const user = await requireSellerSession("seller_panel.html");
+        if (!user) return;
+
+        const seller = getSellerForUser(user);
+
+        if (!seller) {
+            openPage("create_seller.html");
+            return;
+        }
+
+        openPage(`seller.html?seller=${encodeURIComponent(seller.id)}`);
     });
 }
 

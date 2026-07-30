@@ -33,6 +33,7 @@ const interfaceTranslations = {
     myShop: { ru: "Моя торговая точка", uk: "Моя торгова точка", en: "My trading point" },
     openShop: { ru: "Открыть точку", uk: "Відкрити точку", en: "Open point" },
     editShop: { ru: "Редактировать точку", uk: "Редагувати точку", en: "Edit point" },
+    editProfile: { ru: "Редактировать профиль", uk: "Редагувати профіль", en: "Edit profile" },
     sellerCabinet: { ru: "Кабинет продавца", uk: "Кабінет продавця", en: "Seller account" },
     login: { ru: "Вход", uk: "Вхід", en: "Sign in" },
     authSubtitle: { ru: "Войдите или создайте аккаунт продавца.", uk: "Увійдіть або створіть обліковий запис продавця.", en: "Sign in or create a seller account." },
