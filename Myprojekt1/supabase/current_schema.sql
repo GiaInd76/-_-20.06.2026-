@@ -1,5 +1,5 @@
 -- Ринок Онлайн: актуальное состояние базы данных.
--- Версия: 2026-07-29.
+-- Версия: 2026-07-31.
 --
 -- Назначение:
 --   1. Развернуть базу с нуля.
@@ -390,28 +390,71 @@ using (is_active);
 create policy "public_read_active_markets"
 on public.markets for select
 to anon, authenticated
-using (is_active);
+using (
+    is_active
+    and exists (
+        select 1
+        from public.cities
+        where cities.id = markets.city_id
+          and cities.is_active
+    )
+);
 
 create policy "public_read_shops"
 on public.shops for select
 to anon, authenticated
-using (true);
+using (
+    owner_id = (select auth.uid())
+    or exists (
+        select 1
+        from public.markets
+        where markets.id = shops.market_id
+          and markets.is_active
+    )
+);
+
+create policy "admin_read_all_shops"
+on public.shops for select
+to authenticated
+using (
+    exists (
+        select 1
+        from public.admin_users
+        where admin_users.user_id = (select auth.uid())
+    )
+);
 
 create policy "owner_insert_shop"
 on public.shops for insert
 to authenticated
-with check (owner_id = auth.uid());
+with check (
+    owner_id = (select auth.uid())
+    and exists (
+        select 1
+        from public.markets
+        where markets.id = shops.market_id
+          and markets.is_active
+    )
+);
 
 create policy "owner_update_shop"
 on public.shops for update
 to authenticated
-using (owner_id = auth.uid())
-with check (owner_id = auth.uid());
+using (owner_id = (select auth.uid()))
+with check (
+    owner_id = (select auth.uid())
+    and exists (
+        select 1
+        from public.markets
+        where markets.id = shops.market_id
+          and markets.is_active
+    )
+);
 
 create policy "owner_delete_shop"
 on public.shops for delete
 to authenticated
-using (owner_id = auth.uid());
+using (owner_id = (select auth.uid()));
 
 create policy "admin_delete_shop"
 on public.shops for delete
@@ -420,14 +463,31 @@ using (
     exists (
         select 1
         from public.admin_users
-        where admin_users.user_id = auth.uid()
+        where admin_users.user_id = (select auth.uid())
     )
 );
 
 create policy "public_read_products"
 on public.products for select
 to anon, authenticated
-using (true);
+using (
+    exists (
+        select 1
+        from public.shops
+        where shops.id = products.shop_id
+    )
+);
+
+create policy "admin_read_all_products"
+on public.products for select
+to authenticated
+using (
+    exists (
+        select 1
+        from public.admin_users
+        where admin_users.user_id = (select auth.uid())
+    )
+);
 
 create policy "owner_insert_product"
 on public.products for insert
@@ -437,7 +497,7 @@ with check (
         select 1
         from public.shops
         where shops.id = products.shop_id
-          and shops.owner_id = auth.uid()
+          and shops.owner_id = (select auth.uid())
     )
 );
 
@@ -449,7 +509,7 @@ using (
         select 1
         from public.shops
         where shops.id = products.shop_id
-          and shops.owner_id = auth.uid()
+          and shops.owner_id = (select auth.uid())
     )
 )
 with check (
@@ -457,7 +517,7 @@ with check (
         select 1
         from public.shops
         where shops.id = products.shop_id
-          and shops.owner_id = auth.uid()
+          and shops.owner_id = (select auth.uid())
     )
 );
 
@@ -469,7 +529,7 @@ using (
         select 1
         from public.shops
         where shops.id = products.shop_id
-          and shops.owner_id = auth.uid()
+          and shops.owner_id = (select auth.uid())
     )
 );
 
@@ -480,19 +540,46 @@ using (
     exists (
         select 1
         from public.admin_users
-        where admin_users.user_id = auth.uid()
+        where admin_users.user_id = (select auth.uid())
     )
 );
 
 create policy "admin_read_own_record"
 on public.admin_users for select
 to authenticated
-using (user_id = auth.uid());
+using (user_id = (select auth.uid()));
 
 create policy "public_insert_visit"
 on public.visit_events for insert
 to anon, authenticated
-with check (true);
+with check (
+    char_length(path) <= 500
+    and char_length(page_type) <= 64
+    and char_length(category) <= 100
+    and char_length(session_id) between 8 and 128
+    and char_length(user_agent) <= 500
+    and (
+        market_id is null
+        or exists (
+            select 1
+            from public.markets
+            where markets.id = visit_events.market_id
+              and markets.is_active
+        )
+    )
+    and (
+        seller_id is null
+        or exists (
+            select 1
+            from public.shops
+            where shops.id = visit_events.seller_id
+              and (
+                  visit_events.market_id is null
+                  or shops.market_id = visit_events.market_id
+              )
+        )
+    )
+);
 
 create policy "admin_read_visits"
 on public.visit_events for select
@@ -501,7 +588,7 @@ using (
     exists (
         select 1
         from public.admin_users
-        where admin_users.user_id = auth.uid()
+        where admin_users.user_id = (select auth.uid())
     )
 );
 
@@ -571,7 +658,19 @@ on storage.objects for insert
 to authenticated
 with check (
     bucket_id = 'product-images'
-    and (storage.foldername(name))[1] = auth.uid()::text
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and (
+        (storage.foldername(name))[2] = 'covers'
+        or (
+            (storage.foldername(name))[2] = 'products'
+            and exists (
+                select 1
+                from public.shops
+                where shops.id::text = (storage.foldername(name))[3]
+                  and shops.owner_id = (select auth.uid())
+            )
+        )
+    )
 );
 
 create policy "owner_update_product_images"
@@ -579,11 +678,24 @@ on storage.objects for update
 to authenticated
 using (
     bucket_id = 'product-images'
-    and (storage.foldername(name))[1] = auth.uid()::text
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and (storage.foldername(name))[2] in ('covers', 'products')
 )
 with check (
     bucket_id = 'product-images'
-    and (storage.foldername(name))[1] = auth.uid()::text
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and (
+        (storage.foldername(name))[2] = 'covers'
+        or (
+            (storage.foldername(name))[2] = 'products'
+            and exists (
+                select 1
+                from public.shops
+                where shops.id::text = (storage.foldername(name))[3]
+                  and shops.owner_id = (select auth.uid())
+            )
+        )
+    )
 );
 
 create policy "owner_delete_product_images"
@@ -591,7 +703,8 @@ on storage.objects for delete
 to authenticated
 using (
     bucket_id = 'product-images'
-    and (storage.foldername(name))[1] = auth.uid()::text
+    and (storage.foldername(name))[1] = (select auth.uid())::text
+    and (storage.foldername(name))[2] in ('covers', 'products')
 );
 
 -- ---------------------------------------------------------------------------
@@ -610,8 +723,15 @@ grant insert, update, delete on public.shops, public.products
     to authenticated;
 grant select on public.admin_users
     to authenticated;
-grant insert on public.visit_events
-    to anon, authenticated;
+grant insert (
+    market_id,
+    path,
+    page_type,
+    seller_id,
+    category,
+    session_id,
+    user_agent
+) on public.visit_events to anon, authenticated;
 grant select on public.visit_events
     to authenticated;
 
