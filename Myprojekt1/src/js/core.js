@@ -100,6 +100,158 @@ function updateMarketLabels(root = document) {
         element.textContent = getMarketDisplayName(market);
         element.dataset.marketAddress = market.address || "";
         element.classList.toggle("has-market-address", Boolean(market.address));
+        element.classList.add("market-switcher-trigger");
+        element.setAttribute("role", "button");
+        element.setAttribute("tabindex", "0");
+        element.setAttribute("aria-haspopup", "dialog");
+        element.setAttribute("aria-label", translateInterfaceValue("chooseMarket"));
+    });
+}
+
+function clearMarketCatalogCache() {
+    localStorage.removeItem("sellers");
+    localStorage.removeItem("products");
+}
+
+async function initMarketSwitcher() {
+    const triggers = [...document.querySelectorAll("[data-market-label]")];
+
+    if (!triggers.length) return;
+
+    const modal = document.createElement("div");
+    modal.className = "modal market-switcher-modal";
+    modal.setAttribute("aria-hidden", "true");
+    modal.innerHTML = `
+        <section
+            class="market-switcher-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="marketSwitcherTitle"
+        >
+            <div class="market-switcher-heading">
+                <div>
+                    <h2 id="marketSwitcherTitle">${escapeHtml(translateInterfaceValue("chooseMarket"))}</h2>
+                    <p>${escapeHtml(translateInterfaceValue("marketContentHint"))}</p>
+                </div>
+                <button
+                    class="market-switcher-close"
+                    type="button"
+                    aria-label="${escapeHtml(translateInterfaceValue("close"))}"
+                >×</button>
+            </div>
+            <div class="market-switcher-list"></div>
+            <p class="market-switcher-message" aria-live="polite"></p>
+        </section>
+    `;
+    document.body.appendChild(modal);
+
+    const list = modal.querySelector(".market-switcher-list");
+    const message = modal.querySelector(".market-switcher-message");
+    const closeButton = modal.querySelector(".market-switcher-close");
+    let markets = [];
+    let previousFocus = null;
+
+    const close = () => {
+        modal.classList.remove("active");
+        modal.setAttribute("aria-hidden", "true");
+        previousFocus?.focus();
+    };
+
+    const renderMarkets = () => {
+        const currentMarketId = getCurrentMarketId();
+
+        list.innerHTML = markets.map(market => {
+            const details = [market.cityName, market.address]
+                .filter(Boolean)
+                .join(" • ");
+
+            return `
+                <button
+                    class="market-switcher-option ${market.id === currentMarketId ? "is-active" : ""}"
+                    type="button"
+                    data-market-id="${escapeHtml(market.id)}"
+                >
+                    <span>
+                        <strong>${escapeHtml(market.name)}</strong>
+                        ${details ? `<small>${escapeHtml(details)}</small>` : ""}
+                    </span>
+                    <span class="market-switcher-check" aria-hidden="true">
+                        ${market.id === currentMarketId ? "✓" : ""}
+                    </span>
+                </button>
+            `;
+        }).join("");
+    };
+
+    const loadMarkets = async () => {
+        message.textContent = translateInterfaceValue("loadingMarkets");
+
+        try {
+            markets = await fetchMarketsFromSupabase();
+            markets = markets.filter(market => market.id);
+            renderMarkets();
+            message.textContent = markets.length
+                ? ""
+                : translateInterfaceValue("marketListUnavailable");
+        } catch (error) {
+            console.warn("Market switcher failed", error);
+            markets = readStorage("markets", []).filter(market => market.id);
+            renderMarkets();
+            message.textContent = markets.length
+                ? ""
+                : translateInterfaceValue("marketListUnavailable");
+        }
+    };
+
+    const open = async trigger => {
+        previousFocus = trigger;
+        modal.classList.add("active");
+        modal.setAttribute("aria-hidden", "false");
+        closeButton.focus();
+        await loadMarkets();
+    };
+
+    triggers.forEach(trigger => {
+        trigger.addEventListener("click", event => {
+            event.preventDefault();
+            open(trigger);
+        });
+        trigger.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                open(trigger);
+            }
+        });
+    });
+
+    closeButton.addEventListener("click", close);
+    modal.addEventListener("click", event => {
+        if (event.target === modal) close();
+    });
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && modal.classList.contains("active")) close();
+    });
+
+    list.addEventListener("click", event => {
+        const option = event.target.closest("[data-market-id]");
+        const selectedMarket = markets.find(market => market.id === option?.dataset.marketId);
+
+        if (!selectedMarket || selectedMarket.id === getCurrentMarketId()) {
+            close();
+            return;
+        }
+
+        setCurrentMarket(selectedMarket);
+        clearMarketCatalogCache();
+
+        const pageName = window.location.pathname.split("/").pop();
+        const shouldOpenHome = ["seller.html", "seller_panel.html", "create_seller.html"].includes(pageName);
+
+        if (shouldOpenHome) {
+            openPage("index.html");
+        } else {
+            window.location.reload();
+        }
     });
 }
 

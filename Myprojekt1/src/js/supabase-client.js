@@ -521,10 +521,11 @@ async function fetchProductsByIdsFromSupabase(productIds) {
 
     if (error) throw error;
 
+    const currentMarketId = getCurrentMarketId();
     const allowedShopIds = new Set(await fetchCurrentMarketShopIdsFromSupabase());
     const products = (data || [])
         .map(toLocalProduct)
-        .filter(product => !allowedShopIds.size || allowedShopIds.has(product.seller));
+        .filter(product => !currentMarketId || allowedShopIds.has(product.seller));
 
     mergeLocalRows("products", products);
     await fetchShopsByIdsFromSupabase(products.map(product => product.seller));
