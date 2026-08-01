@@ -550,7 +550,8 @@ button:hover,
     color: var(--theme-muted);
 }
 
-.favorites-page .category-results-panel {
+/* Результати категорій показуються без зайвої фонової панелі. */
+.category-page .category-results-panel {
     padding: 0;
     border: none;
     border-radius: 0;
@@ -560,14 +561,9 @@ button:hover,
     backdrop-filter: none;
 }
 
-body.favorites-page .category-results-panel,
-.glass-page.favorites-page .category-results-panel {
-    padding: 0 !important;
-    border: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
+/* На сторінці обраного повторна кнопка переходу не потрібна. */
+.favorites-page .page-navigation .favorites-nav-btn {
+    display: none;
 }
 
 .favorites-page .category-page-label {
@@ -576,6 +572,25 @@ body.favorites-page .category-results-panel,
 
 body.favorites-page .category-page-label {
     margin-left: 0 !important;
+}
+
+/* Єдиний компактний вигляд назви вибраного ринку. */
+[data-market-label] {
+    font-family: var(--font-sans);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.015em;
+}
+
+.home-kicker.market-switcher-trigger {
+    padding: 5px 9px;
+    font-size: 10px;
+}
+
+.page-navigation .site-brand[data-market-label] {
+    padding: 6px 11px;
+    font-size: clamp(13px, 1.4vw, 16px);
+    font-weight: var(--weight-bold);
+    letter-spacing: 0.01em;
 }
 
 .seller-featured-products {
