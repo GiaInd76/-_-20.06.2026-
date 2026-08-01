@@ -97,14 +97,20 @@ function updateMarketLabels(root = document) {
     const market = getCurrentMarket();
 
     root.querySelectorAll("[data-market-label]").forEach(element => {
+        const isSwitcher = element.hasAttribute("data-market-switcher");
+
         element.textContent = getMarketDisplayName(market);
         element.dataset.marketAddress = market.address || "";
         element.classList.toggle("has-market-address", Boolean(market.address));
-        element.classList.add("market-switcher-trigger");
-        element.setAttribute("role", "button");
-        element.setAttribute("tabindex", "0");
-        element.setAttribute("aria-haspopup", "dialog");
-        element.setAttribute("aria-label", translateInterfaceValue("chooseMarket"));
+        element.classList.toggle("market-switcher-trigger", isSwitcher);
+
+        if (isSwitcher) {
+            element.setAttribute("aria-haspopup", "dialog");
+            element.setAttribute("aria-label", translateInterfaceValue("chooseMarket"));
+        } else {
+            element.removeAttribute("aria-haspopup");
+            element.removeAttribute("aria-label");
+        }
     });
 }
 
@@ -114,7 +120,7 @@ function clearMarketCatalogCache() {
 }
 
 async function initMarketSwitcher() {
-    const triggers = [...document.querySelectorAll("[data-market-label]")];
+    const triggers = [...document.querySelectorAll("[data-market-switcher]")];
 
     if (!triggers.length) return;
 

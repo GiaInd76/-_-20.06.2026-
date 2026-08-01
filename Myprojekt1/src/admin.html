@@ -21,7 +21,9 @@
     <main class="container admin-container">
         <nav class="top-bar page-navigation" aria-label="Навигация по сайту">
             <button class="back-home-btn" type="button" onclick="history.back()">Назад</button>
-            <a class="brand-title site-brand" href="index.html">Привоз</a>
+            <a class="brand-title site-brand" href="index.html" data-market-label>
+                Одеса • Ринок Привоз
+            </a>
             <button id="adminLogoutBtn" class="favorites-nav-btn" type="button">Выйти</button>
         </nav>
 
@@ -173,7 +175,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase-client.js?v=20260709-1"></script>
-    <script src="js/core.js?v=20260731-1"></script>
+    <script src="js/core.js?v=20260801-1"></script>
+    <script>updateMarketLabels();</script>
     <script src="js/admin.js?v=20260709-1"></script>
 </body>
 </html>
