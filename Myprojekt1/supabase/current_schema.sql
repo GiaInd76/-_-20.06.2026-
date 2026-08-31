@@ -748,18 +748,7 @@ to authenticated
 with check (
     bucket_id = 'product-images'
     and (storage.foldername(name))[1] = (select auth.uid())::text
-    and (
-        (storage.foldername(name))[2] = 'covers'
-        or (
-            (storage.foldername(name))[2] = 'products'
-            and exists (
-                select 1
-                from public.shops
-                where shops.id::text = (storage.foldername(name))[3]
-                  and shops.owner_id = (select auth.uid())
-            )
-        )
-    )
+    and (storage.foldername(name))[2] in ('covers', 'products')
 );
 
 create policy "owner_update_product_images"
@@ -773,18 +762,7 @@ using (
 with check (
     bucket_id = 'product-images'
     and (storage.foldername(name))[1] = (select auth.uid())::text
-    and (
-        (storage.foldername(name))[2] = 'covers'
-        or (
-            (storage.foldername(name))[2] = 'products'
-            and exists (
-                select 1
-                from public.shops
-                where shops.id::text = (storage.foldername(name))[3]
-                  and shops.owner_id = (select auth.uid())
-            )
-        )
-    )
+    and (storage.foldername(name))[2] in ('covers', 'products')
 );
 
 create policy "owner_delete_product_images"
@@ -793,7 +771,6 @@ to authenticated
 using (
     bucket_id = 'product-images'
     and (storage.foldername(name))[1] = (select auth.uid())::text
-    and (storage.foldername(name))[2] in ('covers', 'products')
 );
 
 -- ---------------------------------------------------------------------------

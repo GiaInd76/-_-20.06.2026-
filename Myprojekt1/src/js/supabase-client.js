@@ -129,6 +129,8 @@ function getSupabaseErrorMessage(error) {
 
     if (!error) return text("unknownError");
 
+    const errorText = `${error.message || ""} ${error.details || ""}`.toLowerCase();
+
     const missingColumn = getMissingColumnName(error);
 
     if (error.message === "auth-required") {
@@ -159,6 +161,50 @@ function getSupabaseErrorMessage(error) {
         return text("emailNotConfirmed");
     }
 
+    if (error.code === "42501" || errorText.includes("row-level security")) {
+        return text("permissionDeniedBySecurityRules");
+    }
+
+    if (errorText.includes("invalid login credentials")) {
+        return text("invalidLoginCredentials");
+    }
+
+    if (errorText.includes("user already registered") || errorText.includes("already been registered")) {
+        return text("accountAlreadyRegistered");
+    }
+
+    if (errorText.includes("email rate limit") || errorText.includes("rate limit exceeded")) {
+        return text("emailRateLimitExceeded");
+    }
+
+    if (errorText.includes("captcha")) {
+        return text("captchaFailed");
+    }
+
+    if (errorText.includes("failed to fetch") || errorText.includes("network")) {
+        return text("networkRequestFailed");
+    }
+
+    if (errorText.includes("mime type") || errorText.includes("content type")) {
+        return text("unsupportedImageType");
+    }
+
+    if (errorText.includes("maximum allowed size") || errorText.includes("payload too large")) {
+        return text("uploadedFileTooLarge");
+    }
+
+    if (errorText.includes("bucket not found")) {
+        return text("imageStorageUnavailable");
+    }
+
+    if (["23502", "23503", "23514"].includes(error.code)) {
+        return text("invalidDataRejected");
+    }
+
+    if (errorText.includes("password") && errorText.includes("characters")) {
+        return text("passwordRequirementsError");
+    }
+
     if (error.code === "23505") {
         return text("accountAlreadyHasShop");
     }
@@ -171,7 +217,7 @@ function getSupabaseErrorMessage(error) {
         return text("schemaOutdated");
     }
 
-    return error.message || text("supabaseUnknownError");
+    return text("supabaseUnknownError");
 }
 
 function getMissingColumnName(error) {
@@ -237,10 +283,20 @@ async function uploadMarketplaceImage(image, folder) {
 async function uploadMarketplaceImages(images, folder) {
     const imageList = Array.isArray(images) ? images : [];
     const uploaded = [];
+    const newlyUploaded = [];
 
-    for (const image of imageList.slice(0, 2)) {
-        if (!image) continue;
-        uploaded.push(await uploadMarketplaceImage(image, folder));
+    try {
+        for (const image of imageList.slice(0, 2)) {
+            if (!image) continue;
+            const uploadedUrl = await uploadMarketplaceImage(image, folder);
+            uploaded.push(uploadedUrl);
+            if (isDataUrl(image)) newlyUploaded.push(uploadedUrl);
+        }
+    } catch (error) {
+        await removeMarketplaceImages(newlyUploaded).catch(cleanupError => {
+            console.warn("Partial image upload cleanup failed", cleanupError);
+        });
+        throw error;
     }
 
     return uploaded;
@@ -852,10 +908,12 @@ async function saveProductToSupabase(product) {
     if (!isUuid(product.seller)) throw new Error("shop-not-synced");
     await assertCurrentUserOwnsShop(product.seller);
 
+    const originalImages = getProductImages(product);
     const images = await uploadMarketplaceImages(
-        getProductImages(product),
+        originalImages,
         `products/${product.seller}`
     );
+    const newlyUploadedImages = images.filter((url, index) => isDataUrl(originalImages[index]));
     const payload = {
         shop_id: product.seller,
         name: product.name,
@@ -866,9 +924,7 @@ async function saveProductToSupabase(product) {
         unit: product.unit || "kg",
         description: product.description || "",
         image_url: images[0] || null,
-        image_urls: images,
-        updated_at: product.updatedAt || new Date().toISOString(),
-        price_changed_at: product.priceChangedAt || null
+        image_urls: images
     };
     const request = isUuid(product.id)
         ? supabaseClient
@@ -882,9 +938,25 @@ async function saveProductToSupabase(product) {
             .insert(payload)
             .select()
             .single();
-    const { data, error } = await withTimeout(request, 12000, "save-product");
+    let result;
 
-    if (error) throw error;
+    try {
+        result = await withTimeout(request, 12000, "save-product");
+    } catch (error) {
+        await removeMarketplaceImages(newlyUploadedImages).catch(cleanupError => {
+            console.warn("Uploaded image cleanup failed", cleanupError);
+        });
+        throw error;
+    }
+
+    const { data, error } = result;
+
+    if (error) {
+        await removeMarketplaceImages(newlyUploadedImages).catch(cleanupError => {
+            console.warn("Uploaded image cleanup failed", cleanupError);
+        });
+        throw error;
+    }
 
     return toLocalProduct(data);
 }
@@ -1144,7 +1216,6 @@ function initAuthPage() {
     const passwordConfirmInput = document.getElementById("authPasswordConfirm");
     const loginModeButton = document.getElementById("loginModeBtn");
     const registerModeButton = document.getElementById("registerModeBtn");
-    const submitButton = document.getElementById("authSubmitBtn");
     const forgotPasswordButton = document.getElementById("forgotPasswordBtn");
     const passwordResetPanel = document.getElementById("passwordResetPanel");
     const newPasswordInput = document.getElementById("newPassword");
@@ -1171,7 +1242,6 @@ function initAuthPage() {
     };
 
     const setBusy = isBusy => {
-        submitButton.disabled = isBusy;
         loginModeButton.disabled = isBusy;
         registerModeButton.disabled = isBusy;
         if (forgotPasswordButton) forgotPasswordButton.disabled = isBusy;
@@ -1227,15 +1297,9 @@ function initAuthPage() {
         authMode = mode === "register" ? "register" : "login";
         const isRegister = authMode === "register";
 
-        loginModeButton.classList.toggle("is-active", !isRegister);
-        registerModeButton.classList.toggle("is-active", isRegister);
-        loginModeButton.setAttribute("aria-selected", String(!isRegister));
-        registerModeButton.setAttribute("aria-selected", String(isRegister));
         passwordConfirmInput.classList.toggle("hidden", !isRegister);
         passwordConfirmInput.required = isRegister;
         passwordInput.autocomplete = isRegister ? "new-password" : "current-password";
-        submitButton.textContent = translateInterfaceValue(isRegister ? "register" : "signIn");
-        forgotPasswordButton.classList.toggle("hidden", isRegister);
         captchaContainer?.classList.toggle("hidden", !turnstileSiteKey);
         showAuthMessage("");
 
@@ -1388,6 +1452,11 @@ function initAuthPage() {
         }
 
         if (credentials.password !== repeatedPassword) {
+            if (!repeatedPassword) {
+                showAuthMessage(translateInterfaceValue("repeatPasswordAgain"));
+                passwordConfirmInput?.focus();
+                return;
+            }
             showAuthMessage(translateInterfaceValue("passwordsDoNotMatch"));
             passwordConfirmInput?.focus();
             return;
