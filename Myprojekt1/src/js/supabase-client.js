@@ -443,6 +443,32 @@ async function fetchShopsByIdsFromSupabase(shopIds) {
     return sellers;
 }
 
+async function fetchOwnSellerFromSupabase() {
+    if (!supabaseClient) return null;
+
+    const user = await getCurrentSupabaseUser();
+
+    if (!user) return null;
+
+    const { data, error } = await withTimeout(
+        supabaseClient
+            .from("shops")
+            .select("*")
+            .eq("owner_id", user.id)
+            .maybeSingle(),
+        7000,
+        "fetch-own-shop"
+    );
+
+    if (error) throw error;
+    if (!data) return null;
+
+    const seller = toLocalSeller(data);
+    mergeLocalRows("sellers", [seller]);
+
+    return seller;
+}
+
 async function fetchLatestProductsFromSupabase(categoryIds = [], limit = 6) {
     if (!supabaseClient) return readStorage("products").slice(0, limit);
 

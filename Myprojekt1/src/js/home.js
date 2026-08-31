@@ -290,49 +290,6 @@ function initMainPage() {
     }
 }
 
-function initFavoritesNavigation() {
-    document
-        .querySelectorAll(".favorites-nav-btn")
-        .forEach(button => {
-            button.addEventListener("click", () => {
-                openPage("category.html?favorites=1");
-            });
-        });
-}
-
-function initBackButtons() {
-    const allCabinetsBtn = document.getElementById("allCabinetsBtn");
-
-    document
-        .querySelectorAll(".back-home-btn:not(#allCabinetsBtn)")
-        .forEach(button => {
-            button.addEventListener("click", () => {
-                if (window.history.length > 1) {
-                    window.history.back();
-                    return;
-                }
-
-                openPage("index.html");
-            });
-        });
-
-    allCabinetsBtn?.addEventListener("click", async event => {
-        event.stopPropagation();
-
-        const user = await requireSellerSession("seller_panel.html");
-        if (!user) return;
-
-        const seller = getSellerForUser(user);
-
-        if (!seller) {
-            openPage("create_seller.html");
-            return;
-        }
-
-        openPage(`seller.html?seller=${encodeURIComponent(seller.id)}`);
-    });
-}
-
 function initCategoryCards() {
     document
         .querySelectorAll(".category-card")

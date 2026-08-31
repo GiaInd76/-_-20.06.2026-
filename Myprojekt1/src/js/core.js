@@ -585,6 +585,42 @@ function openPage(url) {
     window.location.href = url;
 }
 
+function initFavoritesNavigation() {
+    document.querySelectorAll(".favorites-nav-btn").forEach(button => {
+        button.addEventListener("click", () => {
+            openPage("category.html?favorites=1");
+        }, { once: true });
+    });
+}
+
+function initBackButtons() {
+    const allCabinetsBtn = document.getElementById("allCabinetsBtn");
+
+    document.querySelectorAll(".back-home-btn:not(#allCabinetsBtn)").forEach(button => {
+        button.addEventListener("click", () => {
+            if (window.history.length > 1) {
+                window.history.back();
+                return;
+            }
+
+            openPage("index.html");
+        }, { once: true });
+    });
+
+    allCabinetsBtn?.addEventListener("click", async event => {
+        event.stopPropagation();
+
+        const user = await requireSellerSession("seller_panel.html");
+        if (!user) return;
+
+        const seller = getSellerForUser(user);
+
+        openPage(seller
+            ? `seller.html?seller=${encodeURIComponent(seller.id)}`
+            : "create_seller.html");
+    }, { once: true });
+}
+
 function initBrandHeader() {
     // Бренд показываем только на главной странице.
     return;

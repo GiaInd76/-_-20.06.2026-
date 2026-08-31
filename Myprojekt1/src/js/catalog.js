@@ -449,38 +449,6 @@ function initOwnerProductEditor() {
     });
 }
 
-function openProductModal(product) {
-    const modal = document.getElementById("productModal");
-    const image = document.getElementById("productModalImage");
-    const title = document.getElementById("productModalTitle");
-    const price = document.getElementById("productModalPrice");
-
-    if (!modal || !image || !title || !price) return;
-
-    categories.forEach(category => {
-        modal.classList.remove(getCategoryClass(category.id));
-    });
-    modal.classList.add(getCategoryClass(product.category));
-    modalProductImages = getProductImages(product);
-    modalProductImageIndex = 0;
-    updateProductModalImage();
-    title.textContent = getLocalizedProductName(product);
-    price.textContent = getProductPriceText(product);
-    modal.style.display = "flex";
-}
-
-function updateProductModalImage() {
-    const image = document.getElementById("productModalImage");
-
-    if (!image) return;
-
-    const currentImage = modalProductImages[modalProductImageIndex] || "";
-
-    image.classList.toggle("has-image", Boolean(currentImage));
-    image.style.backgroundImage = currentImage ? `url("${currentImage}")` : "";
-    image.textContent = currentImage ? "" : translateInterfaceValue("viewProductPhoto");
-}
-
 async function initSellerPage() {
     const sellerPage = document.getElementById("sellerPage");
     const sellerProductsContainer = document.getElementById("sellerProducts");
@@ -509,9 +477,11 @@ async function initSellerPage() {
     setBrandCategory(seller.category);
     document.body.classList.toggle("owner-mode", ownerMode);
     editNavBtn?.classList.toggle("hidden", !ownerMode);
-    editNavBtn?.addEventListener("click", () => {
-        openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
-    });
+    if (editNavBtn) {
+        editNavBtn.onclick = () => {
+            openPage(`seller_panel.html?seller=${encodeURIComponent(seller.id)}`);
+        };
+    }
 
     sellerPage.classList.toggle("has-cover", Boolean(seller.coverImage));
 
@@ -631,56 +601,4 @@ async function initSellerPage() {
         renderCategoryProducts(sellerProductsContainer, products, { ownerMode });
     }
 
-}
-
-function initModal() {
-    document.addEventListener("click", event => {
-        const modal = document.getElementById("modal");
-        const contactModal = document.getElementById("contactModal");
-        const productModal = document.getElementById("productModal");
-
-        if (
-            productModal &&
-            productModal.style.display === "flex" &&
-            event.target.id === "productModalImage" &&
-            modalProductImages.length > 1
-        ) {
-            modalProductImageIndex = (modalProductImageIndex + 1) % modalProductImages.length;
-            updateProductModalImage();
-            return;
-        }
-
-        if (productModal && productModal.style.display === "flex") {
-            productModal.style.display = "none";
-            return;
-        }
-
-        if (!modal) return;
-
-        if (event.target.id === "findBtn") {
-            modal.style.display = "flex";
-            return;
-        }
-
-        if (event.target.id === "contactBtn") {
-            if (contactModal) contactModal.style.display = "flex";
-            return;
-        }
-
-        const openInfoModal = event.target.closest(".info-modal");
-
-        if (openInfoModal && openInfoModal.style.display === "flex") {
-            if (event.target.closest("a[href]")) {
-                openInfoModal.style.display = "none";
-                return;
-            }
-
-            openInfoModal.style.display = "none";
-            return;
-        }
-
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    });
 }
