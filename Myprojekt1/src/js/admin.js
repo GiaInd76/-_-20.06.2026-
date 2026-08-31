@@ -127,13 +127,13 @@ function renderAdminVisits(visits) {
     if (!breakdown) return;
 
     if (!visits.length) {
-        breakdown.innerHTML = `<p class="admin-muted">Статистика появится после применения SQL 012 и первых посещений.</p>`;
+        breakdown.innerHTML = `<p class="admin-muted">Статистика з’явиться після застосування SQL і перших відвідувань.</p>`;
         bindAdminVisitFilter();
         return;
     }
 
     if (!rows.length) {
-        breakdown.innerHTML = `<p class="admin-muted">За выбранный период посещений нет.</p>`;
+        breakdown.innerHTML = `<p class="admin-muted">За обраний період відвідувань немає.</p>`;
         bindAdminVisitFilter();
         return;
     }
@@ -184,9 +184,9 @@ function getAdminVisitLabel(visit) {
         seller: "Страница торговой точки",
         sellerPanel: "Кабинет продавца",
         createSeller: "Создание торговой точки",
-        auth: "Вход",
+        auth: "Вхід",
         admin: "Админка",
-        favorites: "Избранное"
+        favorites: "Обране"
     };
 
     return pageTypeLabels[visit.pageType] || visit.path || "Страница";
@@ -374,6 +374,16 @@ function renderAdminCategoryDetails(categoryId) {
                             · ${t("contactsCountShort")}: ${contactCount}
                         </small>
                         <span class="admin-row-meta">${escapeHtml(shop.description || t("noDescription"))}</span>
+                        <label>
+                            ${escapeHtml(t("moderationStatus"))}
+                            <select data-shop-moderation="${escapeHtml(shop.id)}">
+                                ${["pending", "active", "blocked"].map(status => `
+                                    <option value="${status}" ${shop.moderationStatus === status ? "selected" : ""}>
+                                        ${escapeHtml(t(`moderation_${status}`))}
+                                    </option>
+                                `).join("")}
+                            </select>
+                        </label>
                     </div>
                     <div class="admin-row-actions">
                         <a class="btn-outline" href="seller.html?seller=${encodeURIComponent(shop.id)}">${t("shop")}</a>
@@ -428,6 +438,20 @@ function makeProductIssue(product) {
 }
 
 function bindAdminActions(root) {
+    root.querySelectorAll("[data-shop-moderation]").forEach(select => {
+        select.addEventListener("change", async () => {
+            select.disabled = true;
+            try {
+                await adminUpdateShopModeration(select.dataset.shopModeration, select.value);
+                await loadAdminDashboard();
+            } catch (error) {
+                console.warn("Moderation update failed", error);
+                select.disabled = false;
+                alert(getSupabaseErrorMessage(error));
+            }
+        });
+    });
+
     root.querySelectorAll("[data-delete-shop]").forEach(button => {
         button.addEventListener("click", async () => {
             const shopId = button.dataset.deleteShop;
@@ -484,7 +508,7 @@ function getAdminProductPrice(product) {
 }
 
 function formatAdminDate(value) {
-    return value.toLocaleTimeString("ru-RU", {
+    return value.toLocaleTimeString("uk-UA", {
         hour: "2-digit",
         minute: "2-digit"
     });

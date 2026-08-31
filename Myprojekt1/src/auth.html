@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Вставте Cloudflare Turnstile Site Key у content; секрет зберігається тільки в Supabase Dashboard. -->
+    <meta name="turnstile-site-key" content="">
     <title>Вхід продавця — Ринок Онлайн</title>
 
     <link rel="stylesheet" href="css/base.css?v=20260622-2">
     <link rel="stylesheet" href="css/home.css?v=20260622-2">
-    <link rel="stylesheet" href="css/components.css?v=20260731-1">
+    <link rel="stylesheet" href="css/components.css?v=20260831-2">
     <link rel="stylesheet" href="css/seller.css?v=20260622-2">
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-2">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
     <link rel="stylesheet" href="css/overrides.css?v=20260801-1">
     <link rel="stylesheet" href="css/theme-background.css?v=20260729-1">
-    <link rel="stylesheet" href="css/auth.css?v=20260709-2">
+    <link rel="stylesheet" href="css/auth.css?v=20260831-2">
     <link rel="stylesheet" href="css/responsive-mobile.css?v=20260709-1">
     <link rel="stylesheet" href="css/responsive-desktop.css?v=20260709-1">
 </head>
@@ -27,24 +29,31 @@
             <span class="auth-nav-space" aria-hidden="true"></span>
         </nav>
 
-        <form id="authForm" class="panel-section auth-card">
+        <form id="authForm" class="panel-section auth-card" novalidate>
             <p class="home-kicker">Кабінет продавця</p>
-            <h1>Вхід</h1>
+            <h1 id="authTitle">Вхід</h1>
             <p class="subtitle">Увійдіть або створіть обліковий запис продавця.</p>
 
-            <input id="authEmail" type="email" placeholder="Електронна пошта" autocomplete="email" required>
-            <input id="authPassword" type="password" placeholder="Пароль, щонайменше 6 символів" autocomplete="current-password" minlength="6" required>
+            <div class="auth-mode-tabs" role="tablist" aria-label="Вхід або реєстрація">
+                <button id="loginModeBtn" class="auth-mode-tab is-active" type="button" role="tab" aria-selected="true">Увійти</button>
+                <button id="registerModeBtn" class="auth-mode-tab" type="button" role="tab" aria-selected="false">Реєстрація</button>
+            </div>
+
+            <input id="authEmail" type="email" placeholder="Електронна пошта" autocomplete="email" maxlength="254" required>
+            <input id="authPassword" type="password" placeholder="Пароль, щонайменше 8 символів" autocomplete="current-password" minlength="8" maxlength="128" required>
             <input
                 id="authPasswordConfirm"
                 class="hidden"
                 type="password"
                 placeholder="Повторіть пароль для реєстрації"
                 autocomplete="new-password"
-                minlength="6"
+                minlength="8"
+                maxlength="128"
             >
 
-            <button id="loginBtn" class="btn-primary" type="submit">Увійти</button>
-            <button id="registerBtn" class="btn-outline" type="button">Створити обліковий запис</button>
+            <div id="captchaContainer" class="auth-captcha hidden" aria-live="polite"></div>
+
+            <button id="authSubmitBtn" class="btn-primary" type="submit">Увійти</button>
             <button id="forgotPasswordBtn" class="auth-link-btn" type="button">Забули пароль?</button>
 
             <div id="passwordResetPanel" class="auth-extra-panel hidden">
@@ -55,14 +64,16 @@
                     type="password"
                     placeholder="Новий пароль"
                     autocomplete="new-password"
-                    minlength="6"
+                    minlength="8"
+                    maxlength="128"
                 >
                 <input
                     id="newPasswordConfirm"
                     type="password"
                     placeholder="Повторіть новий пароль"
                     autocomplete="new-password"
-                    minlength="6"
+                    minlength="8"
+                    maxlength="128"
                 >
                 <button id="saveNewPasswordBtn" class="btn-primary" type="button">Зберегти новий пароль</button>
             </div>
@@ -71,10 +82,11 @@
         </form>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260729-3"></script>
-    <script src="js/i18n.js?v=20260731-1"></script>
-    <script src="js/core.js?v=20260801-1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0"></script>
+    <script src="js/url-security.js?v=20260831-1"></script>
+    <script src="js/supabase-client.js?v=20260831-2"></script>
+    <script src="js/i18n.js?v=20260831-2"></script>
+    <script src="js/core.js?v=20260831-2"></script>
     <script>
         updateMarketLabels();
         initAuthPage();

@@ -145,6 +145,8 @@ async function initMarketSwitcher() {
                     aria-label="${escapeHtml(translateInterfaceValue("close"))}"
                 >×</button>
             </div>
+            <label class="field-note" for="marketSwitcherCity">${escapeHtml(translateInterfaceValue("chooseCity"))}</label>
+            <select id="marketSwitcherCity" class="market-switcher-city"></select>
             <div class="market-switcher-list"></div>
             <p class="market-switcher-message" aria-live="polite"></p>
         </section>
@@ -152,6 +154,7 @@ async function initMarketSwitcher() {
     document.body.appendChild(modal);
 
     const list = modal.querySelector(".market-switcher-list");
+    const citySelect = modal.querySelector(".market-switcher-city");
     const message = modal.querySelector(".market-switcher-message");
     const closeButton = modal.querySelector(".market-switcher-close");
     let markets = [];
@@ -165,8 +168,10 @@ async function initMarketSwitcher() {
 
     const renderMarkets = () => {
         const currentMarketId = getCurrentMarketId();
+        const selectedCityId = citySelect.value;
+        const visibleMarkets = markets.filter(market => market.cityId === selectedCityId);
 
-        list.innerHTML = markets.map(market => {
+        list.innerHTML = visibleMarkets.map(market => {
             const details = [market.cityName, market.address]
                 .filter(Boolean)
                 .join(" • ");
@@ -189,20 +194,36 @@ async function initMarketSwitcher() {
         }).join("");
     };
 
+    const renderCities = () => {
+        const cities = [...new Map(markets.map(market => [market.cityId, {
+            id: market.cityId,
+            name: market.cityName
+        }])).values()].filter(city => city.id);
+        const currentMarket = getCurrentMarket();
+
+        citySelect.innerHTML = cities.map(city => `
+            <option value="${escapeHtml(city.id)}">${escapeHtml(city.name)}</option>
+        `).join("");
+        citySelect.value = cities.some(city => city.id === currentMarket.cityId)
+            ? currentMarket.cityId
+            : (cities[0]?.id || "");
+        renderMarkets();
+    };
+
     const loadMarkets = async () => {
         message.textContent = translateInterfaceValue("loadingMarkets");
 
         try {
             markets = await fetchMarketsFromSupabase();
             markets = markets.filter(market => market.id);
-            renderMarkets();
+            renderCities();
             message.textContent = markets.length
                 ? ""
                 : translateInterfaceValue("marketListUnavailable");
         } catch (error) {
             console.warn("Market switcher failed", error);
             markets = readStorage("markets", []).filter(market => market.id);
-            renderMarkets();
+            renderCities();
             message.textContent = markets.length
                 ? ""
                 : translateInterfaceValue("marketListUnavailable");
@@ -231,6 +252,7 @@ async function initMarketSwitcher() {
     });
 
     closeButton.addEventListener("click", close);
+    citySelect.addEventListener("change", renderMarkets);
     modal.addEventListener("click", event => {
         if (event.target === modal) close();
     });

@@ -5,7 +5,15 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_TG6YRcuVzOUsQLOGbwj2Ew_305uGI-P
 
 const supabaseClient = window.supabase?.createClient(
     SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            flowType: "pkce"
+        }
+    }
 );
 
 let cachedSupabaseUser = null;
@@ -23,14 +31,18 @@ function withTimeout(promise, ms, label = "operation") {
         .finally(() => clearTimeout(timeoutId));
 }
 
+const sanitizeReturnUrl = window.ReturnUrlSecurity?.sanitizeReturnUrl
+    || (() => "index.html");
+
 function getSafeReturnUrl() {
-    const requestedUrl = new URLSearchParams(window.location.search).get("return");
+    return sanitizeReturnUrl(new URLSearchParams(window.location.search).get("return"));
+}
 
-    if (!requestedUrl || requestedUrl.includes("://") || requestedUrl.startsWith("//")) {
-        return "index.html";
-    }
-
-    return requestedUrl;
+function getAuthCallbackUrl(mode, returnUrl = getSafeReturnUrl()) {
+    const callback = new URL("auth.html", window.location.href);
+    callback.searchParams.set("mode", mode);
+    callback.searchParams.set("return", sanitizeReturnUrl(returnUrl));
+    return callback.href;
 }
 
 async function getCurrentSupabaseUser() {
@@ -102,7 +114,9 @@ async function requireSellerSession(returnUrl = window.location.href) {
     if (user) return user;
 
     const localReturnUrl = new URL(returnUrl, window.location.href);
-    const returnPath = `${localReturnUrl.pathname.split("/").pop()}${localReturnUrl.search}`;
+    const returnPath = sanitizeReturnUrl(
+        `${localReturnUrl.pathname.split("/").pop()}${localReturnUrl.search}`
+    );
 
     window.location.replace(`auth.html?return=${encodeURIComponent(returnPath)}`);
     return null;
@@ -271,6 +285,7 @@ function toLocalSeller(row) {
         instagram: row.instagram || "",
         viber: row.viber || "",
         coverImage: row.cover_url || "",
+        moderationStatus: row.moderation_status || "active",
         featuredProductIds: Array.isArray(row.featured_product_ids)
             ? row.featured_product_ids
             : []
@@ -1083,6 +1098,21 @@ async function adminDeleteShop(shopId) {
     if (error) throw error;
 }
 
+async function adminUpdateShopModeration(shopId, moderationStatus) {
+    const allowedStatuses = new Set(["pending", "active", "blocked"]);
+
+    if (!supabaseClient) throw new Error("supabase-unavailable");
+    if (!isUuid(shopId) || !allowedStatuses.has(moderationStatus)) return;
+    if (!await isCurrentUserAdmin()) throw new Error("admin-required");
+
+    const { error } = await supabaseClient
+        .from("shops")
+        .update({ moderation_status: moderationStatus })
+        .eq("id", shopId);
+
+    if (error) throw error;
+}
+
 async function initProtectedSellerPage() {
     const requiresAuth = document.body.dataset.sellerAuth === "required";
     const ownerView = new URLSearchParams(window.location.search).get("owner") === "1";
@@ -1112,14 +1142,22 @@ function initAuthPage() {
     const emailInput = document.getElementById("authEmail");
     const passwordInput = document.getElementById("authPassword");
     const passwordConfirmInput = document.getElementById("authPasswordConfirm");
-    const loginButton = document.getElementById("loginBtn");
-    const registerButton = document.getElementById("registerBtn");
+    const loginModeButton = document.getElementById("loginModeBtn");
+    const registerModeButton = document.getElementById("registerModeBtn");
+    const submitButton = document.getElementById("authSubmitBtn");
     const forgotPasswordButton = document.getElementById("forgotPasswordBtn");
     const passwordResetPanel = document.getElementById("passwordResetPanel");
     const newPasswordInput = document.getElementById("newPassword");
     const newPasswordConfirmInput = document.getElementById("newPasswordConfirm");
     const saveNewPasswordButton = document.getElementById("saveNewPasswordBtn");
+    const captchaContainer = document.getElementById("captchaContainer");
     const message = document.getElementById("authMessage");
+    const urlParams = new URLSearchParams(window.location.search);
+    const callbackMode = urlParams.get("mode");
+    const turnstileSiteKey = document.querySelector('meta[name="turnstile-site-key"]')?.content.trim();
+    let authMode = "login";
+    let captchaToken = "";
+    let captchaWidgetId = null;
 
     if (!form || !supabaseClient) return;
 
@@ -1133,8 +1171,9 @@ function initAuthPage() {
     };
 
     const setBusy = isBusy => {
-        loginButton.disabled = isBusy;
-        registerButton.disabled = isBusy;
+        submitButton.disabled = isBusy;
+        loginModeButton.disabled = isBusy;
+        registerModeButton.disabled = isBusy;
         if (forgotPasswordButton) forgotPasswordButton.disabled = isBusy;
         if (saveNewPasswordButton) saveNewPasswordButton.disabled = isBusy;
     };
@@ -1144,7 +1183,86 @@ function initAuthPage() {
         password: passwordInput.value
     });
 
-    if (new URLSearchParams(window.location.search).get("mode") === "password-reset") {
+    const credentialsAreValid = credentials => (
+        emailInput.validity.valid && credentials.email.length <= 254 &&
+        credentials.password.length >= 8 && credentials.password.length <= 128
+    );
+
+    const resetCaptcha = () => {
+        captchaToken = "";
+        if (captchaWidgetId !== null && window.turnstile) {
+            window.turnstile.reset(captchaWidgetId);
+        }
+    };
+
+    const renderCaptcha = () => {
+        if (!turnstileSiteKey || !captchaContainer || captchaWidgetId !== null) return;
+
+        const renderWidget = () => {
+            if (!window.turnstile || captchaWidgetId !== null) return;
+            captchaWidgetId = window.turnstile.render(captchaContainer, {
+                sitekey: turnstileSiteKey,
+                callback: token => { captchaToken = token; },
+                "expired-callback": () => { captchaToken = ""; },
+                "error-callback": () => { captchaToken = ""; }
+            });
+        };
+
+        captchaContainer.classList.remove("hidden");
+
+        if (window.turnstile) {
+            renderWidget();
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        script.async = true;
+        script.defer = true;
+        script.addEventListener("load", renderWidget, { once: true });
+        document.head.appendChild(script);
+    };
+
+    const setAuthMode = mode => {
+        authMode = mode === "register" ? "register" : "login";
+        const isRegister = authMode === "register";
+
+        loginModeButton.classList.toggle("is-active", !isRegister);
+        registerModeButton.classList.toggle("is-active", isRegister);
+        loginModeButton.setAttribute("aria-selected", String(!isRegister));
+        registerModeButton.setAttribute("aria-selected", String(isRegister));
+        passwordConfirmInput.classList.toggle("hidden", !isRegister);
+        passwordConfirmInput.required = isRegister;
+        passwordInput.autocomplete = isRegister ? "new-password" : "current-password";
+        submitButton.textContent = translateInterfaceValue(isRegister ? "register" : "signIn");
+        forgotPasswordButton.classList.toggle("hidden", isRegister);
+        captchaContainer?.classList.toggle("hidden", !turnstileSiteKey);
+        showAuthMessage("");
+
+        renderCaptcha();
+    };
+
+    const finishAuthCallback = async () => {
+        if (callbackMode !== "confirm") return false;
+
+        setBusy(true);
+        showAuthMessage(translateInterfaceValue("confirmingEmail"));
+
+        const user = await getCurrentSupabaseUser();
+
+        setBusy(false);
+
+        if (!user) {
+            showAuthMessage(translateInterfaceValue("emailConfirmationFailed"));
+            return true;
+        }
+
+        showAuthMessage(translateInterfaceValue("emailConfirmed"));
+        window.setTimeout(() => window.location.replace(getSafeReturnUrl()), 500);
+        return true;
+    };
+
+    if (callbackMode === "password-reset") {
         passwordResetPanel?.classList.remove("hidden");
         newPasswordInput?.focus();
     }
@@ -1152,17 +1270,26 @@ function initAuthPage() {
     const signIn = async () => {
         const credentials = getCredentials();
 
-        if (!credentials.email || credentials.password.length < 6) {
+        if (!credentialsAreValid(credentials)) {
             showAuthMessage(translateInterfaceValue("enterEmailAndPassword"));
+            return;
+        }
+
+        if (turnstileSiteKey && !captchaToken) {
+            showAuthMessage(translateInterfaceValue("completeCaptcha"));
             return;
         }
 
         setBusy(true);
         showAuthMessage(translateInterfaceValue("signingIn"));
 
-        const { data, error } = await supabaseClient.auth.signInWithPassword(credentials);
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            ...credentials,
+            options: { captchaToken: captchaToken || undefined }
+        });
 
         setBusy(false);
+        resetCaptcha();
 
         if (error) {
             showAuthMessage(getSupabaseErrorMessage(error));
@@ -1182,21 +1309,28 @@ function initAuthPage() {
     forgotPasswordButton?.addEventListener("click", async () => {
         const email = emailInput.value.trim();
 
-        if (!email) {
+        if (!email || !emailInput.validity.valid || email.length > 254) {
             showAuthMessage(translateInterfaceValue("enterEmailForPasswordReset"));
             emailInput.focus();
+            return;
+        }
+
+        if (turnstileSiteKey && !captchaToken) {
+            showAuthMessage(translateInterfaceValue("completeCaptcha"));
             return;
         }
 
         setBusy(true);
         showAuthMessage(translateInterfaceValue("sendingPasswordReset"));
 
-        const redirectTo = new URL("auth.html?mode=password-reset", window.location.href).href;
+        const redirectTo = getAuthCallbackUrl("password-reset", getSafeReturnUrl());
         const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-            redirectTo
+            redirectTo,
+            captchaToken: captchaToken || undefined
         });
 
         setBusy(false);
+        resetCaptcha();
 
         if (error) {
             showAuthMessage(getSupabaseErrorMessage(error));
@@ -1210,7 +1344,7 @@ function initAuthPage() {
         const newPassword = newPasswordInput?.value || "";
         const repeatedPassword = newPasswordConfirmInput?.value || "";
 
-        if (newPassword.length < 6) {
+        if (newPassword.length < 8 || newPassword.length > 128) {
             showAuthMessage(translateInterfaceValue("enterNewPassword"));
             newPasswordInput?.focus();
             return;
@@ -1237,28 +1371,19 @@ function initAuthPage() {
         }
     });
 
-    form.addEventListener("submit", event => {
-        event.preventDefault();
-        signIn();
-    });
-
-    registerButton.addEventListener("click", async event => {
+    form.addEventListener("submit", async event => {
         event.preventDefault();
 
-        const credentials = getCredentials();
-        const isConfirmVisible = !passwordConfirmInput?.classList.contains("hidden");
-        const repeatedPassword = passwordConfirmInput?.value || "";
-
-        if (!credentials.email || credentials.password.length < 6) {
-            showAuthMessage(translateInterfaceValue("enterEmailAndPassword"));
+        if (authMode === "login") {
+            await signIn();
             return;
         }
 
-        if (!isConfirmVisible) {
-            passwordConfirmInput?.classList.remove("hidden");
-            passwordInput.setAttribute("autocomplete", "new-password");
-            passwordConfirmInput?.focus();
-            showAuthMessage(translateInterfaceValue("repeatPasswordAgain"));
+        const credentials = getCredentials();
+        const repeatedPassword = passwordConfirmInput?.value || "";
+
+        if (!credentialsAreValid(credentials)) {
+            showAuthMessage(translateInterfaceValue("enterEmailAndPassword"));
             return;
         }
 
@@ -1268,66 +1393,37 @@ function initAuthPage() {
             return;
         }
 
+        if (turnstileSiteKey && !captchaToken) {
+            showAuthMessage(translateInterfaceValue("completeCaptcha"));
+            return;
+        }
+
         setBusy(true);
         showAuthMessage(translateInterfaceValue("creatingAccount"));
 
-        const redirectUrl = new URL(getSafeReturnUrl(), window.location.href).href;
-        const { data, error } = await supabaseClient.auth.signUp({
+        const { error } = await supabaseClient.auth.signUp({
             ...credentials,
             options: {
-                emailRedirectTo: redirectUrl
+                emailRedirectTo: getAuthCallbackUrl("confirm"),
+                captchaToken: captchaToken || undefined
             }
         });
 
-        if (error) {
-            const alreadyRegistered = /already|registered|exists/i.test(error.message || "");
-
-            if (alreadyRegistered) {
-                showAuthMessage(translateInterfaceValue("accountExistsTryingSignIn"));
-                const signInResult = await supabaseClient.auth.signInWithPassword(credentials);
-
-                setBusy(false);
-
-                if (!signInResult.error) {
-                    const user = await getActiveAuthUser(signInResult.data);
-
-                    if (!user) {
-                        showAuthMessage(translateInterfaceValue("accountFoundSignInManual"));
-                        return;
-                    }
-
-                    window.location.replace(getSafeReturnUrl());
-                    return;
-                }
-            }
-
-            setBusy(false);
-            showAuthMessage(getSupabaseErrorMessage(error));
-            return;
-        }
-
-        if (data.session) {
-            await getActiveAuthUser(data);
-            window.location.replace(getSafeReturnUrl());
-            return;
-        }
-
-        const signInResult = await supabaseClient.auth.signInWithPassword(credentials);
-
         setBusy(false);
+        resetCaptcha();
 
-        if (!signInResult.error) {
-            const user = await getActiveAuthUser(signInResult.data);
-
-            if (!user) {
-                showAuthMessage(translateInterfaceValue("accountCreatedSignInManual"));
-                return;
-            }
-
-            window.location.replace(getSafeReturnUrl());
+        if (error) {
+            showAuthMessage(getSupabaseErrorMessage(error));
             return;
         }
 
         showAuthMessage(translateInterfaceValue("accountCreatedConfirmEmail"));
     });
+
+    loginModeButton.addEventListener("click", () => setAuthMode("login"));
+    registerModeButton.addEventListener("click", () => setAuthMode("register"));
+    window.addEventListener("privoz-language-change", () => setAuthMode(authMode));
+
+    setAuthMode(urlParams.get("auth") === "register" ? "register" : "login");
+    finishAuthCallback();
 }

@@ -566,8 +566,16 @@ function initSellerPanel() {
                 .map(input => input.value)
             : (seller?.featuredProductIds || []);
 
-        if (!name) {
+        if (name.length < 2 || name.length > 120) {
             showMessage(profileMessage, translateInterfaceValue("enterShopName"));
+            return;
+        }
+
+        if (
+            description.length > 1000 || findInfo.length > 500 || phone.length > 50 ||
+            telegram.length > 200 || instagram.length > 200 || viber.length > 200
+        ) {
+            showMessage(profileMessage, translateInterfaceValue("inputTooLong"));
             return;
         }
 

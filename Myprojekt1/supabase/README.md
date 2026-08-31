@@ -19,6 +19,24 @@
 
 `20260803_001_add_support_messages.sql`
 
+## Регистрация и защита от ботов
+
+После публикации основного домена в Supabase Dashboard необходимо:
+
+1. В `Authentication → URL Configuration` указать основной HTTPS-домен как
+   Site URL и разрешить callback `https://ВАШ-ДОМЕН/auth.html`.
+2. Создать Cloudflare Turnstile widget для основного и тестового доменов.
+3. В `Authentication → Bot and Abuse Protection` включить Turnstile и сохранить
+   секретный ключ только в Dashboard.
+4. Публичный Site Key записать в `content` элемента
+   `<meta name="turnstile-site-key">` в `src/auth.html`.
+5. Не включать CAPTCHA в Dashboard до публикации Site Key во frontend, иначе
+   вход, регистрация и восстановление пароля будут отклоняться Supabase.
+
+Для текущего изменения применить в SQL Editor только миграцию
+`migrations/20260831_registration_moderation.sql`, предварительно сохранив
+резервную копию и проверив существующие строки `shops`.
+
 ## Администратор
 
 Назначение администратора — это данные, а не часть схемы. После регистрации

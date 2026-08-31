@@ -306,6 +306,7 @@ function initCategoryCards() {
 
 function initSellerCreation() {
     const createSellerBtn = document.getElementById("createSellerBtn");
+    const sellerCitySelect = document.getElementById("sellerCity");
     const sellerMarketSelect = document.getElementById("sellerMarket");
     const sellerCategorySelect = document.getElementById("sellerCategory");
     const createSellerMessage = document.getElementById("createSellerMessage");
@@ -327,13 +328,20 @@ function initSellerCreation() {
             }
         }
 
-        const cityMarkets = markets.filter(market => (
-            market.id && (market.citySlug || "odesa") === "odesa"
-        ));
+        const cities = [...new Map(markets
+            .filter(market => market.cityId && market.citySlug)
+            .map(market => [market.cityId, {
+                id: market.cityId,
+                name: market.cityName,
+                slug: market.citySlug
+            }])).values()]
+            .sort((first, second) => first.name.localeCompare(second.name, "uk"));
         const currentMarket = getCurrentMarket();
 
-        if (!cityMarkets.length) {
+        if (!cities.length || !sellerCitySelect) {
+            if (sellerCitySelect) sellerCitySelect.innerHTML = "";
             sellerMarketSelect.innerHTML = "";
+            if (sellerCitySelect) sellerCitySelect.disabled = true;
             sellerMarketSelect.disabled = true;
             createSellerBtn.disabled = true;
             showMessage(
@@ -343,26 +351,43 @@ function initSellerCreation() {
             return false;
         }
 
-        sellerMarketSelect.disabled = false;
-        createSellerBtn.disabled = false;
-        sellerMarketSelect.innerHTML = cityMarkets
-            .map(market => `
+        sellerCitySelect.disabled = false;
+        sellerCitySelect.innerHTML = cities.map(city => `
+            <option value="${escapeHtml(city.id)}">${escapeHtml(city.name)}</option>
+        `).join("");
+
+        const renderMarkets = () => {
+            const cityMarkets = markets.filter(market => (
+                market.id && market.cityId === sellerCitySelect.value
+            ));
+
+            sellerMarketSelect.innerHTML = cityMarkets.map(market => `
                 <option value="${escapeHtml(market.id)}">
                     ${escapeHtml(market.address
                         ? `${market.name} — ${market.address}`
                         : market.name)}
                 </option>
-            `)
-            .join("");
+            `).join("");
+            sellerMarketSelect.disabled = !cityMarkets.length;
+            createSellerBtn.disabled = !cityMarkets.length;
 
-        if (cityMarkets.some(market => market.id === currentMarket.id)) {
-            sellerMarketSelect.value = currentMarket.id;
+            const selectedMarket = cityMarkets.find(market => market.id === currentMarket.id)
+                || cityMarkets[0];
+
+            if (selectedMarket) {
+                sellerMarketSelect.value = selectedMarket.id;
+                setCurrentMarket(selectedMarket);
+            } else {
+                showMessage(createSellerMessage, translateInterfaceValue("marketListUnavailable"));
+            }
+        };
+
+        if (cities.some(city => city.id === currentMarket.cityId)) {
+            sellerCitySelect.value = currentMarket.cityId;
         }
 
-        const initialMarket = cityMarkets.find(market => market.id === sellerMarketSelect.value)
-            || cityMarkets[0];
-
-        if (initialMarket) setCurrentMarket(initialMarket);
+        renderMarkets();
+        sellerCitySelect.addEventListener("change", renderMarkets);
 
         sellerMarketSelect.addEventListener("change", () => {
             const selectedMarket = cityMarkets.find(market => market.id === sellerMarketSelect.value);
@@ -423,8 +448,13 @@ function initSellerCreation() {
         const open = document.getElementById("openTime").value;
         const close = document.getElementById("closeTime").value;
 
-        if (!name) {
+        if (name.length < 2 || name.length > 120) {
             showMessage(createSellerMessage, translateInterfaceValue("enterShopName"));
+            return;
+        }
+
+        if (description.length > 1000) {
+            showMessage(createSellerMessage, translateInterfaceValue("inputTooLong"));
             return;
         }
 
@@ -489,7 +519,7 @@ function initSellerCreation() {
 
             sellers.push(savedSeller);
             writeStorage("sellers", sellers);
-            showMessage(createSellerMessage, translateInterfaceValue("shopCreated"));
+            showMessage(createSellerMessage, translateInterfaceValue("shopPendingModeration"));
             openPage(`seller_panel.html?seller=${encodeURIComponent(savedSeller.id)}`);
         } catch (error) {
             console.warn("Seller creation failed", error);

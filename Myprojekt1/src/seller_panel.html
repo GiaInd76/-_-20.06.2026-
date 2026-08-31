@@ -9,7 +9,7 @@
 
     <link rel="stylesheet" href="css/base.css?v=20260723-1">
     <link rel="stylesheet" href="css/home.css?v=20260623-3">
-    <link rel="stylesheet" href="css/components.css?v=20260731-1">
+    <link rel="stylesheet" href="css/components.css?v=20260831-2">
     <link rel="stylesheet" href="css/seller.css?v=20260622-1">
     <link rel="stylesheet" href="css/glass-theme.css?v=20260730-1">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
@@ -50,16 +50,20 @@
                 type="text"
                 id="profileSellerName"
                 placeholder="Назва торгової точки"
+                minlength="2"
+                maxlength="120"
             >
 
             <textarea
                 id="profileSellerDescription"
                 placeholder="Опис торгової точки"
+                maxlength="1000"
             ></textarea>
 
             <textarea
                 id="profileFindInfo"
                 placeholder="Опис для кнопки Як знайти"
+                maxlength="500"
             ></textarea>
 
             <div class="contact-fields">
@@ -67,24 +71,28 @@
                     type="tel"
                     id="profilePhone"
                     placeholder="Номер телефону"
+                    maxlength="50"
                 >
 
                 <input
                     type="text"
                     id="profileTelegram"
                     placeholder="Посилання або ім'я Telegram"
+                    maxlength="200"
                 >
 
                 <input
                     type="text"
                     id="profileInstagram"
                     placeholder="Посилання або ім'я Instagram"
+                    maxlength="200"
                 >
 
                 <input
                     type="text"
                     id="profileViber"
                     placeholder="Посилання або номер Viber"
+                    maxlength="200"
                 >
             </div>
 
@@ -327,11 +335,12 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260831-1"></script>
-    <script src="js/i18n.js?v=20260731-1"></script>
-    <script src="js/core.js?v=20260831-1"></script>
-    <script src="js/seller-panel.js?v=20260730-1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0"></script>
+    <script src="js/url-security.js?v=20260831-1"></script>
+    <script src="js/supabase-client.js?v=20260831-2"></script>
+    <script src="js/i18n.js?v=20260831-2"></script>
+    <script src="js/core.js?v=20260831-2"></script>
+    <script src="js/seller-panel.js?v=20260831-2"></script>
     <script src="js/app.js?v=20260831-1"></script>
 </body>
 

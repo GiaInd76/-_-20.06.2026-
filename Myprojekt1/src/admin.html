@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="css/base.css?v=20260723-1">
     <link rel="stylesheet" href="css/home.css?v=20260623-3">
-    <link rel="stylesheet" href="css/components.css?v=20260731-1">
+    <link rel="stylesheet" href="css/components.css?v=20260831-2">
     <link rel="stylesheet" href="css/seller.css?v=20260622-1">
     <link rel="stylesheet" href="css/glass-theme.css?v=20260622-1">
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
@@ -24,7 +24,7 @@
             <a class="brand-title site-brand" href="index.html" data-market-label>
                 Одеса • Ринок Привоз
             </a>
-            <button id="adminLogoutBtn" class="favorites-nav-btn" type="button">Выйти</button>
+            <button id="adminLogoutBtn" class="favorites-nav-btn" type="button">Вийти</button>
         </nav>
 
         <header class="header admin-header">
@@ -36,10 +36,10 @@
         <section id="adminAccessCard" class="panel-section admin-access-card hidden">
             <h2>Нет доступа</h2>
             <p>
-                Войдите под админским аккаунтом и добавьте этот аккаунт в таблицу
+                Увійдіть під обліковим записом адміністратора та додайте його до таблиці
                 <strong>admin_users</strong> через SQL-файл 007_admin_access.sql.
             </p>
-            <a class="btn-primary admin-login-link" href="auth.html?return=admin.html">Войти</a>
+            <a class="btn-primary admin-login-link" href="auth.html?return=admin.html">Увійти</a>
         </section>
 
         <section id="adminDashboard" class="admin-dashboard hidden">
@@ -49,11 +49,11 @@
                     <strong id="adminShopsCount">0</strong>
                 </article>
                 <article class="panel-section admin-stat-card">
-                    <span>Товары</span>
+                    <span>Товари</span>
                     <strong id="adminProductsCount">0</strong>
                 </article>
                 <article class="panel-section admin-stat-card">
-                    <span>Без товаров</span>
+                    <span>Без товарів</span>
                     <strong id="adminEmptyShopsCount">0</strong>
                 </article>
                 <article class="panel-section admin-stat-card">
@@ -69,15 +69,15 @@
             <section class="panel-section admin-section">
                 <div class="admin-section-head">
                     <div>
-                        <h2>Быстрые действия</h2>
-                        <p>Основные переходы для контроля теста с телефона или ноутбука.</p>
+                        <h2>Швидкі дії</h2>
+                        <p>Основні переходи для перевірки з телефона або ноутбука.</p>
                     </div>
                 </div>
                 <div class="admin-quick-actions">
                     <a class="btn-outline" href="index.html">Главная</a>
-                    <a class="btn-outline" href="auth.html">Вход</a>
+                    <a class="btn-outline" href="auth.html">Вхід</a>
                     <a class="btn-outline" href="create_seller.html">Торгова точка</a>
-                    <a class="btn-outline" href="category.html?favorites=1">Избранное</a>
+                    <a class="btn-outline" href="category.html?favorites=1">Обране</a>
                     <a class="btn-outline" href="https://supabase.com/dashboard/project/sdsmnahyobzmrafkexud/editor" target="_blank" rel="noopener noreferrer">Supabase</a>
                 </div>
             </section>
@@ -86,7 +86,7 @@
                 <div class="admin-section-head">
                     <div>
                         <h2>Посещения</h2>
-                        <p>Показывает просмотры сайта за выбранный период.</p>
+                        <p>Показує перегляди сайту за обраний період.</p>
                     </div>
                     <div class="admin-period-filter" id="adminVisitPeriodFilter">
                         <button class="is-active" type="button" data-visit-period="day">Сутки</button>
@@ -102,7 +102,7 @@
                         <strong id="adminVisitsTotal">0</strong>
                     </article>
                     <article class="admin-visit-card">
-                        <span>Уникальных сессий</span>
+                        <span>Унікальних сесій</span>
                         <strong id="adminVisitsUnique">0</strong>
                     </article>
                     <article class="admin-visit-card">
@@ -118,9 +118,9 @@
                 <div class="admin-section-head">
                     <div>
                         <h2>Проверка перед запуском</h2>
-                        <p>30-дневный ориентир: тут видны самые грубые проблемы.</p>
+                        <p>Орієнтир за 30 днів: тут видно найважливіші проблеми.</p>
                     </div>
-                    <button id="adminRefreshBtn" class="btn-outline" type="button">Обновить</button>
+                    <button id="adminRefreshBtn" class="btn-outline" type="button">Оновити</button>
                 </div>
                 <div id="adminChecklist" class="admin-checklist"></div>
             </section>
@@ -128,8 +128,8 @@
             <section class="panel-section admin-section">
                 <div class="admin-section-head">
                     <div>
-                        <h2>Проблемные места</h2>
-                        <p>То, что нужно быстро увидеть во время закрытого теста.</p>
+                        <h2>Проблемні місця</h2>
+                        <p>Те, що потрібно швидко побачити під час закритого тесту.</p>
                     </div>
                 </div>
                 <div id="adminIssuesList" class="admin-issues-grid"></div>
@@ -139,7 +139,7 @@
                 <div class="admin-section-head">
                     <div>
                         <h2>Категории</h2>
-                        <p>На кнопках видно количество торговых точек. Нажмите категорию, чтобы посмотреть их внутри админки.</p>
+                        <p>На кнопках видно кількість торгових точок. Натисніть категорію, щоб переглянути їх в адмінці.</p>
                     </div>
                 </div>
                 <div id="adminCategoriesList" class="admin-category-grid"></div>
@@ -149,9 +149,9 @@
                 <div class="admin-section-head">
                     <div>
                         <h2 id="adminCategoryTitle">Категория</h2>
-                        <p id="adminCategoryMeta">Торговые точки и товары выбранной категории.</p>
+                        <p id="adminCategoryMeta">Торгові точки й товари обраної категорії.</p>
                     </div>
-                    <a id="adminOpenCategoryLink" class="btn-outline" href="category.html">Открыть страницу</a>
+                    <a id="adminOpenCategoryLink" class="btn-outline" href="category.html">Відкрити сторінку</a>
                 </div>
                 <div id="adminCategoryShops" class="admin-list"></div>
             </section>
@@ -160,7 +160,7 @@
                 <div class="admin-section-head">
                     <div>
                         <h2>Заметки теста</h2>
-                        <p>Локальный список наблюдений. Хранится в этом браузере.</p>
+                        <p>Локальний список спостережень. Зберігається в цьому браузері.</p>
                     </div>
                     <button id="adminClearNotesBtn" class="btn-outline" type="button">Очистить</button>
                 </div>
@@ -173,10 +173,12 @@
         </section>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/supabase-client.js?v=20260709-1"></script>
-    <script src="js/core.js?v=20260801-1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0"></script>
+    <script src="js/url-security.js?v=20260831-1"></script>
+    <script src="js/supabase-client.js?v=20260831-2"></script>
+    <script src="js/i18n.js?v=20260831-2"></script>
+    <script src="js/core.js?v=20260831-2"></script>
     <script>updateMarketLabels();</script>
-    <script src="js/admin.js?v=20260709-1"></script>
+    <script src="js/admin.js?v=20260831-2"></script>
 </body>
 </html>
