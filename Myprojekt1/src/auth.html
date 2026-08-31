@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="css/internal-pages.css?v=20260628-1">
     <link rel="stylesheet" href="css/overrides.css?v=20260801-1">
     <link rel="stylesheet" href="css/theme-background.css?v=20260729-1">
-    <link rel="stylesheet" href="css/auth.css?v=20260831-3">
+    <link rel="stylesheet" href="css/auth.css?v=20260831-4">
     <link rel="stylesheet" href="css/responsive-mobile.css?v=20260709-1">
     <link rel="stylesheet" href="css/responsive-desktop.css?v=20260709-1">
 </head>
@@ -35,16 +35,34 @@
             <p class="subtitle">Увійдіть або створіть обліковий запис продавця.</p>
 
             <input id="authEmail" type="email" placeholder="Електронна пошта" autocomplete="email" maxlength="254" required>
-            <input id="authPassword" type="password" placeholder="Пароль, щонайменше 8 символів" autocomplete="current-password" minlength="8" maxlength="128" required>
-            <input
-                id="authPasswordConfirm"
-                class="hidden"
-                type="password"
-                placeholder="Повторіть пароль для реєстрації"
-                autocomplete="new-password"
-                minlength="8"
-                maxlength="128"
-            >
+            <div class="auth-password-field">
+                <input id="authPassword" type="password" placeholder="Пароль, щонайменше 8 символів" autocomplete="current-password" minlength="8" maxlength="128" required>
+                <button class="auth-password-toggle" type="button" data-password-toggle="authPassword" aria-label="Показати пароль" title="Показати пароль" aria-pressed="false">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22">
+                        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                        <circle cx="12" cy="12" r="2.75"></circle>
+                        <path class="auth-eye-slash" d="m4 4 16 16"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="authPasswordConfirmField" class="auth-password-field hidden">
+                <input
+                    id="authPasswordConfirm"
+                    class="hidden"
+                    type="password"
+                    placeholder="Повторіть пароль для реєстрації"
+                    autocomplete="new-password"
+                    minlength="8"
+                    maxlength="128"
+                >
+                <button class="auth-password-toggle" type="button" data-password-toggle="authPasswordConfirm" aria-label="Показати пароль" title="Показати пароль" aria-pressed="false">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22">
+                        <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                        <circle cx="12" cy="12" r="2.75"></circle>
+                        <path class="auth-eye-slash" d="m4 4 16 16"></path>
+                    </svg>
+                </button>
+            </div>
 
             <div id="captchaContainer" class="auth-captcha hidden" aria-live="polite"></div>
 
@@ -59,8 +77,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.111.0"></script>
     <script src="js/url-security.js?v=20260831-1"></script>
-    <script src="js/supabase-client.js?v=20260831-3"></script>
-    <script src="js/i18n.js?v=20260831-3"></script>
+    <script src="js/supabase-client.js?v=20260831-4"></script>
+    <script src="js/i18n.js?v=20260831-4"></script>
     <script src="js/core.js?v=20260831-2"></script>
     <script>
         updateMarketLabels();

@@ -30,6 +30,50 @@
     font: inherit;
 }
 
+.auth-password-field {
+    position: relative;
+}
+
+.auth-password-field input {
+    padding-right: 48px;
+}
+
+.auth-card .auth-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    display: grid;
+    width: 38px;
+    min-height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #5d6871;
+    place-items: center;
+    transform: translateY(-50%);
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.auth-password-toggle:hover,
+.auth-password-toggle:focus-visible {
+    background: rgba(28, 35, 42, 0.08);
+    color: #202a32;
+}
+
+.auth-password-toggle svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.auth-password-toggle[aria-pressed="true"] .auth-eye-slash {
+    display: none;
+}
+
 .auth-card button {
     min-height: 42px;
 }

@@ -1214,6 +1214,7 @@ function initAuthPage() {
     const emailInput = document.getElementById("authEmail");
     const passwordInput = document.getElementById("authPassword");
     const passwordConfirmInput = document.getElementById("authPasswordConfirm");
+    const passwordConfirmField = document.getElementById("authPasswordConfirmField");
     const loginModeButton = document.getElementById("loginModeBtn");
     const registerModeButton = document.getElementById("registerModeBtn");
     const forgotPasswordButton = document.getElementById("forgotPasswordBtn");
@@ -1233,6 +1234,21 @@ function initAuthPage() {
     if (!form || !supabaseClient) return;
 
     trackVisitEvent();
+
+    form.querySelectorAll("[data-password-toggle]").forEach(toggleButton => {
+        toggleButton.addEventListener("click", () => {
+            const targetInput = document.getElementById(toggleButton.dataset.passwordToggle);
+            if (!targetInput) return;
+
+            const shouldShow = targetInput.type === "password";
+            targetInput.type = shouldShow ? "text" : "password";
+            toggleButton.setAttribute("aria-pressed", String(shouldShow));
+
+            const label = translateInterfaceValue(shouldShow ? "hidePassword" : "showPassword");
+            toggleButton.setAttribute("aria-label", label);
+            toggleButton.setAttribute("title", label);
+        });
+    });
 
     const showAuthMessage = text => {
         if (!message) return;
@@ -1298,6 +1314,7 @@ function initAuthPage() {
         const isRegister = authMode === "register";
 
         passwordConfirmInput.classList.toggle("hidden", !isRegister);
+        passwordConfirmField?.classList.toggle("hidden", !isRegister);
         passwordConfirmInput.required = isRegister;
         passwordInput.autocomplete = isRegister ? "new-password" : "current-password";
         captchaContainer?.classList.toggle("hidden", !turnstileSiteKey);

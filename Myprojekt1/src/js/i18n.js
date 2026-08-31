@@ -47,6 +47,8 @@ const interfaceTranslations = {
     register: { uk: "Створити обліковий запис", en: "Create account" },
     registerAction: { uk: "Зареєструватися", en: "Register" },
     repeatPassword: { uk: "Повторіть пароль для реєстрації", en: "Repeat password to register" },
+    showPassword: { uk: "Показати пароль", en: "Show password" },
+    hidePassword: { uk: "Сховати пароль", en: "Hide password" },
     enterEmailAndPassword: { uk: "Введіть пошту і пароль не коротше 8 символів.", en: "Enter email and a password of at least 8 characters." },
     signingIn: { uk: "Входимо...", en: "Signing in..." },
     signInNotPersisted: { uk: "Вхід не закріпився в браузері. Оновіть сторінку входу і спробуйте ще раз.", en: "Sign-in did not persist in the browser. Refresh the sign-in page and try again." },
