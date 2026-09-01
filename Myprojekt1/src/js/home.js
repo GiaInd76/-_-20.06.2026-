@@ -67,9 +67,21 @@ function initMainPage() {
             products = await fetchLatestProductsFromSupabase(activeFilters, 6);
         } catch (error) {
             console.warn("Home offers fallback", error);
+            const currentMarketId = getCurrentMarketId();
+            const currentMarketSellerIds = new Set(
+                readStorage("sellers")
+                    .filter(seller => !currentMarketId || seller.marketId === currentMarketId)
+                    .map(seller => seller.id)
+            );
+
             products = readStorage("products")
                 .filter(product => {
-                    return !activeFilters.length || activeFilters.includes(product.category);
+                    const belongsToCurrentMarket = !currentMarketId
+                        || currentMarketSellerIds.has(product.seller);
+                    const belongsToSelectedCategory = !activeFilters.length
+                        || activeFilters.includes(product.category);
+
+                    return belongsToCurrentMarket && belongsToSelectedCategory;
                 })
                 .map((product, index) => ({ product, index }))
                 .sort((first, second) => {
@@ -390,7 +402,10 @@ function initSellerCreation() {
         sellerCitySelect.addEventListener("change", renderMarkets);
 
         sellerMarketSelect.addEventListener("change", () => {
-            const selectedMarket = cityMarkets.find(market => market.id === sellerMarketSelect.value);
+            const selectedMarket = markets.find(market => (
+                market.id === sellerMarketSelect.value
+                && market.cityId === sellerCitySelect.value
+            ));
 
             if (selectedMarket) setCurrentMarket(selectedMarket);
         });
