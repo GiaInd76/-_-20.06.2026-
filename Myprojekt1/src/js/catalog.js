@@ -508,9 +508,18 @@ async function initSellerPage() {
         <p class="work-time">🕒 ${escapeHtml(formatSellerTime(seller.open))} - ${escapeHtml(formatSellerTime(seller.close))}</p>
         <div class="seller-actions">
             <button id="findBtn" class="btn-outline">${escapeHtml(translateInterfaceValue("howToFind"))}</button>
+            <button id="sellerQrBtn" class="btn-outline">${escapeHtml(translateInterfaceValue("pageQrCode"))}</button>
             <button id="contactBtn" class="btn-outline">${escapeHtml(translateInterfaceValue("contact"))}</button>
         </div>
     `;
+
+    const qrTitle = document.getElementById("sellerQrTitle");
+    const qrHint = document.getElementById("sellerQrHint");
+    const qrCloseButton = document.getElementById("sellerQrCloseBtn");
+
+    if (qrTitle) qrTitle.textContent = translateInterfaceValue("pageQrTitle");
+    if (qrHint) qrHint.textContent = translateInterfaceValue("pageQrHint");
+    if (qrCloseButton) qrCloseButton.setAttribute("aria-label", translateInterfaceValue("close"));
 
     const findModalText = document.getElementById("findModalText");
 

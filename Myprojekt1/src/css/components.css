@@ -12,6 +12,64 @@
 
     gap: 9px;
 
+    flex-wrap: wrap;
+
+}
+
+.qr-modal-content {
+    position: relative;
+    cursor: default;
+}
+
+.qr-modal-content h2 {
+    margin: 0 32px 16px;
+    font-size: 20px;
+}
+
+.qr-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(20, 20, 20, 0.08);
+    color: #202020;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.qr-modal-close:hover,
+.qr-modal-close:focus-visible {
+    background: rgba(20, 20, 20, 0.15);
+    outline: 2px solid #202020;
+    outline-offset: 2px;
+}
+
+.seller-qr-code {
+    display: flex;
+    width: 244px;
+    min-height: 244px;
+    margin: 0 auto;
+    padding: 12px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: #fff;
+    color: #202020;
+}
+
+.seller-qr-code img,
+.seller-qr-code canvas {
+    display: block;
+    width: 220px;
+    height: 220px;
+}
+
+.qr-modal-hint {
+    margin: 14px 0 0;
 }
 
 
