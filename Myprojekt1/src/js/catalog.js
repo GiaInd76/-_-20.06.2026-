@@ -294,7 +294,7 @@ function renderCategoryProducts(container, products, options = {}) {
                             <span class="seller-link-full">
                                 ${escapeHtml(translateInterfaceValue("shopPrefix"))}: ${escapeHtml(getSellerName(product.seller))}
                             </span>
-                            <span class="seller-link-short">${escapeHtml(translateInterfaceValue("goShop"))}</span>
+                            <span class="seller-link-short">${escapeHtml(getSellerName(product.seller))}</span>
                         </button>
                     `
                     : ""

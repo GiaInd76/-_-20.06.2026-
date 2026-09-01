@@ -119,6 +119,7 @@ function initMainPage() {
         homeOffersGrid.innerHTML = products.map(product => {
             const hasNewPrice = Boolean(product.priceChangedAt);
             const isFavorite = isFavoriteProduct(product.id);
+            const sellerName = getSellerName(product.seller);
 
             return `
                 <article
@@ -141,7 +142,7 @@ function initMainPage() {
                     <span class="home-offer-badge">${hasNewPrice ? translateInterfaceValue("priceUpdated") : translateInterfaceValue("newBadge")}</span>
                     <strong>${escapeHtml(getLocalizedProductName(product))}</strong>
                     <small>${escapeHtml(getProductPriceText(product))}</small>
-                    <button class="home-offer-shop" type="button">${escapeHtml(translateInterfaceValue("goShop"))}</button>
+                    <button class="home-offer-shop" type="button">${escapeHtml(sellerName)}</button>
                 </article>
             `;
         }).join("");
